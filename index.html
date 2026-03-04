@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ACTUAL CONSTRUCTION OS - منصة إدارة المشاريع الهندسية</title>
+    
+    <!-- ربط ملف CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- أيقونة الموقع -->
+    <link rel="icon" type="image/png" href="assets/icons/app-icon.png">
+    
+    <!-- وصف الموقع لمحركات البحث -->
+    <meta name="description" content="منصة متكاملة لتصميم وإدارة المشاريع الهندسية - ACTUAL CONSTRUCTION OS">
+    <meta name="keywords" content="هندسة, بناء, مشاريع, خرسانة, حديد, تشطيبات">
+    <meta name="author" content="مهندس سوداني">
+    
+    <!-- دعم اللغة العربية -->
+    <meta name="language" content="ar">
+    
+    <!-- ألوان الواجهة للمتصفحات الحديثة -->
+    <meta name="theme-color" content="#111122">
+    
+    <!-- إعدادات Three.js -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+    
+    <style>
+        /* أنماط احتياطية أثناء تحميل CSS */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #111122;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.5s;
+        }
+        
+        .loader {
+            text-align: center;
+            color: white;
+        }
+        
+        .loader h1 {
+            color: #88aaff;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        
+        .loader p {
+            color: #4a6c8f;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+    </style>
+</head>
+<body>
+    <!-- شاشة التحميل -->
+    <div id="loading">
+        <div class="loader">
+            <h1>🏗️ ACTUAL CONSTRUCTION OS</h1>
+            <p>جاري تحميل المنصة المتكاملة...</p>
+            <p style="font-size: 12px; margin-top: 20px;">الإصدار 1.0 | منصة إدارة المشاريع الهندسية</p>
+        </div>
+    </div>
+    
+    <!-- حاوية المشهد ثلاثي الأبعاد -->
+    <div id="container"></div>
+    
+    <!-- شريط الحالة -->
+    <div class="status-bar" id="statusBar">
+        ✅ النظام جاهز
+    </div>
+    
+    <!-- إخفاء شريط التحميل بعد تحميل الصفحة -->
+    <script>
+        // إخفاء شاشة التحميل بعد 2 ثانية أو عند تحميل الصفحة
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                }, 500);
+            }, 1500);
+        });
+        
+        // في حال فشل تحميل الصورة الرئيسية
+        window.addEventListener('error', (e) => {
+            console.error('خطأ في التحميل:', e.message);
+        }, true);
+    </script>
+    
+    <!-- استيراد الملف الرئيسي -->
+    <script type="module" src="./main.js"></script>
+</body>
+</html>
