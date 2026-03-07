@@ -1,19 +1,5 @@
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // modules/Earthworks/Compaction.js
 import * as THREE from 'three';
 import { SoilMaterial } from './SoilMaterial.js';
