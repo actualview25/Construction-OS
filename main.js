@@ -1,6 +1,8 @@
 // =======================================
 // ACTUAL CONSTRUCTION OS - MAIN ENTRY POINT
 // =======================================
+// الإصدار: 3.0.0
+// =======================================
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -8,6 +10,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 console.log('🚀 بدء تشغيل ACTUAL CONSTRUCTION OS...');
 console.log('THREE loaded:', !!THREE);
 console.log('OrbitControls loaded:', !!OrbitControls);
+
 // ========== CORE SYSTEMS ==========
 import { GeoReferencing } from './core/Georeferencing.js';
 import { SceneManager } from './core/SceneManager.js';
@@ -15,8 +18,10 @@ import { ProjectManager } from './core/ProjectManager.js';
 import { GlobalEntitySystem } from './core/global/GlobalEntitySystem.js';
 import { SceneConnector } from './core/global/SceneConnector.js';
 import { CoordinateTransformer } from './core/global/CoordinateTransformer.js';
-import { StorageManager } from './core/storage/StorageManager.js';
 import { SceneGraph } from './core/bridge/SceneGraph.js';
+
+// ملاحظة: StorageManager مؤقتاً غير موجود - سنستخدم localStorage بديلاً
+// import { StorageManager } from './core/storage/StorageManager.js';
 
 // ========== REALITY BRIDGE SYSTEMS ==========
 import { RealityBridge } from './core/bridge/RealityBridge.js';
@@ -165,201 +170,234 @@ class ActualConstructionOS {
         this.animate();
         
         console.log('%c✅ ACTUAL CONSTRUCTION OS جاهز', 'color: #44ff44; font-size: 14px;');
-        console.log('📊 المشروع جاهز لاستقبال البيانات');
     }
 
     // ==================== تهيئة Three.js ====================
 
     initThree() {
-        // المشهد
-        this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(0x111122);
-        
-        // الكاميرا
-        this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
-        this.camera.position.set(30, 20, 30);
-        this.camera.lookAt(0, 5, 0);
-        
-        // الرندر الهجين
-        this.renderer = new HybridRenderer('container');
-        
-        // التحكم
-        this.controls = new OrbitControls(this.camera, this.renderer.webglRenderer.domElement);
-        this.controls.enableDamping = true;
-        this.controls.dampingFactor = 0.05;
-        this.controls.maxPolarAngle = Math.PI / 2;
+        try {
+            this.scene = new THREE.Scene();
+            this.scene.background = new THREE.Color(0x111122);
+            
+            this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+            this.camera.position.set(30, 20, 30);
+            this.camera.lookAt(0, 5, 0);
+            
+            this.renderer = new HybridRenderer('container');
+            
+            this.controls = new OrbitControls(this.camera, this.renderer.webglRenderer.domElement);
+            this.controls.enableDamping = true;
+            this.controls.dampingFactor = 0.05;
+            this.controls.maxPolarAngle = Math.PI / 2;
+            
+            console.log('✅ Three.js initialized');
+        } catch (error) {
+            console.error('❌ فشل تهيئة Three.js:', error);
+        }
     }
 
     // ==================== تهيئة الأنظمة الأساسية ====================
 
     initCore() {
-        // نظم الإحداثيات
-        this.geoRef = new GeoReferencing();
-        
-        // مديري المشروع
-        this.sceneManager = new SceneManager(this);
-        this.projectManager = new ProjectManager();
-        
-        // الرسم البياني للمشاهد
-        this.sceneGraph = new SceneGraph();
-        
-        // مدير التخزين
-        this.storage = new StorageManager();
-        
-        // الأنظمة العالمية
-        this.globalSystem = new GlobalEntitySystem(this.geoRef);
-        this.sceneConnector = new SceneConnector(this.geoRef);
-        this.sceneConnector.setGlobalSystem(this.globalSystem);
-        
-        this.coordTransformer = new CoordinateTransformer(this.geoRef, this.sceneConnector);
-        
-        // BOQ
-        this.boqCalculator = new BOQCalculator(this);
-        this.boqReporter = new BOQReporter(this.boqCalculator);
-        this.boqExporter = new BOQExporter(this.boqReporter);
-        
-        // BOQ العالمي
-        this.globalBOQ = new GlobalBOQCalculator(this.globalSystem);
-        this.globalReporter = new GlobalReporter(this.globalBOQ);
-        
-        // مكتبة المواد
-        this.materialLibrary = new MaterialLibrary();
+        try {
+            this.geoRef = new GeoReferencing();
+            this.sceneManager = new SceneManager(this);
+            this.projectManager = new ProjectManager();
+            this.sceneGraph = new SceneGraph();
+            
+            // تخزين مؤقت باستخدام localStorage
+            this.storage = {
+                save: (key, data) => {
+                    try {
+                        localStorage.setItem(key, JSON.stringify(data));
+                    } catch (e) {
+                        console.warn('⚠️ فشل حفظ:', key);
+                    }
+                },
+                load: (key) => {
+                    try {
+                        return JSON.parse(localStorage.getItem(key));
+                    } catch {
+                        return null;
+                    }
+                }
+            };
+            
+            this.globalSystem = new GlobalEntitySystem(this.geoRef);
+            this.sceneConnector = new SceneConnector(this.geoRef);
+            this.sceneConnector.setGlobalSystem(this.globalSystem);
+            
+            this.coordTransformer = new CoordinateTransformer(this.geoRef, this.sceneConnector);
+            
+            this.boqCalculator = new BOQCalculator(this);
+            this.boqReporter = new BOQReporter(this.boqCalculator);
+            this.boqExporter = new BOQExporter(this.boqReporter);
+            
+            this.globalBOQ = new GlobalBOQCalculator(this.globalSystem);
+            this.globalReporter = new GlobalReporter(this.globalBOQ);
+            
+            this.materialLibrary = new MaterialLibrary();
+            
+            console.log('✅ Core systems initialized');
+        } catch (error) {
+            console.error('❌ فشل تهيئة Core systems:', error);
+        }
     }
 
-    // ==================== تهيئة أنظمة التحميل ====================
+// ==================== تهيئة أنظمة التحميل ====================
 
     initLoadingSystems() {
-        // أنظمة التحميل الفردية
-        this.lazyLoader = new LazySceneLoader(this.sceneGraph, this.storage);
-        this.segmentedLoader = new SegmentedSceneLoader();
-        this.lodManager = new LODManager(this.camera);
-        this.tileLODManager = new TileLODManager(this.camera);
-        this.priorityQueue = new PriorityQueue();
-        
-        // المحمل المتكامل
-        this.loader = new IntegratedLoader(
-            this.sceneGraph,
-            this.storage,
-            this.camera,
-            null // سيتم ربط analytics لاحقاً
-        );
+        try {
+            this.lazyLoader = new LazySceneLoader(this.sceneGraph, this.storage);
+            this.segmentedLoader = new SegmentedSceneLoader();
+            this.lodManager = new LODManager(this.camera);
+            this.tileLODManager = new TileLODManager(this.camera);
+            this.priorityQueue = new PriorityQueue(this);
+            
+            this.loader = new IntegratedLoader(
+                this.sceneGraph,
+                this.storage,
+                this.camera,
+                null
+            );
+            
+            console.log('✅ Loading systems initialized');
+        } catch (error) {
+            console.error('❌ فشل تهيئة Loading systems:', error);
+        }
     }
 
     // ==================== تهيئة Reality Bridge ====================
 
     initBridgeSystems() {
-        this.realityBridge = new RealityBridge(this.globalSystem, this.sceneConnector, this.sceneGraph);
-        this.syncManager = new SyncManager(this.realityBridge);
-        
-        // ربط المحمل بالـ Bridge
-        this.realityBridge.setLoader(this.loader);
-        
-        // إنشاء مشاهد افتراضية للتجربة
-        this.setupDemoScenes();
+        try {
+            this.realityBridge = new RealityBridge(this.globalSystem, this.sceneConnector, this.sceneGraph);
+            this.syncManager = new SyncManager(this.realityBridge);
+            
+            this.realityBridge.setLoader(this.loader);
+            
+            this.setupDemoScenes();
+            
+            console.log('✅ Bridge systems initialized');
+        } catch (error) {
+            console.error('❌ فشل تهيئة Bridge systems:', error);
+        }
     }
 
     setupDemoScenes() {
-        // إضافة مشاهد مع إحداثيات افتراضية
-        this.sceneConnector.addScene('scene_001', { x: 0, y: 0, z: 0 }, 0);
-        this.sceneConnector.addScene('scene_002', { x: 20, y: 0, z: 0 }, 0);
-        this.sceneConnector.addScene('scene_003', { x: 40, y: 0, z: 10 }, 0);
-        
-        // ربط المشاهد
-        this.realityBridge.createLink('scene_001', 'scene_002', { x: 10, y: 0, z: 0 }, 'door');
-        this.realityBridge.createLink('scene_002', 'scene_003', { x: 30, y: 0, z: 5 }, 'hallway');
-        
-        // بناء الرسم البياني
-        this.sceneGraph.buildFromScenes();
+        try {
+            this.sceneConnector.addScene('scene_001', { x: 0, y: 0, z: 0 }, 0);
+            this.sceneConnector.addScene('scene_002', { x: 20, y: 0, z: 0 }, 0);
+            this.sceneConnector.addScene('scene_003', { x: 40, y: 0, z: 10 }, 0);
+            
+            this.realityBridge.createLink('scene_001', 'scene_002', { x: 10, y: 0, z: 0 }, 'door');
+            this.realityBridge.createLink('scene_002', 'scene_003', { x: 30, y: 0, z: 5 }, 'hallway');
+            
+            this.sceneGraph.buildFromScenes();
+            
+            console.log('✅ Demo scenes created');
+        } catch (error) {
+            console.warn('⚠️ فشل إنشاء المشاهد التجريبية:', error);
+        }
     }
 
     // ==================== تهيئة الأدوات ====================
 
     initTools() {
-        // أدوات CAD
-        this.cadImporter = new CADImporter(this.geoRef, this.sceneConnector);
-        this.calibrationWizard = new CalibrationWizard(this.geoRef, this.sceneConnector);
-        this.dwgParser = new DWGParser();
-        this.dxfParser = new DXFParser();
-        
-        // أدوات القياس
-        this.distanceTool = new DistanceTool(this);
-        this.areaTool = new AreaTool(this);
-        this.volumeTool = new VolumeTool(this);
-        
-        // أدوات التصدير
-        this.constructionExporter = new ConstructionExporter(this);
-        this.globalDataExporter = new GlobalDataExporter(this);
+        try {
+            this.cadImporter = new CADImporter(this.geoRef, this.sceneConnector);
+            this.calibrationWizard = new CalibrationWizard(this.geoRef, this.sceneConnector);
+            this.dwgParser = new DWGParser();
+            this.dxfParser = new DXFParser();
+            
+            this.distanceTool = new DistanceTool(this);
+            this.areaTool = new AreaTool(this);
+            this.volumeTool = new VolumeTool(this);
+            
+            this.constructionExporter = new ConstructionExporter(this);
+            this.globalDataExporter = new GlobalDataExporter(this);
+            
+            console.log('✅ Tools initialized');
+        } catch (error) {
+            console.error('❌ فشل تهيئة Tools:', error);
+        }
     }
 
     // ==================== تهيئة واجهة المستخدم ====================
 
     initUI() {
-        // واجهة المستخدم الرئيسية
-        this.dashboard = new Dashboard(this);
-        this.propertiesPanel = new PropertiesPanel(this);
-        this.toolbar = new Toolbar(this);
-        
-        // واجهات إضافية
-        this.globalEntitiesPanel = new GlobalEntitiesPanel(this);
-        this.sceneConnectorUI = new SceneConnectorUI(this);
-        this.calibrationUI = new CalibrationUI(this, this.calibrationWizard);
+        try {
+            this.dashboard = new Dashboard(this);
+            this.propertiesPanel = new PropertiesPanel(this);
+            this.toolbar = new Toolbar(this);
+            
+            this.globalEntitiesPanel = new GlobalEntitiesPanel(this);
+            this.sceneConnectorUI = new SceneConnectorUI(this);
+            this.calibrationUI = new CalibrationUI(this, this.calibrationWizard);
+            
+            console.log('✅ UI initialized');
+        } catch (error) {
+            console.error('❌ فشل تهيئة UI:', error);
+        }
     }
 
     // ==================== تهيئة أنظمة التصحيح ====================
 
     initDebugSystems() {
-        // محلل الأداء
-        this.analytics = new AnalyticsDebugger(this.loader, this.realityBridge);
-        
-        // ربط analytics بالمحمل
-        this.loader.analytics = this.analytics;
-        
-        // طبقة التصحيح
-        this.debugLayer = new DebugLayer(this.sceneGraph, this.realityBridge, this.loader, this.lodManager);
-        this.debugLayer.setupKeyboardShortcut();
-        
-        // بدء التتبع
-        this.analytics.startTracking();
+        try {
+            this.analytics = new AnalyticsDebugger(this.loader, this.realityBridge);
+            this.loader.analytics = this.analytics;
+            
+            this.debugLayer = new DebugLayer(this.sceneGraph, this.realityBridge, this.loader, this.lodManager);
+            this.debugLayer.setupKeyboardShortcut();
+            
+            this.analytics.startTracking();
+            
+            console.log('✅ Debug systems initialized');
+        } catch (error) {
+            console.error('❌ فشل تهيئة Debug systems:', error);
+        }
     }
 
     // ==================== الإضاءة ====================
 
     setupLights() {
-        // إضاءة محيطية
-        const ambientLight = new THREE.AmbientLight(0x404060);
-        this.scene.add(ambientLight);
-        
-        // إضاءة رئيسية (شمس)
-        const sunLight = new THREE.DirectionalLight(0xfff5e6, 1.2);
-        sunLight.position.set(20, 30, 20);
-        sunLight.castShadow = true;
-        sunLight.shadow.mapSize.width = 2048;
-        sunLight.shadow.mapSize.height = 2048;
-        sunLight.shadow.camera.near = 0.5;
-        sunLight.shadow.camera.far = 50;
-        sunLight.shadow.camera.left = -20;
-        sunLight.shadow.camera.right = 20;
-        sunLight.shadow.camera.top = 20;
-        sunLight.shadow.camera.bottom = -20;
-        this.scene.add(sunLight);
-        
-        // إضاءة خلفية
-        const backLight = new THREE.DirectionalLight(0x446688, 0.5);
-        backLight.position.set(-20, 10, -20);
-        this.scene.add(backLight);
+        try {
+            const ambientLight = new THREE.AmbientLight(0x404060);
+            this.scene.add(ambientLight);
+            
+            const sunLight = new THREE.DirectionalLight(0xfff5e6, 1.2);
+            sunLight.position.set(20, 30, 20);
+            sunLight.castShadow = true;
+            sunLight.shadow.mapSize.width = 2048;
+            sunLight.shadow.mapSize.height = 2048;
+            this.scene.add(sunLight);
+            
+            const backLight = new THREE.DirectionalLight(0x446688, 0.5);
+            backLight.position.set(-20, 10, -20);
+            this.scene.add(backLight);
+            
+            console.log('✅ Lights setup');
+        } catch (error) {
+            console.error('❌ فشل إعداد الإضاءة:', error);
+        }
     }
 
     // ==================== الشبكة الأرضية ====================
 
     setupGrid() {
-        // شبكة رئيسية
-        const gridHelper = new THREE.GridHelper(200, 40, 0x88aaff, 0x335588);
-        gridHelper.position.y = 0;
-        this.scene.add(gridHelper);
-        
-        // محاور
-        const axesHelper = new THREE.AxesHelper(20);
-        this.scene.add(axesHelper);
+        try {
+            const gridHelper = new THREE.GridHelper(200, 40, 0x88aaff, 0x335588);
+            gridHelper.position.y = 0;
+            this.scene.add(gridHelper);
+            
+            const axesHelper = new THREE.AxesHelper(20);
+            this.scene.add(axesHelper);
+            
+            console.log('✅ Grid setup');
+        } catch (error) {
+            console.error('❌ فشل إعداد الشبكة:', error);
+        }
     }
 
     // ==================== الأحداث ====================
@@ -367,16 +405,17 @@ class ActualConstructionOS {
     setupEvents() {
         window.addEventListener('resize', () => this.onResize());
         
-        // أحداث الفأرة
-        this.renderer.webglRenderer.domElement.addEventListener('click', (e) => this.onClick(e));
-        this.renderer.webglRenderer.domElement.addEventListener('mousemove', (e) => this.onMouseMove(e));
+        if (this.renderer?.webglRenderer?.domElement) {
+            this.renderer.webglRenderer.domElement.addEventListener('click', (e) => this.onClick(e));
+            this.renderer.webglRenderer.domElement.addEventListener('mousemove', (e) => this.onMouseMove(e));
+        }
         
-        // لوحة المفاتيح
         window.addEventListener('keydown', (e) => this.onKeyDown(e));
+        
+        console.log('✅ Events setup');
     }
 
     onClick(e) {
-        // معالجة النقر للقياس أو التحديد
         if (this.calibrationUI?.isActive) {
             this.handleCalibrationClick(e);
         } else if (this.distanceTool?.active) {
@@ -387,7 +426,6 @@ class ActualConstructionOS {
     }
 
     handleCalibrationClick(e) {
-        // حساب نقطة التقاطع مع الشبكة
         const mouse = new THREE.Vector2();
         mouse.x = (e.clientX / this.renderer.webglRenderer.domElement.clientWidth) * 2 - 1;
         mouse.y = -(e.clientY / this.renderer.webglRenderer.domElement.clientHeight) * 2 + 1;
@@ -395,22 +433,19 @@ class ActualConstructionOS {
         const raycaster = new THREE.Raycaster();
         raycaster.setFromCamera(mouse, this.camera);
         
-        // تقاطع مع مستوى الأرض
         const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
         const target = new THREE.Vector3();
-        raycaster.ray.intersectPlane(plane, target);
         
-        if (target) {
+        if (raycaster.ray.intersectPlane(plane, target) && this.calibrationUI) {
             this.calibrationUI.handleClick(target);
         }
     }
 
     onMouseMove(e) {
-        // تحديث معاينة الأدوات
+        // يمكن إضافة منطق هنا
     }
 
     onKeyDown(e) {
-        // اختصارات لوحة المفاتيح
         switch(e.key) {
             case 'Escape':
                 this.calibrationUI?.hide();
@@ -425,16 +460,20 @@ class ActualConstructionOS {
                 break;
             case 'c':
                 if (e.ctrlKey) {
-                    this.calibrationUI.show();
+                    this.calibrationUI?.show();
                 }
                 break;
         }
     }
 
-    onResize() {
-        this.camera.aspect = window.innerWidth / window.innerHeight;
-        this.camera.updateProjectionMatrix();
-        this.renderer.resize(window.innerWidth, window.innerHeight);
+onResize() {
+        if (this.camera) {
+            this.camera.aspect = window.innerWidth / window.innerHeight;
+            this.camera.updateProjectionMatrix();
+        }
+        if (this.renderer) {
+            this.renderer.resize(window.innerWidth, window.innerHeight);
+        }
     }
 
     // ==================== حلقة الحركة ====================
@@ -442,58 +481,95 @@ class ActualConstructionOS {
     animate() {
         requestAnimationFrame(() => this.animate());
         
-        this.controls.update();
-        
-        // اختيار الريندرر المناسب
-        if (this.loader.currentScene) {
-            this.renderer.renderWebGL(this.scene, this.camera);
-        } else {
-            this.renderer.renderCSS('default.jpg', []);
+        if (this.controls) {
+            this.controls.update();
         }
         
-        // تحديث LOD
-        this.lodManager.update();
-        this.tileLODManager.update();
+        if (this.renderer) {
+            if (this.loader?.currentScene) {
+                this.renderer.renderWebGL(this.scene, this.camera);
+            } else {
+                this.renderer.renderCSS('default.jpg', []);
+            }
+        }
+        
+        if (this.lodManager) {
+            this.lodManager.update();
+        }
+        if (this.tileLODManager) {
+            this.tileLODManager.update();
+        }
     }
 
     // ==================== دوال مساعدة ====================
     
     createGlobalWall(options) {
-        const wall = new GlobalWall(this.globalSystem, this.sceneConnector, options);
-        return wall;
+        try {
+            return new GlobalWall(this.globalSystem, this.sceneConnector, options);
+        } catch (error) {
+            console.error('❌ فشل إنشاء جدار عالمي:', error);
+            return null;
+        }
     }
 
     createGlobalBeam(options) {
-        const beam = new GlobalBeam(this.globalSystem, this.sceneConnector, options);
-        return beam;
+        try {
+            return new GlobalBeam(this.globalSystem, this.sceneConnector, options);
+        } catch (error) {
+            console.error('❌ فشل إنشاء كمرة عالمية:', error);
+            return null;
+        }
     }
 
     createGlobalColumn(options) {
-        const column = new GlobalColumn(this.globalSystem, this.sceneConnector, options);
-        return column;
+        try {
+            return new GlobalColumn(this.globalSystem, this.sceneConnector, options);
+        } catch (error) {
+            console.error('❌ فشل إنشاء عمود عالمي:', error);
+            return null;
+        }
     }
 
     createGlobalSlab(options) {
-        const slab = new GlobalSlab(this.globalSystem, this.sceneConnector, options);
-        return slab;
+        try {
+            return new GlobalSlab(this.globalSystem, this.sceneConnector, options);
+        } catch (error) {
+            console.error('❌ فشل إنشاء سقف عالمي:', error);
+            return null;
+        }
     }
 
     createGlobalExcavation(options) {
-        const excavation = new GlobalExcavation(this.globalSystem, this.sceneConnector, options);
-        return excavation;
+        try {
+            return new GlobalExcavation(this.globalSystem, this.sceneConnector, options);
+        } catch (error) {
+            console.error('❌ فشل إنشاء حفرية عالمية:', error);
+            return null;
+        }
     }
 
     createGlobalElectrical(options) {
-        const electrical = new GlobalElectrical(this.globalSystem, this.sceneConnector, options);
-        return electrical;
+        try {
+            return new GlobalElectrical(this.globalSystem, this.sceneConnector, options);
+        } catch (error) {
+            console.error('❌ فشل إنشاء نظام كهربائي عالمي:', error);
+            return null;
+        }
     }
 
     // ==================== تحميل مشهد ====================
 
     async loadScene(sceneId) {
+        if (!this.loader) {
+            console.error('❌ المحمل غير موجود');
+            return null;
+        }
+        
         try {
+            console.log(`🔄 تحميل المشهد ${sceneId}...`);
+            
             const sceneData = await this.loader.loadScene(sceneId, {
-                viewport: { x: this.camera.position.x, y: this.camera.position.z }
+                viewport: { x: this.camera?.position?.x || 0, y: this.camera?.position?.z || 0 }
             });
             
             this.loader.setCurrentScene(sceneId);
@@ -502,17 +578,28 @@ class ActualConstructionOS {
             return sceneData;
         } catch (error) {
             console.error(`❌ فشل تحميل المشهد ${sceneId}:`, error);
+            return null;
         }
     }
 
     // ==================== دوال التصدير ====================
     
     exportToActualViewStudio() {
-        return this.constructionExporter.export();
+        try {
+            return this.constructionExporter?.export();
+        } catch (error) {
+            console.error('❌ فشل التصدير:', error);
+            return null;
+        }
     }
 
     generateGlobalReport() {
-        return this.globalReporter.generateFullReport();
+        try {
+            return this.globalReporter?.generateFullReport();
+        } catch (error) {
+            console.error('❌ فشل إنشاء التقرير:', error);
+            return null;
+        }
     }
 
     getSystemStatus() {
@@ -520,101 +607,64 @@ class ActualConstructionOS {
             version: '3.0.0',
             name: 'ACTUAL CONSTRUCTION OS',
             type: 'Reality-BIM Engine',
+            status: 'running',
             stats: {
-                loader: this.loader.getDetailedStats(),
+                loader: this.loader?.getDetailedStats?.() || {},
                 bridge: {
-                    anchors: this.realityBridge.anchors.size,
-                    markers: this.realityBridge.markers.size,
-                    links: this.realityBridge.links.size
+                    anchors: this.realityBridge?.anchors?.size || 0,
+                    markers: this.realityBridge?.markers?.size || 0,
+                    links: this.realityBridge?.links?.size || 0
                 },
                 graph: {
-                    nodes: this.sceneGraph.nodes.size,
-                    edges: this.sceneGraph.edges.length
+                    nodes: this.sceneGraph?.nodes?.size || 0,
+                    edges: this.sceneGraph?.edges?.length || 0
                 },
-                analytics: this.analytics.getPerformanceReport()
+                analytics: this.analytics?.getPerformanceReport?.() || {}
             }
         };
     }
 }
-// =======================================
-// 🚀 تشغيل التطبيق
-// =======================================
 
-window.addEventListener('load', async () => {
-    console.log('%c🌟 ACTUAL CONSTRUCTION OS - Reality-BIM Engine', 'color: #ffaa44; font-size: 18px; font-weight: bold;');
-    
-    // إخفاء شاشة التحميل
-    const loader = document.getElementById('loader');
-    if (loader) {
-        setTimeout(() => {
-            loader.style.opacity = '0';
-            setTimeout(() => loader.remove(), 500);
-        }, 1500);
-    }
-    
-    // إنشاء التطبيق
-    window.app = new ActualConstructionOS();
-    
-    // تحميل أول مشهد تجريبي
-    setTimeout(() => {
-        app.loadScene('scene_001');
-    }, 2000);
-    
-    console.log('📊 يمكنك استخدام window.app للوصول إلى التطبيق');
-    console.log('🔧 F2: إظهار/إخفاء Debug Layer');
-    console.log('🔧 F3: إظهار/إخفاء Analytics');
-});
-
-// للوصول من Console
-window.ActualConstructionOS = ActualConstructionOS;
 // =======================================
-// 🚀 تشغيل التطبيق
+// 🚀 تشغيل التطبيق (نسخة واحدة فقط)
 // =======================================
 
 window.addEventListener('load', async () => {
     console.log('%c🌟 ACTUAL CONSTRUCTION OS - Reality-BIM Engine v3.0', 'color: #ffaa44; font-size: 18px; font-weight: bold;');
     console.log('%c🏗️ منصة متكاملة لتصميم وإدارة المشاريع الهندسية', 'color: #88aaff; font-size: 14px;');
-    
-    // إخفاء شاشة التحميل
-    const loader = document.getElementById('loader');
-    if (loader) {
-        setTimeout(() => {
-            loader.style.opacity = '0';
-            setTimeout(() => {
-                if (loader.parentNode) {
-                    loader.parentNode.removeChild(loader);
-                }
-            }, 500);
-        }, 1500);
-    } else {
-        console.log('⚠️ لا توجد شاشة تحميل');
-    }
 
     try {
+        // إخفاء شاشة التحميل إذا وجدت
+        const loader = document.getElementById('loader');
+        if (loader) {
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove?.(), 500);
+            }, 1500);
+        }
+
         // إنشاء التطبيق
         console.log('🔄 جاري إنشاء التطبيق...');
         window.app = new ActualConstructionOS();
-        
-        // التحقق من نجاح الإنشاء
+
         if (!window.app) {
             throw new Error('فشل إنشاء التطبيق');
         }
-        
+
         console.log('✅ تم إنشاء التطبيق بنجاح');
-        
-        // تحميل أول مشهد تجريبي بعد ثانيتين
+
+        // تحميل أول مشهد تجريبي
         setTimeout(() => {
-            if (window.app && typeof window.app.loadScene === 'function') {
+            if (window.app?.loadScene) {
                 console.log('🔄 تحميل المشهد التجريبي...');
                 window.app.loadScene('scene_001').catch(err => {
-                    console.warn('⚠️ فشل تحميل المشهد التجريبي:', err.message);
+                    console.warn('⚠️ فشل تحميل المشهد التجريبي:', err?.message);
                 });
-            } else {
-                console.log('ℹ️ المشاهد التجريبية غير مفعلة');
             }
         }, 2000);
-        
-        // عرض معلومات المساعدة
+
+        // معلومات المساعدة
+        console.log('');
         console.log('📊 يمكنك استخدام window.app للوصول إلى التطبيق');
         console.log('📌 الأوامر المتاحة:');
         console.log('   • app.getSystemStatus() - حالة النظام');
@@ -625,10 +675,10 @@ window.addEventListener('load', async () => {
         console.log('   • F2 - إظهار/إخفاء Debug Layer');
         console.log('   • F3 - إظهار/إخفاء Analytics');
         console.log('   • Ctrl+C - فتح معالج المعايرة');
-        
+
     } catch (error) {
         console.error('❌ فشل تشغيل التطبيق:', error);
-        
+
         // عرض رسالة خطأ للمستخدم
         const errorDiv = document.createElement('div');
         errorDiv.style.cssText = `
@@ -636,60 +686,59 @@ window.addEventListener('load', async () => {
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(200, 50, 50, 0.9);
+            background: rgba(200, 50, 50, 0.95);
             color: white;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 25px;
+            border-radius: 15px;
             z-index: 10000;
-            font-family: monospace;
-            direction: ltr;
+            font-family: system-ui, sans-serif;
             text-align: center;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             border: 2px solid #ff8888;
+            max-width: 400px;
+            backdrop-filter: blur(5px);
         `;
         errorDiv.innerHTML = `
-            <h2 style="margin-top:0;">❌ خطأ في تشغيل التطبيق</h2>
-            <p>${error.message}</p>
-            <p style="font-size:12px; opacity:0.8;">تأكد من تحميل جميع الملفات بشكل صحيح</p>
-            <button onclick="this.parentElement.remove()" style="
-                background: white;
-                color: black;
+            <h2 style="margin:0 0 15px 0; color:#ffaa44;">❌ خطأ في التشغيل</h2>
+            <p style="margin:10px 0;">${error.message}</p>
+            <p style="font-size:12px; opacity:0.8; margin:15px 0;">تأكد من تحميل جميع الملفات بشكل صحيح</p>
+            <button onclick="this.parentElement.remove(); location.reload()" style="
+                background: #4a6c8f;
+                color: white;
                 border: none;
-                padding: 5px 15px;
+                padding: 8px 20px;
                 border-radius: 5px;
                 cursor: pointer;
-                margin-top: 10px;
-            ">إغلاق</button>
+                font-size: 14px;
+                transition: 0.2s;
+            ">إعادة تحميل</button>
         `;
         document.body.appendChild(errorDiv);
     }
 });
 
-// دالة مساعدة لإعادة التشغيل (يمكن استدعاؤها من Console)
-window.restartApp = function() {
+// دوال مساعدة للـ Console
+window.restartApp = () => {
     console.log('🔄 إعادة تشغيل التطبيق...');
-    if (window.app) {
-        // تنظيف الموارد إذا لزم الأمر
-        if (window.app.dispose) {
-            window.app.dispose();
-        }
-        delete window.app;
+    if (window.app?.dispose) {
+        window.app.dispose();
     }
-    // إعادة التحميل
+    delete window.app;
     location.reload();
 };
 
-// دالة للحصول على معلومات النظام
-window.getSystemInfo = function() {
-    return {
-        version: '3.0.0',
-        name: 'ACTUAL CONSTRUCTION OS',
-        type: 'Reality-BIM Engine',
-        browser: navigator.userAgent,
-        url: window.location.href,
-        timestamp: new Date().toISOString()
-    };
-};
+window.getSystemInfo = () => ({
+    version: '3.0.0',
+    name: 'ACTUAL CONSTRUCTION OS',
+    type: 'Reality-BIM Engine',
+    browser: navigator.userAgent,
+    url: window.location.href,
+    timestamp: new Date().toISOString()
+});
 
-console.log('📌 يمكنك استخدام window.restartApp() لإعادة تشغيل التطبيق');
-console.log('📌 يمكنك استخدام window.getSystemInfo() لعرض معلومات النظام');
+// تصدير للاستخدام
+window.ActualConstructionOS = ActualConstructionOS;
+
+console.log('📌 يمكنك استخدام:');
+console.log('   • window.restartApp() - إعادة تشغيل التطبيق');
+console.log('   • window.getSystemInfo() - معلومات النظام');
