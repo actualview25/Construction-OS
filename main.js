@@ -547,31 +547,74 @@ class ActualConstructionOS {
         }
     }
 
-    // ==================== حلقة الحركة ====================
+// ==================== حلقة الحركة ====================
 
-    animate() {
-        requestAnimationFrame(() => this.animate());
+animate() {
+    requestAnimationFrame(() => this.animate());
+    
+    if (this.controls) {
+        this.controls.update();
+    }
+    
+    // ✅ إضافة عناصر الاختبار إذا لم تكن موجودة
+    if (!this.gridHelper && this.scene) {
+        console.log('🔄 إنشاء الشبكة الأرضية...');
+        this.gridHelper = new THREE.GridHelper(200, 40, 0x88aaff, 0x335588);
+        this.gridHelper.position.y = 0;
+        this.scene.add(this.gridHelper);
         
-        if (this.controls) {
-            this.controls.update();
-        }
+        this.axesHelper = new THREE.AxesHelper(20);
+        this.scene.add(this.axesHelper);
+    }
+    
+    // ✅ إضافة مكعب اختبار للتأكد من أن الرندر يعمل
+    if (!this.testCube && this.scene) {
+        console.log('🧪 إنشاء مكعب اختبار...');
+        const geometry = new THREE.BoxGeometry(2, 2, 2);
+        const material = new THREE.MeshStandardMaterial({ 
+            color: 0xffaa44,
+            emissive: 0x442200
+        });
+        this.testCube = new THREE.Mesh(geometry, material);
+        this.testCube.position.set(0, 1, 0);
+        this.scene.add(this.testCube);
         
-        if (this.renderer) {
-            if (this.loader?.currentScene) {
-                this.renderer.renderWebGL(this.scene, this.camera);
-            } else {
-                this.renderer.renderCSS('default.jpg', []);
-            }
-        }
-        
-        if (this.lodManager) {
-            this.lodManager.update();
-        }
-        if (this.tileLODManager) {
-            this.tileLODManager.update();
+        // إضافة إضاءة للمكعب
+        if (!this.testLight) {
+            this.testLight = new THREE.PointLight(0xffffff, 1);
+            this.testLight.position.set(5, 5, 5);
+            this.scene.add(this.testLight);
         }
     }
 
+    // ✅ تحديث دوران المكعب (للتأكد من أن الحركة تعمل)
+    if (this.testCube) {
+        this.testCube.rotation.y += 0.005;
+    }
+    
+    // ✅ التأكد من وجود إضاءة أساسية
+    if (!this.ambientLight && this.scene) {
+        this.ambientLight = new THREE.AmbientLight(0x404060);
+        this.scene.add(this.ambientLight);
+        
+        const sunLight = new THREE.DirectionalLight(0xfff5e6, 1.2);
+        sunLight.position.set(20, 30, 20);
+        this.scene.add(sunLight);
+    }
+    
+    // ✅ تحقق من وجود HybridRenderer
+    if (this.renderer) {
+        // استخدم WebGL دائماً للتأكد من الرؤية
+        this.renderer.renderWebGL(this.scene, this.camera);
+    }
+    
+    if (this.lodManager) {
+        this.lodManager.update();
+    }
+    if (this.tileLODManager) {
+        this.tileLODManager.update();
+    }
+}
 // ==================== دوال مساعدة ====================
     
     createGlobalWall(options) {
