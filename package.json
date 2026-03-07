@@ -1,0 +1,19 @@
+{
+  "name": "actual-construction-os",
+  "version": "3.0.0",
+  "description": "Reality-BIM Engine for Construction Projects",
+  "main": "main.js",
+  "scripts": {
+    "start": "npx http-server . -p 3000",
+    "dev": "npx live-server --port=3000 --no-browser",
+    "build": "echo 'No build needed'",
+    "deploy": "git push origin main"
+  },
+  "keywords": ["bim", "construction", "3d", "reality-bim"],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2"
+  }
+}
