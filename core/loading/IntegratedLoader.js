@@ -1,10 +1,26 @@
 // =======================================
 // ACTUAL CONSTRUCTION OS - INTEGRATED LOADER FINAL
 // =======================================
-// نظام تحميل موحد مع تحسينات ذكية
+// نظام تحميل موحد متكامل مع:
+// - Lazy Loading
+// - Segmented Loading
+// - Dynamic Tile LOD
+// - Priority Queue
+// - Cache + IndexedDB
+// - Analytics Feedback
+// =======================================
+
+import { LazySceneLoader } from './LazySceneLoader.js';
+import { SegmentedSceneLoader } from './SegmentedSceneLoader.js';
+import { LODManager } from './LODManager.js';
+import { PriorityQueue } from './PriorityQueue.js';
+import { TileLODManager } from './TileLODManager.js';
 
 export class IntegratedLoader {
     constructor(sceneGraph, storage, camera, analytics) {
+        console.log('🚀 IntegratedLoader بدء التهيئة...');
+        
+        // الأنظمة الأساسية
         this.sceneGraph = sceneGraph;
         this.storage = storage;
         this.camera = camera;
@@ -14,49 +30,89 @@ export class IntegratedLoader {
         this.lazyLoader = new LazySceneLoader(sceneGraph, storage);
         this.segmentedLoader = new SegmentedSceneLoader();
         this.lodManager = new LODManager(camera);
+        this.tileLODManager = new TileLODManager(camera);
         
-        // أنظمة التخزين
-        this.cache = new Map();
-        this.pending = new Map();
-        this.tileCache = new Map();
+        // طابور الأولويات
+        this.priorityQueue = new PriorityQueue(this);
         
-        // إحصائيات
-        this.stats = {
-            scenesLoaded: 0,
-            tilesLoaded: 0,
-            tilesCached: 0,
-            cacheHits: 0,
-            cacheMisses: 0,
-            preloadCount: 0,
-            memoryUsage: 0,
-            fps: 60,
-            avgLoadTime: 0
-        };
-
+        // أنظمة التخزين المؤقت
+        this.sceneCache = new Map();      // المشاهد المحملة
+        this.tileCache = new Map();       // التايلات المحملة
+        this.pendingLoads = new Map();    // المهام قيد التنفيذ
+        
         // إعدادات قابلة للتعديل
         this.settings = {
-            maxLoadedScenes: 5,
-            maxLoadedTiles: 20,
-            preloadRadius: 2,
-            lodDistances: { high: 10, medium: 30, low: 100 },
+            // حدود التحميل
+            maxLoadedScenes: 5,           // حد أقصى للمشاهد في الذاكرة
+            maxLoadedTiles: 50,            // حد أقصى للتايلات في الذاكرة
+            maxConcurrentLoads: 3,         // تحميلات متزامنة
+            
+            // مسافات LOD
+            lodDistances: {
+                high: 10,                  // أقل من 10 متر
+                medium: 30,                 // 10-30 متر
+                low: 100,                   // 30-100 متر
+                culled: 100                  // أكثر من 100 متر
+            },
+            
+            // أولويات التحميل
+            priorities: {
+                critical: 100,              // أمام المستخدم مباشرة
+                high: 70,                    // قريب من مجال الرؤية
+                medium: 40,                   // مشاهد متصلة قريبة
+                low: 10,                       // تحميل مسبق بعيد
+                background: 1                   // خلفية
+            },
+            
+            // تفعيل/تعطيل الميزات
             enableCache: true,
             enablePreload: true,
-            enableAnalytics: true
+            enableAnalytics: true,
+            enablePriorityQueue: true
         };
 
+        // إحصائيات شاملة
+        this.stats = {
+            // مشاهد
+            scenesLoaded: 0,
+            scenesCached: 0,
+            scenesPreloaded: 0,
+            
+            // تايلات
+            tilesLoaded: 0,
+            tilesCached: 0,
+            tilesSkipped: 0,
+            
+            // أداء
+            cacheHits: 0,
+            cacheMisses: 0,
+            averageLoadTime: 0,
+            peakMemoryUsage: 0,
+            currentMemoryUsage: 0,
+            fps: 60,
+            
+            // طابور
+            queueLength: 0,
+            processedTasks: 0,
+            failedTasks: 0
+        };
+
+        // بدء المراقبة
         this.startMonitoring();
+        
+        console.log('✅ IntegratedLoader جاهز');
     }
 
-    // ==================== التحميل الموحد ====================
+    // ==================== التحميل الموحد الرئيسي ====================
 
     async loadScene(sceneId, options = {}) {
         const startTime = performance.now();
-        console.log(`🎯 [Phase 1] بدء تحميل المشهد ${sceneId}...`);
+        console.log(`\n🎯 [IntegratedLoader] بدء تحميل المشهد ${sceneId}...`);
 
         // Phase 1: التحقق من الكاش
-        if (this.settings.enableCache && this.cache.has(sceneId)) {
+        if (this.settings.enableCache && this.sceneCache.has(sceneId)) {
             this.stats.cacheHits++;
-            console.log(`✅ [Cache] المشهد ${sceneId} في الكاش`);
+            console.log(`✅ [Phase 1] المشهد ${sceneId} في الكاش`);
             return this.getCachedScene(sceneId);
         }
 
@@ -64,10 +120,13 @@ export class IntegratedLoader {
 
         try {
             // Phase 2: تحميل بيانات المشهد (Lazy)
-            console.log(`📥 [Phase 2] تحميل بيانات المشهد...`);
+            console.log(`📥 [Phase 2] تحميل بيانات المشهد من LazyLoader...`);
             const sceneData = await this.lazyLoader.loadScene(sceneId);
             
-            // Phase 3: تحضير Tiles
+            // تحديث الرسم البياني
+            this.sceneGraph.addNode(sceneId, sceneData.position);
+
+            // Phase 3: تجهيز Tiles
             if (!sceneData.segmented) {
                 console.log(`🔲 [Phase 3] تقسيم المشهد إلى Tiles...`);
                 sceneData.tiles = this.segmentedLoader.segmentImage(
@@ -76,18 +135,30 @@ export class IntegratedLoader {
                     sceneData.height || 2048
                 );
                 sceneData.segmented = true;
+                sceneData.tileCount = sceneData.tiles.length;
                 
                 // تخزين في IndexedDB
                 await this.storage.save(`scene_${sceneId}`, sceneData);
+                console.log(`💾 تم تخزين المشهد في IndexedDB`);
             }
 
-            // Phase 4: تحميل Tiles مع LOD
-            console.log(`📐 [Phase 4] تحميل Tiles مع LOD...`);
-            await this.loadTilesWithLOD(sceneId, sceneData, options.viewport);
+            // Phase 4: تحميل Tiles عبر Priority Queue
+            console.log(`📊 [Phase 4] إضافة Tiles إلى طابور الأولويات...`);
+            this.priorityQueue.queueNearbyTiles(
+                sceneId,
+                sceneData.tiles,
+                options.viewport || { x: 0, y: 0 },
+                this.getCameraDirection()
+            );
 
             // Phase 5: تخزين في الكاش
-            this.cache.set(sceneId, sceneData);
+            this.sceneCache.set(sceneId, {
+                ...sceneData,
+                lastUsed: Date.now(),
+                accessCount: 0
+            });
             this.stats.scenesLoaded++;
+            this.stats.scenesCached = this.sceneCache.size;
 
             // Phase 6: تحميل مسبق للمشاهد المتصلة
             if (this.settings.enablePreload) {
@@ -95,107 +166,122 @@ export class IntegratedLoader {
                 await this.preloadConnectedScenes(sceneId);
             }
 
-            // تحديث الإحصائيات
+            // تحديث إحصائيات
             const loadTime = performance.now() - startTime;
-            this.stats.avgLoadTime = (this.stats.avgLoadTime + loadTime) / 2;
+            this.stats.averageLoadTime = (this.stats.averageLoadTime + loadTime) / 2;
 
             console.log(`✅ تم تحميل المشهد ${sceneId} في ${loadTime.toFixed(0)}ms`);
-            
+            console.log(`📊 Tiles: ${sceneData.tileCount}, محملة: ${this.stats.tilesLoaded}`);
+
             // تسجيل في Analytics
             if (this.analytics) {
-                this.analytics.logLoad(sceneId, loadTime);
+                this.analytics.logLoad(sceneId, loadTime, this.stats);
             }
 
             return sceneData;
 
         } catch (error) {
             console.error(`❌ فشل تحميل المشهد ${sceneId}:`, error);
+            this.stats.failedTasks++;
             throw error;
         }
     }
 
     // ==================== تحميل Tiles مع LOD ====================
 
-    async loadTilesWithLOD(sceneId, sceneData, viewport = { x: 0, y: 0 }) {
-        if (!sceneData.tiles) return;
-
-        // تحديد Tiles القريبة
-        const nearbyTiles = this.segmentedLoader.getTilesAround(
-            sceneData.tiles,
-            viewport.x,
-            viewport.y,
-            this.settings.maxLoadedTiles
-        );
-
-        // تحميل كل Tile بمستوى LOD مناسب
-        for (const tile of nearbyTiles) {
-            await this.loadTileWithLOD(sceneId, tile);
-        }
-
-        // تفريغ Tiles البعيدة
-        this.unloadDistantTiles(sceneId, nearbyTiles);
-    }
-
-    async loadTileWithLOD(sceneId, tile) {
+    async loadTileWithLOD(sceneId, tile, lodLevel = 'medium') {
         const tileId = `${sceneId}_${tile.id}`;
 
-        // التحقق من كاش التايل
-        if (this.tileCache.has(tileId)) {
-            this.stats.tilesCached++;
-            return this.tileCache.get(tileId);
+        // Phase 1: التحقق من الكاش
+        if (this.settings.enableCache && this.tileCache.has(tileId)) {
+            const cached = this.tileCache.get(tileId);
+            if (cached.lod === lodLevel) {
+                this.stats.tilesCached++;
+                return cached;
+            }
         }
 
-        if (this.pending.has(tileId)) {
-            return this.pending.get(tileId);
+        // Phase 2: التحقق من التحميلات الجارية
+        if (this.pendingLoads.has(tileId)) {
+            return this.pendingLoads.get(tileId);
         }
 
-        // حساب المسافة من الكاميرا
+        // Phase 3: حساب المسافة لاختيار LOD
         const distance = this.calculateTileDistance(tile);
-        
-        // تحديد LOD المناسب
-        const lodLevel = this.getOptimalLOD(distance);
-        
-        // تحميل التايل
-        const loadPromise = this.loadTileWithRetry(sceneId, tile, lodLevel);
-        this.pending.set(tileId, loadPromise);
-        
+        const optimalLod = this.getOptimalLOD(distance);
+        const finalLod = lodLevel || optimalLod;
+
+        // Phase 4: إنشاء وعد التحميل
+        const loadPromise = this.executeTileLoad(sceneId, tile, finalLod);
+        this.pendingLoads.set(tileId, loadPromise);
+
         try {
             const tileData = await loadPromise;
+            
+            // إضافة إلى TileLODManager للمراقبة
+            this.tileLODManager.addTile(tileId, tileData, tile.position);
+            
+            // تخزين في الكاش
             this.tileCache.set(tileId, tileData);
             this.stats.tilesLoaded++;
             
+            // تحديث إحصائيات الذاكرة
+            this.updateMemoryStats();
+
             return tileData;
+
         } finally {
-            this.pending.delete(tileId);
+            this.pendingLoads.delete(tileId);
         }
     }
 
-    async loadTileWithRetry(sceneId, tile, lodLevel, retries = 3) {
-        for (let i = 0; i < retries; i++) {
-            try {
-                // التحقق من IndexedDB
-                let tileData = await this.storage.load(`${sceneId}_${tile.id}_${lodLevel}`);
-                
-                if (!tileData) {
-                    // تحميل الصورة
-                    tileData = await this.loadTileImage(tile, lodLevel);
-                    await this.storage.save(`${sceneId}_${tile.id}_${lodLevel}`, tileData);
-                }
-
-                tileData.lod = lodLevel;
-                tileData.loadTime = Date.now();
-
-                return tileData;
-
-            } catch (error) {
-                console.warn(`⚠️ محاولة ${i + 1} فشلت لـ ${tile.id}`);
-                if (i === retries - 1) throw error;
-                await new Promise(r => setTimeout(r, 100 * Math.pow(2, i)));
-            }
+    async executeTileLoad(sceneId, tile, lodLevel) {
+        const tileId = `${sceneId}_${tile.id}_${lodLevel}`;
+        
+        // محاولة من IndexedDB
+        let tileData = await this.storage.load(tileId);
+        
+        if (!tileData) {
+            // تحميل الصورة
+            tileData = await this.loadTileImage(tile, lodLevel);
+            
+            // تخزين للمستقبل
+            await this.storage.save(tileId, tileData);
         }
+
+    // إضافة معلومات إضافية
+        tileData.id = tile.id;
+        tileData.lod = lodLevel;
+        tileData.loadedAt = Date.now();
+        tileData.size = tile.size;
+        tileData.position = tile.position;
+
+        return tileData;
     }
 
-    // ==================== LOD الذكي ====================
+    async loadTileImage(tile, lodLevel) {
+        const qualities = {
+            high: { scale: 1.0, quality: 1.0 },
+            medium: { scale: 0.5, quality: 0.7 },
+            low: { scale: 0.25, quality: 0.4 }
+        };
+
+        const q = qualities[lodLevel] || qualities.medium;
+
+        // محاكاة تحميل الصورة
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve({
+                    data: tile.imageData,
+                    quality: q.quality,
+                    scale: q.scale,
+                    size: tile.size * q.scale
+                });
+            }, 50);
+        });
+    }
+
+    // ==================== LOD وإدارة المسافات ====================
 
     getOptimalLOD(distance) {
         const d = this.settings.lodDistances;
@@ -209,7 +295,6 @@ export class IntegratedLoader {
     calculateTileDistance(tile) {
         if (!this.camera) return 0;
         
-        // تحويل إحداثيات التايل إلى موقع افتراضي
         const tileWorldPos = new THREE.Vector3(
             tile.col * tile.size,
             0,
@@ -219,60 +304,159 @@ export class IntegratedLoader {
         return this.camera.position.distanceTo(tileWorldPos);
     }
 
-    // ==================== تحميل مسبق ذكي ====================
+    getCameraDirection() {
+        if (!this.camera) return null;
+        
+        return {
+            x: this.camera.position.x,
+            y: this.camera.position.y,
+            angle: this.camera.rotation?.y || 0
+        };
+    }
+
+    // ==================== تحميل مسبق ====================
 
     async preloadConnectedScenes(sceneId) {
         const connected = this.sceneGraph.getConnectedScenes(sceneId);
-        
-        // ترتيب حسب الأهمية
-        const toPreload = connected
-            .sort((a, b) => b.importance - a.importance)
-            .slice(0, this.settings.preloadRadius);
+        const currentPos = this.sceneGraph.scenePositions.get(sceneId);
 
-        for (const conn of toPreload) {
-            // تحميل في الخلفية بأولوية منخفضة
-            setTimeout(() => {
-                this.loadScene(conn.sceneId, { preload: true, priority: 'low' })
-                    .catch(() => {});
-            }, 2000);
+        // ترتيب حسب المسافة
+        const scenesWithDistance = connected.map(scene => ({
+            ...scene,
+            distance: this.calculateDistance(scene.position, currentPos)
+        }));
+
+        scenesWithDistance.sort((a, b) => a.distance - b.distance);
+
+        // تحميل أقرب مشهدين فقط
+        for (const scene of scenesWithDistance.slice(0, 2)) {
+            let priority = this.settings.priorities.medium;
             
-            this.stats.preloadCount++;
+            if (scene.distance < 20) {
+                priority = this.settings.priorities.high;
+            } else if (scene.distance < 50) {
+                priority = this.settings.priorities.medium;
+            } else {
+                priority = this.settings.priorities.low;
+            }
+
+            this.priorityQueue.addTask({
+                type: 'preload',
+                sceneId: scene.id,
+                priority,
+                position: scene.position,
+                importance: scene.importance || 1,
+                retries: 0
+            });
+
+            this.stats.scenesPreloaded++;
         }
     }
 
-    // ==================== تفريغ ذكي ====================
+    calculateDistance(pos1, pos2) {
+        if (!pos1 || !pos2) return Infinity;
+        return Math.sqrt(
+            Math.pow(pos2.x - pos1.x, 2) +
+            Math.pow(pos2.y - pos1.y, 2) +
+            Math.pow(pos2.z - pos1.z, 2)
+        );
+    }
 
-    unloadDistantTiles(sceneId, keepTiles) {
-        const keepIds = new Set(keepTiles.map(t => t.id));
-        
-        // إزالة التايلات البعيدة من الكاش
-        for (const [id, data] of this.tileCache) {
-            if (id.startsWith(sceneId) && !keepIds.has(id.split('_').pop())) {
-                if (data.element) {
-                    data.element.remove();
-                }
-                this.tileCache.delete(id);
-                this.stats.tilesLoaded--;
-            }
-        }
+    // ==================== إدارة الكاش ====================
+
+    getCachedScene(sceneId) {
+        const scene = this.sceneCache.get(sceneId);
+        if (!scene) return null;
+
+        // تحديث إحصائيات الاستخدام
+        scene.lastUsed = Date.now();
+        scene.accessCount = (scene.accessCount || 0) + 1;
+
+        return scene;
     }
 
     unloadScene(sceneId) {
-        // تفريغ المشهد من الكاش
-        this.cache.delete(sceneId);
+        // إزالة من الكاش
+        this.sceneCache.delete(sceneId);
         
-        // تفريغ جميع تايلاته
+        // إزالة جميع تايلاته من الكاش
         for (const [id] of this.tileCache) {
             if (id.startsWith(sceneId)) {
                 this.tileCache.delete(id);
             }
         }
-        
-        this.lazyLoader.unloadScene(sceneId);
+
+        // إزالة من TileLODManager
+        this.tileLODManager.tiles.forEach((_, id) => {
+            if (id.startsWith(sceneId)) {
+                this.tileLODManager.removeTile(id);
+            }
+        });
+
+        // تحديث إحصائيات
         this.stats.scenesLoaded--;
+        this.updateMemoryStats();
+
+        console.log(`🧹 تم تفريغ المشهد ${sceneId}`);
     }
 
-    // ==================== حلقة التغذية الراجعة من Analytics ====================
+    unloadOldestScenes() {
+        if (this.sceneCache.size <= this.settings.maxLoadedScenes) return;
+
+        // ترتيب المشاهد حسب آخر استخدام
+        const scenes = Array.from(this.sceneCache.entries())
+            .map(([id, data]) => ({ id, lastUsed: data.lastUsed || 0 }))
+            .sort((a, b) => a.lastUsed - b.lastUsed);
+
+        // إزالة الأقدم
+        const toRemove = scenes.slice(0, this.sceneCache.size - this.settings.maxLoadedScenes);
+        toRemove.forEach(s => this.unloadScene(s.id));
+    }
+
+    clearCache() {
+        this.sceneCache.clear();
+        this.tileCache.clear();
+        this.tileLODManager.tiles.clear();
+        
+        this.stats.scenesLoaded = 0;
+        this.stats.tilesLoaded = 0;
+        this.stats.tilesCached = 0;
+        
+        console.log('🧹 تم مسح الكاش بالكامل');
+    }
+
+    // ==================== تحديثات الكاميرا ====================
+
+    onCameraMove(viewportX, viewportY) {
+        if (!this.currentScene) return;
+
+        // إعادة تقييم أولويات التايلات
+        if (this.settings.enablePriorityQueue) {
+            this.priorityQueue.cancelTasksByType('tile');
+            
+            this.priorityQueue.queueNearbyTiles(
+                this.currentScene.id,
+                this.currentScene.tiles,
+                { x: viewportX, y: viewportY },
+                this.getCameraDirection()
+            );
+        }
+
+        // تحديث LOD
+        this.tileLODManager.update();
+    }
+
+    setCamera(camera) {
+        this.camera = camera;
+        this.lodManager.camera = camera;
+        this.tileLODManager.camera = camera;
+    }
+
+    setCurrentScene(sceneId) {
+        this.currentScene = this.sceneCache.get(sceneId);
+    }
+
+    // ==================== مراقبة وإحصائيات ====================
 
     startMonitoring() {
         setInterval(() => {
@@ -281,115 +465,168 @@ export class IntegratedLoader {
             if (this.settings.enableAnalytics && this.analytics) {
                 this.analyticsFeedback();
             }
+
+            // تفريغ المشاهد القديمة إذا لزم الأمر
+            this.unloadOldestScenes();
+
         }, 2000);
     }
 
-    analyticsFeedback() {
-        const analytics = this.analytics.getPerformanceReport();
-        if (!analytics) return;
-
-        // ضبط بناءً على FPS
-        if (analytics.averageFps < 30) {
-            console.log('⚠️ FPS منخفض - تخفيض جودة LOD');
-            this.settings.lodDistances.high *= 0.8;
-            this.settings.lodDistances.medium *= 0.8;
-            this.settings.maxLoadedTiles = Math.max(5, this.settings.maxLoadedTiles - 2);
-        }
-
-        // ضبط بناءً على الذاكرة
-        if (analytics.averageMemory > 400) {
-            console.log('⚠️ ذاكرة عالية - تقليل Preload');
-            this.settings.preloadRadius = Math.max(1, this.settings.preloadRadius - 1);
-            this.settings.maxLoadedScenes = Math.max(3, this.settings.maxLoadedScenes - 1);
-        }
-
-        // ضبط بناءً على Cache Hit Rate
-        if (analytics.cacheHitRate < 50) {
-            console.log('⚠️ Cache Hit Rate منخفض - زيادة حجم الكاش');
-            this.settings.maxLoadedScenes++;
-            this.settings.maxLoadedTiles += 5;
-        }
-
-        // تسجيل التغييرات
-        this.analytics.logSettings(this.settings);
-    }
-
-    // ==================== واجهة الكاش ====================
-
-    getCachedScene(sceneId) {
-        const scene = this.cache.get(sceneId);
-        if (!scene) return null;
-
-        // تحديث وقت الاستخدام
-        scene.lastUsed = Date.now();
-        
-        return scene;
-    }
-
-    clearCache() {
-        this.cache.clear();
-        this.tileCache.clear();
-        this.stats = {
-            ...this.stats,
-            scenesLoaded: 0,
-            tilesLoaded: 0,
-            tilesCached: 0
-        };
-    }
-
-    // ==================== إحصائيات ====================
-
     updateStats() {
-        this.stats.memoryUsage = this.calculateMemoryUsage();
+        // تحديث استخدام الذاكرة
+        this.stats.currentMemoryUsage = this.calculateMemoryUsage();
+        this.stats.peakMemoryUsage = Math.max(
+            this.stats.peakMemoryUsage,
+            this.stats.currentMemoryUsage
+        );
+
+        // تحديث FPS
         this.stats.fps = this.calculateFPS();
+
+        // تحديث إحصائيات الطابور
+        const queueStats = this.priorityQueue.getStats();
+        this.stats.queueLength = queueStats.queueLength;
+        this.stats.processedTasks = queueStats.processed;
     }
 
     calculateMemoryUsage() {
-        let total = this.cache.size * 5; // تقدير 5MB لكل مشهد
-        total += this.tileCache.size * 0.5; // 0.5MB لكل تايل
+        // تقدير استخدام الذاكرة
+        let total = 0;
+        
+        // مشاهد: ~5MB لكل مشهد
+        total += this.sceneCache.size * 5;
+        
+        // تايلات: ~0.5MB لكل تايل
+        total += this.tileCache.size * 0.5;
+        
         return total;
     }
 
     calculateFPS() {
         if (!window.performance) return 60;
+        // FPS تقريبي
         return Math.round(60 - (performance.now() % 60));
     }
 
+    analyticsFeedback() {
+        const report = this.analytics.getPerformanceReport();
+        if (!report) return;
+
+        // ضبط بناءً على FPS
+        if (report.averageFps < 30) {
+            console.log('⚠️ [Analytics] FPS منخفض - تخفيض جودة LOD');
+            this.settings.lodDistances.high *= 0.8;
+            this.settings.lodDistances.medium *= 0.8;
+            this.settings.maxLoadedTiles = Math.max(20, this.settings.maxLoadedTiles - 5);
+        }
+
+        // ضبط بناءً على الذاكرة
+        if (report.averageMemory > 400) {
+            console.log('⚠️ [Analytics] ذاكرة عالية - تقليل Preload');
+            this.settings.maxLoadedScenes = Math.max(3, this.settings.maxLoadedScenes - 1);
+            this.settings.maxLoadedTiles = Math.max(30, this.settings.maxLoadedTiles - 10);
+        }
+
+        // ضبط بناءً على Cache Hit Rate
+        const hitRate = (this.stats.cacheHits / (this.stats.cacheHits + this.stats.cacheMisses)) * 100;
+        if (hitRate < 50) {
+            console.log('⚠️ [Analytics] Cache Hit Rate منخفض - زيادة حجم الكاش');
+            this.settings.maxLoadedScenes++;
+            this.settings.maxLoadedTiles += 10;
+        }
+
+        // تسجيل التغييرات
+        if (this.analytics) {
+            this.analytics.logSettings(this.settings);
+        }
+    }
+
+    // ==================== إحصائيات مفصلة ====================
+
     getDetailedStats() {
+        const hitRate = (this.stats.cacheHits / (this.stats.cacheHits + this.stats.cacheMisses)) * 100;
+        const queueStats = this.priorityQueue.getStats();
+
         return {
+            // المشاهد
             scenes: {
                 loaded: this.stats.scenesLoaded,
-                cached: this.cache.size,
-                preloaded: this.stats.preloadCount
+                cached: this.sceneCache.size,
+                preloaded: this.stats.scenesPreloaded,
+                maxAllowed: this.settings.maxLoadedScenes
             },
+
+            // التايلات
             tiles: {
                 loaded: this.stats.tilesLoaded,
                 cached: this.tileCache.size,
-                hitRate: (this.stats.cacheHits / (this.stats.cacheHits + this.stats.cacheMisses) * 100).toFixed(2) + '%'
+                skipped: this.stats.tilesSkipped,
+                maxAllowed: this.settings.maxLoadedTiles,
+                byLod: this.tileLODManager.getStats()
             },
+
+            // الأداء
             performance: {
                 fps: this.stats.fps,
-                memory: this.stats.memoryUsage.toFixed(2) + ' MB',
-                avgLoadTime: this.stats.avgLoadTime.toFixed(0) + ' ms'
+                memory: {
+                    current: this.stats.currentMemoryUsage.toFixed(2) + ' MB',
+                    peak: this.stats.peakMemoryUsage.toFixed(2) + ' MB',
+                    estimated: this.calculateMemoryUsage().toFixed(2) + ' MB'
+                },
+                averageLoadTime: this.stats.averageLoadTime.toFixed(0) + ' ms'
             },
-            settings: this.settings
+
+            // الكاش
+            cache: {
+                hits: this.stats.cacheHits,
+                misses: this.stats.cacheMisses,
+                hitRate: hitRate.toFixed(2) + '%',
+                size: this.sceneCache.size + this.tileCache.size
+            },
+
+            // الطابور
+            queue: {
+                length: queueStats.queueLength,
+                processed: queueStats.processed,
+                avgWait: queueStats.avgWaitTime?.toFixed(0) + ' ms',
+                breakdown: queueStats.priorityBreakdown
+            },
+
+            // الإعدادات الحالية
+            settings: { ...this.settings }
         };
     }
 
-    // ==================== تحديثات الكاميرا ====================
+    // ==================== أدوات التحكم ====================
 
-    onCameraMove(viewportX, viewportY) {
-        if (!this.currentScene) return;
-
-        // إعادة تحميل Tiles حسب الموقع الجديد
-        this.loadTilesWithLOD(this.currentScene.id, this.currentScene, { x: viewportX, y: viewportY });
+    updateSettings(newSettings) {
+        this.settings = {
+            ...this.settings,
+            ...newSettings
+        };
         
-        // تحديث LOD
-        this.lodManager.update();
+        console.log('⚙️ تم تحديث الإعدادات:', this.settings);
     }
 
-    setCamera(camera) {
-        this.camera = camera;
-        this.lodManager.camera = camera;
+    pauseLoading() {
+        this.priorityQueue.pause();
+        console.log('⏸️ تم إيقاف التحميل مؤقتاً');
+    }
+
+    resumeLoading() {
+        this.priorityQueue.resume();
+        console.log('▶️ تم استئناف التحميل');
+    }
+
+    getStatus() {
+        return {
+            isReady: true,
+            currentScene: this.currentScene?.id,
+            loading: this.pendingLoads.size,
+            queueLength: this.priorityQueue.queue.length,
+            stats: this.getDetailedStats()
+        };
     }
 }
+
+export default IntegratedLoader;
