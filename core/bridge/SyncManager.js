@@ -1,166 +1,163 @@
 // =======================================
 // ACTUAL CONSTRUCTION OS - SYNC MANAGER
 // =======================================
-// مدير المزامنة - يضمن تطابق البيانات
+// مزامنة البيانات بين RealityBridge و SceneGraph و LazyLoader
 
 export class SyncManager {
     constructor(bridge) {
         this.bridge = bridge;
         this.syncQueue = [];
-        this.syncHistory = [];
-        this.conflicts = [];
+        this.syncing = false;
         
-        this.autoSync = true;
-        this.syncInterval = 5000; // 5 ثوان
-        
-        if (this.autoSync) {
-            this.startAutoSync();
-        }
-    }
-
-    // بدء المزامنة التلقائية
-    startAutoSync() {
-        setInterval(() => {
-            this.syncAll();
-        }, this.syncInterval);
-    }
-
-    // مزامنة كل شيء
-    syncAll() {
-        console.log('🔄 بدء المزامنة الشاملة...');
-        
-        const report = {
-            timestamp: new Date().toISOString(),
-            entitiesSynced: 0,
-            anchorsSynced: 0,
-            markersSynced: 0,
+        this.stats = {
+            totalSyncs: 0,
+            queueSize: 0,
+            lastSync: null,
             conflicts: 0
         };
 
-        // مزامنة الكيانات العالمية
-        this.bridge.globalSystem.entities.forEach((entity, entityId) => {
-            const result = this.syncEntity(entityId);
-            report.entitiesSynced += result.entities;
-            report.anchorsSynced += result.anchors;
-            report.markersSynced += result.markers;
-            report.conflicts += result.conflicts;
+        this.startSyncLoop();
+    }
+
+    // بدء حلقة المزامنة
+    startSyncLoop() {
+        setInterval(() => {
+            if (this.syncQueue.length > 0 && !this.syncing) {
+                this.processQueue();
+            }
+        }, 1000);
+    }
+
+    // إضافة كيان لقائمة المزامنة
+    queueSync(entityId, priority = 5) {
+        this.syncQueue.push({
+            entityId,
+            priority,
+            queuedAt: Date.now()
         });
 
-        this.syncHistory.push(report);
-        console.log('✅ اكتملت المزامنة:', report);
-        
-        return report;
+        // ترتيب حسب الأولوية
+        this.syncQueue.sort((a, b) => b.priority - a.priority);
+        this.stats.queueSize = this.syncQueue.length;
+
+        console.log(`📋 تمت إضافة ${entityId} للمزامنة (أولوية ${priority})`);
     }
 
-    // مزامنة كيان محدد
-    syncEntity(entityId) {
+    // معالجة قائمة المزامنة
+    async processQueue() {
+        if (this.syncQueue.length === 0) return;
+
+        this.syncing = true;
+        const item = this.syncQueue.shift();
+
+        try {
+            await this.syncEntity(item.entityId);
+            this.stats.totalSyncs++;
+            this.stats.lastSync = new Date().toISOString();
+        } catch (error) {
+            console.error(`❌ فشل مزامنة ${item.entityId}:`, error);
+            
+            // إعادة المحاولة بأولوية أقل
+            if (item.priority > 1) {
+                this.queueSync(item.entityId, item.priority - 1);
+            }
+        }
+
+        this.syncing = false;
+    }
+
+    // مزامنة كيان واحد
+    async syncEntity(entityId) {
         const entity = this.bridge.globalSystem.getCompleteEntity(entityId);
-        if (!entity) return { entities: 0, anchors: 0, markers: 0, conflicts: 0 };
+        if (!entity) return;
 
-        let result = {
-            entities: 1,
-            anchors: 0,
-            markers: 0,
-            conflicts: 0
-        };
+        console.log(`🔄 مزامنة ${entityId}...`);
 
-        // مزامنة جميع أجزاء الكيان
+        // 1. تحديث SceneGraph
+        this.updateSceneGraph(entity);
+
+        // 2. تحديث المرتكزات والعلامات
+        this.updateAnchorsAndMarkers(entity);
+
+        // 3. تحديث LazyLoader إذا كان موجوداً
+        if (this.bridge.loader) {
+            await this.updateLoader(entity);
+        }
+
+        // 4. حفظ في التخزين
+        await this.saveToStorage(entity);
+    }
+
+    // تحديث الرسم البياني
+    updateSceneGraph(entity) {
         entity.segments.forEach((segment, sceneId) => {
-            const anchor = this.bridge.sceneAnchors.get(`${entityId}_${sceneId}`);
-            const marker = this.bridge.entityMarkers.get(`${entityId}_${sceneId}`);
+            this.bridge.sceneGraph.addEntityToScene(sceneId, entity.id);
+        });
+    }
+
+    // تحديث المرتكزات والعلامات
+    updateAnchorsAndMarkers(entity) {
+        entity.segments.forEach((segment, sceneId) => {
+            const id = `${entity.id}_${sceneId}`;
+            const anchor = this.bridge.anchors.get(id);
+            const marker = this.bridge.markers.get(id);
 
             if (anchor) {
-                this.syncAnchor(anchor, entity, segment);
-                result.anchors++;
+                anchor.updateFromEntity(entity);
+                if (segment.position) {
+                    anchor.updateFromLocal(segment.position, this.bridge.sceneConnector);
+                }
             }
 
             if (marker) {
-                this.syncMarker(marker, entity, segment);
-                result.markers++;
+                marker.updateFromEntity(entity);
+                if (segment.position) {
+                    marker.updatePosition(segment.position, this.bridge.sceneConnector);
+                }
             }
         });
-
-        return result;
     }
 
-    // مزامنة مرتكز
-    syncAnchor(anchor, entity, segment) {
-        // التحقق من تطابق البيانات
-        const entityVersion = entity.data?.version || 0;
-        const anchorVersion = anchor.metadata.version || 0;
-
-        if (entityVersion > anchorVersion) {
-            // تحديث المرتكز من الكيان
-            anchor.updateFromEntity(entity);
-            this.logSync('anchor', anchor.id, 'updated');
-        } else if (entityVersion < anchorVersion) {
-            // هناك تعارض
-            this.handleConflict({
-                type: 'anchor',
-                id: anchor.id,
-                entityVersion,
-                anchorVersion
-            });
-        }
-    }
-
-    // مزامنة علامة
-    syncMarker(marker, entity, segment) {
-        // تحديث موقع العلامة
-        if (segment && segment.localPosition) {
-            marker.updatePosition(segment.localPosition, this.bridge.sceneConnector);
-        }
-        
-        // تحديث خصائص العرض
-        marker.updateFromEntity(entity);
-        
-        this.logSync('marker', marker.id, 'synced');
-    }
-
-    // معالجة التعارضات
-    handleConflict(conflict) {
-        this.conflicts.push({
-            ...conflict,
-            timestamp: new Date().toISOString()
+    // تحديث LazyLoader
+    async updateLoader(entity) {
+        // تحديث أولويات التحميل
+        entity.segments.forEach((_, sceneId) => {
+            this.bridge.loader.updateScenePriority(sceneId, entity.data?.importance || 1);
         });
 
-        console.warn('⚠️ تعارض في البيانات:', conflict);
+        // تحميل مسبق للمشاهد المهمة
+        const importantScenes = Array.from(entity.segments.keys())
+            .filter(sceneId => entity.data?.importance > 5);
 
-        // هنا يمكن إضافة منطق لحل التعارضات
-        // مثلاً: اختيار الإصدار الأحدث دائماً
-    }
-
-    // تسجيل عملية المزامنة
-    logSync(type, id, action) {
-        this.syncQueue.push({
-            type,
-            id,
-            action,
-            timestamp: new Date().toISOString()
-        });
-
-        // حفظ آخر 100 عملية فقط
-        if (this.syncQueue.length > 100) {
-            this.syncQueue.shift();
+        for (const sceneId of importantScenes) {
+            await this.bridge.loader.preloadScene(sceneId);
         }
     }
 
-    // الحصول على حالة المزامنة
+    // حفظ في التخزين
+    async saveToStorage(entity) {
+        if (this.bridge.storage) {
+            await this.bridge.storage.save(`entity_${entity.id}`, entity);
+        }
+    }
+
+    // حل التعارضات
+    resolveConflict(entityId, version1, version2) {
+        this.stats.conflicts++;
+        
+        // استراتيجية: الأحدث يفوز
+        if (version1.timestamp > version2.timestamp) {
+            return version1;
+        }
+        return version2;
+    }
+
+    // الحصول على الحالة
     getStatus() {
         return {
-            queueLength: this.syncQueue.length,
-            conflictsCount: this.conflicts.length,
-            lastSync: this.syncHistory[this.syncHistory.length - 1],
-            isHealthy: this.conflicts.length === 0
+            ...this.stats,
+            isSyncing: this.syncing,
+            queueLength: this.syncQueue.length
         };
-    }
-
-    // حل جميع التعارضات (اختيار الأحدث)
-    resolveAllConflicts() {
-        this.conflicts.forEach(conflict => {
-            // حل التعارض - الأحدث يفوز
-            console.log('🔧 حل التعارض:', conflict);
-        });
-        this.conflicts = [];
     }
 }
