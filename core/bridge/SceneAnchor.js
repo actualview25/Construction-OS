@@ -1,21 +1,21 @@
 // =======================================
 // ACTUAL CONSTRUCTION OS - SCENE ANCHOR
 // =======================================
-// مرتكز المشهد - يربط الكيان العالمي بموقع في مشهد معين
+// ربط الكيان بموقع في المشهد
 
 export class SceneAnchor {
-    constructor(entity, sceneId, localPosition) {
-        this.id = `anchor_${entity.id}_${sceneId}_${Date.now()}`;
-        this.entityId = entity.id;
-        this.entityType = entity.type;
+    constructor(entityId, sceneId, localPosition) {
+        this.id = `anchor_${entityId}_${sceneId}_${Date.now()}`;
+        this.entityId = entityId;
         this.sceneId = sceneId;
         
         this.localPosition = { ...localPosition };
-        this.worldPosition = null; // يحسب لاحقاً
+        this.worldPosition = null;
         
         this.transform = {
             rotation: 0,
-            scale: 1.0
+            scale: 1.0,
+            matrix: null
         };
         
         this.metadata = {
@@ -25,7 +25,7 @@ export class SceneAnchor {
         };
     }
 
-    // تحديث الموقع من الإحداثيات العالمية
+    // تحديث من الإحداثيات العالمية
     updateFromWorld(worldPosition, sceneConnector) {
         this.worldPosition = { ...worldPosition };
         this.localPosition = sceneConnector.worldToLocal(this.sceneId, worldPosition);
@@ -33,7 +33,7 @@ export class SceneAnchor {
         this.metadata.version++;
     }
 
-    // تحديث الموقع من الإحداثيات المحلية
+    // تحديث من الإحداثيات المحلية
     updateFromLocal(localPosition, sceneConnector) {
         this.localPosition = { ...localPosition };
         this.worldPosition = sceneConnector.localToWorld(this.sceneId, localPosition);
@@ -41,14 +41,28 @@ export class SceneAnchor {
         this.metadata.version++;
     }
 
-    // ربط بكيان محدث
+    // تحديث من الكيان
     updateFromEntity(entity) {
-        // تحديث خصائص الكيان إذا تغيرت
+        // تطبيق تحويلات الكيان إذا وجدت
+        if (entity.data?.transform) {
+            this.transform = { ...this.transform, ...entity.data.transform };
+        }
         this.metadata.updated = new Date().toISOString();
         this.metadata.version++;
     }
 
-    // حساب المسافة من نقطة
+    // حساب مصفوفة التحويل
+    calculateTransformMatrix() {
+        // مصفوفة 4x4 للتحويل
+        return [
+            [this.transform.scale, 0, 0, this.localPosition.x],
+            [0, this.transform.scale, 0, this.localPosition.y],
+            [0, 0, this.transform.scale, this.localPosition.z],
+            [0, 0, 0, 1]
+        ];
+    }
+
+    // المسافة من نقطة
     distanceTo(point) {
         return Math.sqrt(
             Math.pow(point.x - this.localPosition.x, 2) +
@@ -57,12 +71,11 @@ export class SceneAnchor {
         );
     }
 
-    // تحويل إلى JSON للتخزين
+    // حفظ
     toJSON() {
         return {
             id: this.id,
             entityId: this.entityId,
-            entityType: this.entityType,
             sceneId: this.sceneId,
             localPosition: this.localPosition,
             worldPosition: this.worldPosition,
@@ -71,10 +84,10 @@ export class SceneAnchor {
         };
     }
 
-    // إنشاء من JSON
-    static fromJSON(json, sceneConnector) {
+    // تحميل
+    static fromJSON(json) {
         const anchor = new SceneAnchor(
-            { id: json.entityId, type: json.entityType },
+            json.entityId,
             json.sceneId,
             json.localPosition
         );
