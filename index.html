@@ -245,5 +245,279 @@
     
     <!-- استيراد الملف الرئيسي -->
     <script type="module" src="./main.js"></script>
+<!-- واجهة المستخدم الأساسية -->
+<div class="main-toolbar" id="mainToolbar">
+    <button class="toolbar-btn" onclick="createWall()" title="إضافة جدار">🧱</button>
+    <button class="toolbar-btn" onclick="createDoor()" title="إضافة باب">🚪</button>
+    <button class="toolbar-btn" onclick="createWindow()" title="إضافة شباك">🪟</button>
+    <button class="toolbar-btn" onclick="createColumn()" title="إضافة عمود">🏛️</button>
+    <button class="toolbar-btn" onclick="createBeam()" title="إضافة كمرة">📐</button>
+    <button class="toolbar-btn" onclick="showBOQ()" title="جدول الكميات">📊</button>
+    <button class="toolbar-btn" onclick="resetCamera()" title="إعادة ضبط الكاميرا">🎯</button>
+</div>
+
+<!-- لوحة الخصائص -->
+<div class="properties-panel" id="propertiesPanel">
+    <h3>📋 الخصائص</h3>
+    <div id="propertiesContent">
+        <p>اختر عنصراً لعرض خصائصه</p>
+    </div>
+</div>
+
+<script>
+// ===== دوال واجهة المستخدم =====
+window.createWall = async function() {
+    try {
+        // استيراد كلاس Wall
+        const module = await import('/Construction-OS/Modules/Architecture/Wall.js');
+        const Wall = module.Wall;
+        
+        // إنشاء جدار عشوائي
+        const wall = new Wall({
+            start: { x: -3, y: 0, z: 0 },
+            end: { x: 3, y: 0, z: 0 },
+            height: 3,
+            thickness: 0.2
+        });
+        
+        const mesh = wall.createMesh();
+        window.app.scene.add(mesh);
+        
+        // حفظ معلومات الجدار
+        mesh.userData = { type: 'wall', data: wall };
+        
+        updateStatus('✅ تم إضافة جدار', 'success');
+    } catch (e) {
+        console.error(e);
+        updateStatus('❌ فشل إضافة جدار', 'error');
+    }
+};
+
+window.createDoor = async function() {
+    try {
+        const module = await import('/Construction-OS/Modules/Architecture/Door.js');
+        const Door = module.Door;
+        
+        const door = new Door({
+            width: 0.9,
+            height: 2.1,
+            position: { x: 0, y: 0, z: 2 }
+        });
+        
+        const mesh = door.createMesh();
+        window.app.scene.add(mesh);
+        
+        mesh.userData = { type: 'door', data: door };
+        updateStatus('✅ تم إضافة باب', 'success');
+    } catch (e) {
+        updateStatus('❌ فشل إضافة باب', 'error');
+    }
+};
+
+window.createColumn = async function() {
+    try {
+        const module = await import('/Construction-OS/Modules/Concrete/Column.js');
+        const Column = module.Column;
+        
+        const column = new Column({
+            height: 4,
+            width: 0.4,
+            depth: 0.4,
+            position: { x: 2, y: 0, z: 2 }
+        });
+        
+        const mesh = column.createMesh();
+        window.app.scene.add(mesh);
+        
+        mesh.userData = { type: 'column', data: column };
+        updateStatus('✅ تم إضافة عمود', 'success');
+    } catch (e) {
+        updateStatus('❌ فشل إضافة عمود', 'error');
+    }
+};
+
+window.showBOQ = function() {
+    // حساب الكميات للعناصر في المشهد
+    let items = [];
+    window.app.scene.children.forEach(child => {
+        if (child.userData && child.userData.data) {
+            items.push(child.userData.data);
+        }
+    });
+    
+    let report = '📊 جدول الكميات\n';
+    report += '══════════════════\n';
+    
+    items.forEach((item, i) => {
+        if (item.getBOQ) {
+            const boq = item.getBOQ();
+            report += `\n${i+1}. ${boq.نوع || 'عنصر'}:\n`;
+            Object.keys(boq).forEach(key => {
+                report += `   ${key}: ${boq[key]}\n`;
+            });
+        }
+    });
+    
+    report += '\n══════════════════';
+    alert(report);
+};
+
+window.resetCamera = function() {
+    if (window.app) {
+        window.app.camera.position.set(5, 5, 10);
+        window.app.camera.lookAt(0, 0, 0);
+        window.app.controls.target.set(0, 0, 0);
+        window.app.controls.update();
+        updateStatus('🎯 تم إعادة ضبط الكاميرا', 'info');
+    }
+};
+
+window.updateStatus = function(message, type = 'info') {
+    const bar = document.getElementById('statusBar');
+    if (bar) {
+        const icons = { info: 'ℹ️', success: '✅', error: '❌', warning: '⚠️' };
+        bar.innerHTML = `${icons[type]} ${message}`;
+        
+        // إخفاء الرسالة بعد 3 ثوان
+        setTimeout(() => {
+            bar.innerHTML = '✅ النظام جاهز';
+        }, 3000);
+    }
+};
+
+// تفعيل النقر على العناصر
+window.setupSelection = function() {
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    
+    window.app.renderer.domElement.addEventListener('click', (event) => {
+        // حساب موقع النقر
+        mouse.x = (event.clientX / window.app.renderer.domElement.clientWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.app.renderer.domElement.clientHeight) * 2 + 1;
+        
+        raycaster.setFromCamera(mouse, window.app.camera);
+        
+        // فحص العناصر
+        const intersects = raycaster.intersectObjects(window.app.scene.children);
+        
+        if (intersects.length > 0) {
+            const selected = intersects[0].object;
+            
+            if (selected.userData && selected.userData.data) {
+                // عرض الخصائص
+                const data = selected.userData.data;
+                const boq = data.getBOQ ? data.getBOQ() : {};
+                
+                let html = '<table style="width:100%">';
+                Object.keys(boq).forEach(key => {
+                    html += `<tr><td><strong>${key}</strong></td><td>${boq[key]}</td></tr>`;
+                });
+                html += '</table>';
+                
+                document.getElementById('propertiesContent').innerHTML = html;
+            }
+        }
+    });
+};
+
+// تفعيل بعد تحميل التطبيق
+setTimeout(() => {
+    if (window.app) {
+        window.setupSelection();
+        console.log('✅ واجهة المستخدم جاهزة');
+    }
+}, 5000);
+</script>
+
+<!-- إضافة بعض الأنماط للواجهة -->
+<style>
+.main-toolbar {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(20, 30, 40, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid #4a6c8f;
+    border-radius: 50px;
+    padding: 10px;
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.toolbar-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toolbar-btn:hover {
+    background: rgba(74, 108, 143, 0.5);
+    transform: scale(1.1);
+}
+
+.properties-panel {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 250px;
+    background: rgba(20, 30, 40, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid #4a6c8f;
+    border-radius: 12px;
+    color: white;
+    padding: 15px;
+    z-index: 1000;
+}
+
+.properties-panel h3 {
+    color: #88aaff;
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    text-align: center;
+}
+
+#propertiesContent {
+    font-size: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+#propertiesContent table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#propertiesContent td {
+    padding: 5px;
+    border-bottom: 1px solid #4a6c8f;
+}
+
+.status-bar {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(20, 30, 40, 0.6);
+    backdrop-filter: blur(5px);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 12px;
+    border: 1px solid #4a6c8f;
+    z-index: 900;
+}
+</style>
 </body>
 </html>
