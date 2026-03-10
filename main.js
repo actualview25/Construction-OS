@@ -613,9 +613,155 @@ window.getSystemInfo = () => ({
     url: window.location.href,
     timestamp: new Date().toISOString()
 });
+// إضافة عناصر واضحة للتأكد من أن المشهد يعمل
+window.ensureSceneVisible = function() {
+    console.log('🔧 التأكد من ظهور المشهد...');
+    
+    // إضافة مكعب كبير في منتصف المشهد
+    const geo = new THREE.BoxGeometry(5, 5, 5);
+    const mat = new THREE.MeshStandardMaterial({ color: 0xffaa44 });
+    const bigCube = new THREE.Mesh(geo, mat);
+    bigCube.position.set(0, 2.5, 0);
+    window.app.scene.add(bigCube);
+    
+    // إضافة إضاءة قوية
+    const light = new THREE.PointLight(0xffffff, 2);
+    light.position.set(10, 20, 10);
+    window.app.scene.add(light);
+    
+    // تحريك الكاميرا
+    window.app.camera.position.set(20, 10, 20);
+    window.app.camera.lookAt(0, 2.5, 0);
+    
+    console.log('✅ تم إضافة عناصر واضحة');
+};
+// إضافة عناصر واضحة للتأكد من أن المشهد يعمل
+window.ensureSceneVisible = function() {
+    console.log('🔧 التأكد من ظهور المشهد...');
+    
+    // إضافة مكعب كبير في منتصف المشهد
+    const geo = new THREE.BoxGeometry(5, 5, 5);
+    const mat = new THREE.MeshStandardMaterial({ color: 0xffaa44 });
+    const bigCube = new THREE.Mesh(geo, mat);
+    bigCube.position.set(0, 2.5, 0);
+    window.app.scene.add(bigCube);
+    
+    // إضافة إضاءة قوية
+    const light = new THREE.PointLight(0xffffff, 2);
+    light.position.set(10, 20, 10);
+    window.app.scene.add(light);
+    
+    // تحريك الكاميرا
+    window.app.camera.position.set(20, 10, 20);
+    window.app.camera.lookAt(0, 2.5, 0);
+    
+    console.log('✅ تم إضافة عناصر واضحة');
+};// ==================== نهاية الكلاس ====================
+} // إغلاق class ActualConstructionOS
 
+// =======================================
+// 🚀 تشغيل التطبيق
+// =======================================
+
+window.addEventListener('load', async () => {
+    console.log('%c🌟 ACTUAL CONSTRUCTION OS - Reality-BIM Engine v3.0', 'color: #ffaa44; font-size: 18px; font-weight: bold;');
+    console.log('%c🏗️ منصة متكاملة لتصميم وإدارة المشاريع الهندسية', 'color: #88aaff; font-size: 14px;');
+
+    try {
+        // إخفاء شاشة التحميل
+        const loading = document.getElementById('loading');
+        if (loading) {
+            setTimeout(() => {
+                loading.style.opacity = '0';
+                setTimeout(() => loading.style.display = 'none', 500);
+            }, 1500);
+        }
+
+        // إنشاء التطبيق
+        console.log('🔄 جاري إنشاء التطبيق...');
+        window.app = new ActualConstructionOS();
+
+        if (!window.app) {
+            throw new Error('فشل إنشاء التطبيق');
+        }
+
+        console.log('✅ تم إنشاء التطبيق بنجاح');
+
+        // تحميل المشهد التجريبي بعد قليل
+        setTimeout(() => {
+            if (window.app?.loadScene) {
+                console.log('🔄 تحميل المشهد التجريبي...');
+                window.app.loadScene('scene_001').catch(err => {
+                    console.warn('⚠️ فشل تحميل المشهد التجريبي:', err?.message);
+                });
+            }
+        }, 2000);
+
+    } catch (error) {
+        console.error('❌ فشل تشغيل التطبيق:', error);
+    }
+});
+
+// ========== دوال مساعدة للتشخيص ==========
+
+// دالة التأكد من ظهور المشهد
+window.ensureSceneVisible = function() {
+    console.log('🔧 التأكد من ظهور المشهد...');
+    
+    if (!window.app || !window.app.scene) {
+        console.error('❌ التطبيق غير موجود');
+        return;
+    }
+    
+    try {
+        // إضافة مكعب كبير في منتصف المشهد
+        const geo = new THREE.BoxGeometry(5, 5, 5);
+        const mat = new THREE.MeshStandardMaterial({ color: 0xffaa44 });
+        const bigCube = new THREE.Mesh(geo, mat);
+        bigCube.position.set(0, 2.5, 0);
+        window.app.scene.add(bigCube);
+        
+        // إضافة إضاءة قوية
+        const light = new THREE.PointLight(0xffffff, 2);
+        light.position.set(10, 20, 10);
+        window.app.scene.add(light);
+        
+        // تحريك الكاميرا
+        window.app.camera.position.set(20, 10, 20);
+        window.app.camera.lookAt(0, 2.5, 0);
+        
+        console.log('✅ تم إضافة عناصر واضحة');
+    } catch (error) {
+        console.error('❌ خطأ:', error);
+    }
+};
+
+// تنفيذ بعد 5 ثوان للتأكد
+setTimeout(() => {
+    if (window.app) {
+        window.ensureSceneVisible();
+    }
+}, 5000);
+
+// دوال مساعدة للـ Console
+window.restartApp = () => {
+    console.log('🔄 إعادة تشغيل التطبيق...');
+    location.reload();
+};
+
+window.getSystemInfo = () => ({
+    version: '3.0.0',
+    name: 'ACTUAL CONSTRUCTION OS',
+    type: 'Reality-BIM Engine',
+    browser: navigator.userAgent,
+    url: window.location.href,
+    timestamp: new Date().toISOString()
+});
+
+// تصدير للاستخدام
 window.ActualConstructionOS = ActualConstructionOS;
 
 console.log('📌 يمكنك استخدام:');
 console.log('   • window.restartApp() - إعادة تشغيل التطبيق');
 console.log('   • window.getSystemInfo() - معلومات النظام');
+console.log('   • window.ensureSceneVisible() - إظهار مكعب كبير');
