@@ -1,7 +1,7 @@
 // =======================================
 // ACTUAL CONSTRUCTION OS - MAIN ENTRY POINT
 // =======================================
-// الإصدار: 3.0.0 - النسخة الكاملة مع تصحيح المسارات
+// الإصدار: 3.0.0 - النسخة الكاملة
 // =======================================
 
 import * as THREE from 'three';
@@ -183,12 +183,10 @@ class ActualConstructionOS {
         console.log('%c✅ ACTUAL CONSTRUCTION OS جاهز', 'color: #44ff44; font-size: 14px;');
     }
 
-    // ✅ دالة جديدة لإضافة مكعب الاختبار
     addTestCube() {
         try {
             console.log('🧪 إضافة مكعب اختبار...');
             
-            // مكعب
             const geometry = new THREE.BoxGeometry(2, 2, 2);
             const material = new THREE.MeshStandardMaterial({ 
                 color: 0xffaa44,
@@ -198,7 +196,6 @@ class ActualConstructionOS {
             this.testCube.position.set(0, 1, 0);
             this.scene.add(this.testCube);
             
-            // إضاءة
             const light = new THREE.PointLight(0xffffff, 1);
             light.position.set(5, 5, 5);
             this.scene.add(light);
@@ -209,9 +206,7 @@ class ActualConstructionOS {
         }
     }
 
-// ==================== تهيئة Three.js ====================
-
-    initThree() {
+initThree() {
         try {
             this.scene = new THREE.Scene();
             this.scene.background = new THREE.Color(0x111122);
@@ -233,8 +228,6 @@ class ActualConstructionOS {
         }
     }
 
-    // ==================== تهيئة الأنظمة الأساسية ====================
-
     initCore() {
         try {
             this.geoRef = new GeoReferencing();
@@ -242,7 +235,6 @@ class ActualConstructionOS {
             this.projectManager = new ProjectManager();
             this.sceneGraph = new SceneGraph();
             
-            // تخزين باستخدام StorageManager
             this.storage = new StorageManager();
             
             this.globalSystem = new GlobalEntitySystem(this.geoRef);
@@ -266,8 +258,6 @@ class ActualConstructionOS {
         }
     }
 
-    // ==================== تهيئة أنظمة التحميل ====================
-
     initLoadingSystems() {
         try {
             this.lazyLoader = new LazySceneLoader(this.sceneGraph, this.storage);
@@ -290,8 +280,6 @@ class ActualConstructionOS {
         }
     }
 
-    // ==================== تهيئة الأنظمة العالمية ====================
-
     initUniversalSystems() {
         try {
             this.universalImporter = new UniversalImporter(this.globalSystem, this.cadImporter);
@@ -300,8 +288,6 @@ class ActualConstructionOS {
             console.error('❌ فشل تهيئة Universal systems:', error);
         }
     }
-
-    // ==================== تهيئة Reality Bridge ====================
 
     initBridgeSystems() {
         try {
@@ -335,8 +321,6 @@ class ActualConstructionOS {
         }
     }
 
-    // ==================== تهيئة الأدوات ====================
-
     initTools() {
         try {
             this.cadImporter = new CADImporter(this.geoRef, this.sceneConnector);
@@ -357,8 +341,6 @@ class ActualConstructionOS {
         }
     }
 
-    // ==================== تهيئة واجهة المستخدم ====================
-
     initUI() {
         try {
             this.dashboard = new Dashboard(this);
@@ -376,8 +358,6 @@ class ActualConstructionOS {
         }
     }
 
-    // ==================== تهيئة أنظمة التصحيح ====================
-
     initDebugSystems() {
         try {
             this.analytics = new AnalyticsDebugger(this.loader, this.realityBridge);
@@ -393,8 +373,6 @@ class ActualConstructionOS {
             console.error('❌ فشل تهيئة Debug systems:', error);
         }
     }
-
-    // ==================== الإضاءة ====================
 
     setupLights() {
         try {
@@ -418,8 +396,6 @@ class ActualConstructionOS {
         }
     }
 
-    // ==================== الشبكة الأرضية ====================
-
     setupGrid() {
         try {
             const gridHelper = new THREE.GridHelper(200, 40, 0x88aaff, 0x335588);
@@ -435,8 +411,6 @@ class ActualConstructionOS {
         }
     }
 
-    // ==================== الأحداث ====================
-
     setupEvents() {
         window.addEventListener('resize', () => this.onResize());
         
@@ -450,13 +424,9 @@ class ActualConstructionOS {
         console.log('✅ Events setup');
     }
 
-    onClick(e) {
-        // يمكن إضافة منطق النقر هنا
-    }
+    onClick(e) {}
 
-    onMouseMove(e) {
-        // يمكن إضافة منطق حركة الماوس هنا
-    }
+    onMouseMove(e) {}
 
     onKeyDown(e) {
         switch(e.key) {
@@ -481,8 +451,6 @@ class ActualConstructionOS {
         }
     }
 
-    // ==================== حلقة الحركة ====================
-
     animate() {
         requestAnimationFrame(() => this.animate());
         
@@ -490,12 +458,10 @@ class ActualConstructionOS {
             this.controls.update();
         }
         
-        // ✅ تحديث دوران المكعب
         if (this.testCube) {
             this.testCube.rotation.y += 0.005;
         }
         
-        // ✅ تحقق من وجود HybridRenderer
         if (this.renderer) {
             this.renderer.renderWebGL(this.scene, this.camera);
         }
@@ -507,8 +473,6 @@ class ActualConstructionOS {
             this.tileLODManager.update();
         }
     }
-
-    // ==================== تحميل مشهد ====================
 
     async loadScene(sceneId) {
         if (!this.loader) {
@@ -565,7 +529,6 @@ window.addEventListener('load', async () => {
     console.log('%c🏗️ منصة متكاملة لتصميم وإدارة المشاريع الهندسية', 'color: #88aaff; font-size: 14px;');
 
     try {
-        // إخفاء شاشة التحميل
         const loading = document.getElementById('loading');
         if (loading) {
             setTimeout(() => {
@@ -574,7 +537,6 @@ window.addEventListener('load', async () => {
             }, 1500);
         }
 
-        // إنشاء التطبيق
         console.log('🔄 جاري إنشاء التطبيق...');
         window.app = new ActualConstructionOS();
 
@@ -584,7 +546,6 @@ window.addEventListener('load', async () => {
 
         console.log('✅ تم إنشاء التطبيق بنجاح');
 
-        // تحميل المشهد التجريبي بعد قليل
         setTimeout(() => {
             if (window.app?.loadScene) {
                 console.log('🔄 تحميل المشهد التجريبي...');
@@ -599,151 +560,8 @@ window.addEventListener('load', async () => {
     }
 });
 
-// دوال مساعدة للـ Console
-window.restartApp = () => {
-    console.log('🔄 إعادة تشغيل التطبيق...');
-    location.reload();
-};
+// ========== دوال مساعدة ==========
 
-window.getSystemInfo = () => ({
-    version: '3.0.0',
-    name: 'ACTUAL CONSTRUCTION OS',
-    type: 'Reality-BIM Engine',
-    browser: navigator.userAgent,
-    url: window.location.href,
-    timestamp: new Date().toISOString()
-});
-// إضافة عناصر واضحة للتأكد من أن المشهد يعمل
-window.ensureSceneVisible = function() {
-    console.log('🔧 التأكد من ظهور المشهد...');
-    
-    // إضافة مكعب كبير في منتصف المشهد
-    const geo = new THREE.BoxGeometry(5, 5, 5);
-    const mat = new THREE.MeshStandardMaterial({ color: 0xffaa44 });
-    const bigCube = new THREE.Mesh(geo, mat);
-    bigCube.position.set(0, 2.5, 0);
-    window.app.scene.add(bigCube);
-    
-    // إضافة إضاءة قوية
-    const light = new THREE.PointLight(0xffffff, 2);
-    light.position.set(10, 20, 10);
-    window.app.scene.add(light);
-    
-    // تحريك الكاميرا
-    window.app.camera.position.set(20, 10, 20);
-    window.app.camera.lookAt(0, 2.5, 0);
-    
-    console.log('✅ تم إضافة عناصر واضحة');
-};
-// إضافة عناصر واضحة للتأكد من أن المشهد يعمل
-window.ensureSceneVisible = function() {
-    console.log('🔧 التأكد من ظهور المشهد...');
-    
-    // إضافة مكعب كبير في منتصف المشهد
-    const geo = new THREE.BoxGeometry(5, 5, 5);
-    const mat = new THREE.MeshStandardMaterial({ color: 0xffaa44 });
-    const bigCube = new THREE.Mesh(geo, mat);
-    bigCube.position.set(0, 2.5, 0);
-    window.app.scene.add(bigCube);
-    
-    // إضافة إضاءة قوية
-    const light = new THREE.PointLight(0xffffff, 2);
-    light.position.set(10, 20, 10);
-    window.app.scene.add(light);
-    
-    // تحريك الكاميرا
-    window.app.camera.position.set(20, 10, 20);
-    window.app.camera.lookAt(0, 2.5, 0);
-    
-    console.log('✅ تم إضافة عناصر واضحة');
-};// ==================== نهاية الكلاس ====================
-} // إغلاق class ActualConstructionOS
-
-// =======================================
-// 🚀 تشغيل التطبيق
-// =======================================
-
-window.addEventListener('load', async () => {
-    console.log('%c🌟 ACTUAL CONSTRUCTION OS - Reality-BIM Engine v3.0', 'color: #ffaa44; font-size: 18px; font-weight: bold;');
-    console.log('%c🏗️ منصة متكاملة لتصميم وإدارة المشاريع الهندسية', 'color: #88aaff; font-size: 14px;');
-
-    try {
-        // إخفاء شاشة التحميل
-        const loading = document.getElementById('loading');
-        if (loading) {
-            setTimeout(() => {
-                loading.style.opacity = '0';
-                setTimeout(() => loading.style.display = 'none', 500);
-            }, 1500);
-        }
-
-        // إنشاء التطبيق
-        console.log('🔄 جاري إنشاء التطبيق...');
-        window.app = new ActualConstructionOS();
-
-        if (!window.app) {
-            throw new Error('فشل إنشاء التطبيق');
-        }
-
-        console.log('✅ تم إنشاء التطبيق بنجاح');
-
-        // تحميل المشهد التجريبي بعد قليل
-        setTimeout(() => {
-            if (window.app?.loadScene) {
-                console.log('🔄 تحميل المشهد التجريبي...');
-                window.app.loadScene('scene_001').catch(err => {
-                    console.warn('⚠️ فشل تحميل المشهد التجريبي:', err?.message);
-                });
-            }
-        }, 2000);
-
-    } catch (error) {
-        console.error('❌ فشل تشغيل التطبيق:', error);
-    }
-});
-
-// ========== دوال مساعدة للتشخيص ==========
-
-// دالة التأكد من ظهور المشهد
-window.ensureSceneVisible = function() {
-    console.log('🔧 التأكد من ظهور المشهد...');
-    
-    if (!window.app || !window.app.scene) {
-        console.error('❌ التطبيق غير موجود');
-        return;
-    }
-    
-    try {
-        // إضافة مكعب كبير في منتصف المشهد
-        const geo = new THREE.BoxGeometry(5, 5, 5);
-        const mat = new THREE.MeshStandardMaterial({ color: 0xffaa44 });
-        const bigCube = new THREE.Mesh(geo, mat);
-        bigCube.position.set(0, 2.5, 0);
-        window.app.scene.add(bigCube);
-        
-        // إضافة إضاءة قوية
-        const light = new THREE.PointLight(0xffffff, 2);
-        light.position.set(10, 20, 10);
-        window.app.scene.add(light);
-        
-        // تحريك الكاميرا
-        window.app.camera.position.set(20, 10, 20);
-        window.app.camera.lookAt(0, 2.5, 0);
-        
-        console.log('✅ تم إضافة عناصر واضحة');
-    } catch (error) {
-        console.error('❌ خطأ:', error);
-    }
-};
-
-// تنفيذ بعد 5 ثوان للتأكد
-setTimeout(() => {
-    if (window.app) {
-        window.ensureSceneVisible();
-    }
-}, 5000);
-
-// دوال مساعدة للـ Console
 window.restartApp = () => {
     console.log('🔄 إعادة تشغيل التطبيق...');
     location.reload();
@@ -758,10 +576,8 @@ window.getSystemInfo = () => ({
     timestamp: new Date().toISOString()
 });
 
-// تصدير للاستخدام
 window.ActualConstructionOS = ActualConstructionOS;
 
 console.log('📌 يمكنك استخدام:');
 console.log('   • window.restartApp() - إعادة تشغيل التطبيق');
 console.log('   • window.getSystemInfo() - معلومات النظام');
-console.log('   • window.ensureSceneVisible() - إظهار مكعب كبير');
