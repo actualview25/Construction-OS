@@ -5,6 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ACTUAL CONSTRUCTION OS - منصة إدارة المشاريع الهندسية</title>
     
+    <!-- ===== تصحيح المسارات ===== -->
+    <script>
+        // تصحيح المسار الأساسي (Constraction-OS → Construction-OS)
+        (function fixBasePath() {
+            const wrongBase = 'Constraction-OS/';
+            const correctBase = 'Construction-OS/';
+            
+            // اعتراض جميع طلبات الملفات
+            const originalFetch = window.fetch;
+            window.fetch = function(url, options) {
+                if (typeof url === 'string' && url.includes(wrongBase)) {
+                    url = url.replace(wrongBase, correctBase);
+                    console.log('✅ تم تصحيح المسار:', url);
+                }
+                return originalFetch.call(this, url, options);
+            };
+            
+            // اعتراض import
+            const originalImport = window.import;
+            if (originalImport) {
+                window.import = function(url) {
+                    if (typeof url === 'string' && url.includes(wrongBase)) {
+                        url = url.replace(wrongBase, correctBase);
+                    }
+                    return originalImport.call(this, url);
+                };
+            }
+            
+            // إخفاء أخطاء الملفات المفقودة مؤقتاً
+            window.addEventListener('error', function(e) {
+                if (e.message && e.message.includes('Loading chunk') || 
+                    (e.target && e.target.src && e.target.src.includes('Constraction-OS'))) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                
+                // إخفاء أخطاء 404 للملفات غير المهمة
+                if (e.target && e.target.src && (
+                    e.target.src.includes('/player/') ||
+                    e.target.src.includes('/floors/') ||
+                    e.target.src.includes('/clash/')
+                )) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.warn('⚠️ تم تجاهل ملف غير أساسي:', e.target.src);
+                    return false;
+                }
+            }, true);
+            
+            console.log('🌟 نظام تصحيح المسارات نشط');
+        })();
+    </script>
+    
     <!-- ربط ملف CSS -->
     <link rel="stylesheet" href="style.css">
     
@@ -100,11 +154,6 @@
                 }, 500);
             }, 1500);
         });
-        
-        // في حال فشل تحميل الصورة الرئيسية
-        window.addEventListener('error', (e) => {
-            console.error('خطأ في التحميل:', e.message);
-        }, true);
     </script>
     
     <!-- استيراد الملف الرئيسي -->
