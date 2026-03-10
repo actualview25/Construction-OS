@@ -125,6 +125,40 @@
         }
     </style>
 </head>
+<script>
+    (function fixPaths() {
+        console.log('🔧 بدء تصحيح المسارات...');
+        
+        // اعتراض جميع طلبات الملفات
+        const originalFetch = window.fetch;
+        window.fetch = function(url, options) {
+            if (typeof url === 'string') {
+                // قائمة بالمسارات الخاطئة المحتملة
+                const fixes = {
+                    '/modules/Architecture/': '/modules/architecture/',
+                    '/modules/Concrete/': '/modules/concrete/',
+                    '/modules/Earthworks/': '/modules/earthworks/',
+                    '/modules/MEP/': '/modules/mep/',
+                    '/modules/BOQ/': '/modules/boq/'
+                };
+                
+                let fixedUrl = url;
+                for (let [wrong, correct] of Object.entries(fixes)) {
+                    if (url.includes(wrong)) {
+                        fixedUrl = url.replace(wrong, correct);
+                        console.log('✅ تم تصحيح المسار:', fixedUrl);
+                        break;
+                    }
+                }
+                return originalFetch.call(this, fixedUrl, options);
+            }
+            return originalFetch.call(this, url, options);
+        };
+        
+        console.log('✅ نظام تصحيح المسارات جاهز');
+    })();
+</script>
+    
 <body>
     <!-- شاشة التحميل -->
     <div id="loading">
