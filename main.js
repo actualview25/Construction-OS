@@ -8,8 +8,6 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 console.log('🚀 بدء تشغيل ACTUAL CONSTRUCTION OS...');
-console.log('THREE loaded:', !!THREE);
-console.log('OrbitControls loaded:', !!OrbitControls);
 
 // ========== CORE SYSTEMS ==========
 import { GeoReferencing } from '/Construction-OS/core/Georeferencing.js';
@@ -134,7 +132,8 @@ import { DebugLayer } from '/Construction-OS/core/debug/DebugLayer.js';
 import { AnalyticsDebugger } from '/Construction-OS/core/debug/AnalyticsDebugger.js';
 
 // ========== RENDERING ==========
-import { HybridRenderer } from '/Construction-OS/core/rendering/HybridRenderer.js';
+// استيراد WebGLRenderer مباشرة بدلاً من HybridRenderer
+// import { HybridRenderer } from '/Construction-OS/core/rendering/HybridRenderer.js';
 
 // =======================================
 // 🎯 MAIN CONSTRUCTION OS CLASS
@@ -145,7 +144,7 @@ class ActualConstructionOS {
         console.log('%c🚀 ACTUAL CONSTRUCTION OS v3.0.0', 'color: #88aaff; font-size: 16px; font-weight: bold;');
         console.log('%c🏗️ محرك Reality-BIM المتكامل', 'color: #ffaa44; font-size: 14px;');
         
-        // ===== THREE.JS SETUP =====
+        // ===== THREE.JS SETUP (مباشر) =====
         this.initThree();
         
         // ===== CORE SYSTEMS =====
@@ -182,45 +181,37 @@ class ActualConstructionOS {
         
         console.log('%c✅ ACTUAL CONSTRUCTION OS جاهز', 'color: #44ff44; font-size: 14px;');
     }
-
-    addTestCube() {
+   initThree() {
         try {
-            console.log('🧪 إضافة مكعب اختبار...');
-            
-            const geometry = new THREE.BoxGeometry(2, 2, 2);
-            const material = new THREE.MeshStandardMaterial({ 
-                color: 0xffaa44,
-                emissive: 0x442200
-            });
-            this.testCube = new THREE.Mesh(geometry, material);
-            this.testCube.position.set(0, 1, 0);
-            this.scene.add(this.testCube);
-            
-            const light = new THREE.PointLight(0xffffff, 1);
-            light.position.set(5, 5, 5);
-            this.scene.add(light);
-            
-            console.log('✅ تم إضافة مكعب الاختبار');
-        } catch (error) {
-            console.error('❌ فشل إضافة مكعب الاختبار:', error);
-        }
-    }
-
-initThree() {
-        try {
+            // إنشاء المشهد
             this.scene = new THREE.Scene();
             this.scene.background = new THREE.Color(0x111122);
             
+            // إنشاء الكاميرا
             this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
             this.camera.position.set(30, 20, 30);
             this.camera.lookAt(0, 5, 0);
             
-            this.renderer = new HybridRenderer('container');
+            // إنشاء الـ Renderer مباشرة (بدون HybridRenderer)
+            this.renderer = new THREE.WebGLRenderer({ antialias: true });
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
+            this.renderer.shadowMap.enabled = true;
+            this.renderer.setPixelRatio(window.devicePixelRatio);
             
-            this.controls = new OrbitControls(this.camera, this.renderer.webglRenderer.domElement);
+            // إضافة الـ Renderer إلى الصفحة
+            const container = document.getElementById('container');
+            if (container) {
+                container.appendChild(this.renderer.domElement);
+                console.log('✅ تم إضافة Renderer إلى container');
+            } else {
+                console.error('❌ عنصر container غير موجود');
+                document.body.appendChild(this.renderer.domElement);
+            }
+            
+            // التحكم بالكاميرا
+            this.controls = new OrbitControls(this.camera, this.renderer.domElement);
             this.controls.enableDamping = true;
             this.controls.dampingFactor = 0.05;
-            this.controls.maxPolarAngle = Math.PI / 2;
             
             console.log('✅ Three.js initialized');
         } catch (error) {
@@ -374,21 +365,39 @@ initThree() {
         }
     }
 
+    addTestCube() {
+        try {
+            console.log('🧪 إضافة مكعب اختبار...');
+            
+            // مكعب كبير
+            const geometry = new THREE.BoxGeometry(5, 5, 5);
+            const material = new THREE.MeshStandardMaterial({ 
+                color: 0xffaa44,
+                emissive: 0x442200
+            });
+            this.testCube = new THREE.Mesh(geometry, material);
+            this.testCube.position.set(0, 2.5, 0);
+            this.scene.add(this.testCube);
+            
+            console.log('✅ تم إضافة مكعب الاختبار');
+        } catch (error) {
+            console.error('❌ فشل إضافة مكعب الاختبار:', error);
+        }
+    }
+
     setupLights() {
         try {
             const ambientLight = new THREE.AmbientLight(0x404060);
             this.scene.add(ambientLight);
             
-            const sunLight = new THREE.DirectionalLight(0xfff5e6, 1.2);
+            const sunLight = new THREE.DirectionalLight(0xfff5e6, 1.5);
             sunLight.position.set(20, 30, 20);
             sunLight.castShadow = true;
-            sunLight.shadow.mapSize.width = 2048;
-            sunLight.shadow.mapSize.height = 2048;
             this.scene.add(sunLight);
             
-            const backLight = new THREE.DirectionalLight(0x446688, 0.5);
-            backLight.position.set(-20, 10, -20);
-            this.scene.add(backLight);
+            const pointLight = new THREE.PointLight(0xffaa44, 1);
+            pointLight.position.set(5, 10, 5);
+            this.scene.add(pointLight);
             
             console.log('✅ Lights setup');
         } catch (error) {
@@ -413,32 +422,7 @@ initThree() {
 
     setupEvents() {
         window.addEventListener('resize', () => this.onResize());
-        
-        if (this.renderer?.webglRenderer?.domElement) {
-            this.renderer.webglRenderer.domElement.addEventListener('click', (e) => this.onClick(e));
-            this.renderer.webglRenderer.domElement.addEventListener('mousemove', (e) => this.onMouseMove(e));
-        }
-        
-        window.addEventListener('keydown', (e) => this.onKeyDown(e));
-        
         console.log('✅ Events setup');
-    }
-
-    onClick(e) {}
-
-    onMouseMove(e) {}
-
-    onKeyDown(e) {
-        switch(e.key) {
-            case 'Escape':
-                break;
-            case 'F2':
-                this.debugLayer?.toggle();
-                break;
-            case 'F3':
-                this.analytics?.toggle();
-                break;
-        }
     }
 
     onResize() {
@@ -447,7 +431,7 @@ initThree() {
             this.camera.updateProjectionMatrix();
         }
         if (this.renderer) {
-            this.renderer.resize(window.innerWidth, window.innerHeight);
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
         }
     }
 
@@ -459,11 +443,12 @@ initThree() {
         }
         
         if (this.testCube) {
-            this.testCube.rotation.y += 0.005;
+            this.testCube.rotation.y += 0.01;
+            this.testCube.rotation.x += 0.005;
         }
         
-        if (this.renderer) {
-            this.renderer.renderWebGL(this.scene, this.camera);
+        if (this.renderer && this.scene && this.camera) {
+            this.renderer.render(this.scene, this.camera);
         }
         
         if (this.lodManager) {
@@ -496,47 +481,26 @@ initThree() {
             return null;
         }
     }
-
-    getSystemStatus() {
-        return {
-            version: '3.0.0',
-            name: 'ACTUAL CONSTRUCTION OS',
-            type: 'Reality-BIM Engine',
-            status: 'running',
-            stats: {
-                loader: this.loader?.getDetailedStats?.() || {},
-                bridge: {
-                    anchors: this.realityBridge?.anchors?.size || 0,
-                    markers: this.realityBridge?.markers?.size || 0,
-                    links: this.realityBridge?.links?.size || 0
-                },
-                graph: {
-                    nodes: this.sceneGraph?.nodes?.size || 0,
-                    edges: this.sceneGraph?.edges?.length || 0
-                },
-                analytics: this.analytics?.getPerformanceReport?.() || {}
-            }
-        };
-    }
 }
 
 // =======================================
 // 🚀 تشغيل التطبيق
 // =======================================
 
-window.addEventListener('load', async () => {
+window.addEventListener('load', () => {
     console.log('%c🌟 ACTUAL CONSTRUCTION OS - Reality-BIM Engine v3.0', 'color: #ffaa44; font-size: 18px; font-weight: bold;');
-    console.log('%c🏗️ منصة متكاملة لتصميم وإدارة المشاريع الهندسية', 'color: #88aaff; font-size: 14px;');
 
     try {
+        // إخفاء شاشة التحميل
         const loading = document.getElementById('loading');
         if (loading) {
             setTimeout(() => {
                 loading.style.opacity = '0';
                 setTimeout(() => loading.style.display = 'none', 500);
-            }, 1500);
+            }, 2000);
         }
 
+        // إنشاء التطبيق
         console.log('🔄 جاري إنشاء التطبيق...');
         window.app = new ActualConstructionOS();
 
@@ -546,6 +510,7 @@ window.addEventListener('load', async () => {
 
         console.log('✅ تم إنشاء التطبيق بنجاح');
 
+        // تحميل المشهد التجريبي
         setTimeout(() => {
             if (window.app?.loadScene) {
                 console.log('🔄 تحميل المشهد التجريبي...');
@@ -553,31 +518,20 @@ window.addEventListener('load', async () => {
                     console.warn('⚠️ فشل تحميل المشهد التجريبي:', err?.message);
                 });
             }
-        }, 2000);
+        }, 3000);
 
     } catch (error) {
         console.error('❌ فشل تشغيل التطبيق:', error);
     }
 });
 
-// ========== دوال مساعدة ==========
-
+// دوال مساعدة
 window.restartApp = () => {
     console.log('🔄 إعادة تشغيل التطبيق...');
     location.reload();
 };
 
-window.getSystemInfo = () => ({
-    version: '3.0.0',
-    name: 'ACTUAL CONSTRUCTION OS',
-    type: 'Reality-BIM Engine',
-    browser: navigator.userAgent,
-    url: window.location.href,
-    timestamp: new Date().toISOString()
-});
-
 window.ActualConstructionOS = ActualConstructionOS;
 
 console.log('📌 يمكنك استخدام:');
-console.log('   • window.restartApp() - إعادة تشغيل التطبيق');
-console.log('   • window.getSystemInfo() - معلومات النظام');
+console.log('   • window.restartApp() - إعادة تشغيل التطبيق'); 
