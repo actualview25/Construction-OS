@@ -181,8 +181,10 @@ class ActualViewConstructionOS {
             indicatorRotation: 0
         };
         
-        // ===== تهيئة جميع الأنظمة =====
+        // ===== تهيئة Three.js أولاً =====
         this.initThree();
+        
+        // ===== تهيئة الأنظمة الأساسية =====
         this.initCore();
         this.initGlobalSystems();
         this.initRealityBridge();
@@ -199,7 +201,7 @@ class ActualViewConstructionOS {
         this.initDebugSystems();
         this.initWorkerModes();
         
-        // ===== تجهيز المشهد الأساسي مع الأرضية والكرة =====
+        // ===== تجهيز المشهد الأساسي =====
         this.setupScene();
         
         // ===== بدء الحركة =====
@@ -241,7 +243,7 @@ class ActualViewConstructionOS {
         }
     }
 
-// ========== CORE SYSTEMS ==========
+    // ========== CORE SYSTEMS ==========
     initCore() {
         try {
             this.engine.geoRef = new GeoReferencing();
@@ -319,7 +321,6 @@ class ActualViewConstructionOS {
         try {
             this.engine.clashDetection = new ClashDetection(this.engine.globalSystem, this.engine.sceneConnector);
             this.engine.advancedClashDetection = new AdvancedClashDetection(this.engine.globalSystem, this.engine.sceneConnector);
-            
             console.log('✅ Clash detection initialized');
         } catch (error) {
             console.error('❌ Clash detection init failed:', error);
@@ -332,7 +333,6 @@ class ActualViewConstructionOS {
             this.engine.floorConnector = new FloorConnector(this.engine.globalSystem, this.engine.sceneConnector);
             this.engine.floorCopySystem = new FloorCopySystem(this.engine.globalSystem, this.engine.sceneConnector);
             this.engine.floorNavigation = new FloorNavigation(this.engine.floorConnector);
-            
             console.log('✅ Floor systems initialized');
         } catch (error) {
             console.error('❌ Floor systems init failed:', error);
@@ -344,7 +344,6 @@ class ActualViewConstructionOS {
         try {
             this.engine.universalElement = new UniversalElement();
             this.engine.universalImporter = new UniversalImporter(this.engine.globalSystem, this.engine.cadImporter);
-            
             console.log('✅ Universal systems initialized');
         } catch (error) {
             console.error('❌ Universal systems init failed:', error);
@@ -365,7 +364,7 @@ class ActualViewConstructionOS {
         }
     }
 
-    // ========== MEASUREMENT TOOLS ==========
+// ========== MEASUREMENT TOOLS ==========
     initMeasurementTools() {
         try {
             this.engine.distanceTool = new DistanceTool(this);
@@ -471,10 +470,10 @@ class ActualViewConstructionOS {
         }
     }
 
-    // ========== SCENE SETUP مع الأرضية المربعة والكرة التوجيهية ==========
+    // ========== SCENE SETUP ==========
     setupScene() {
         try {
-            // ===== 1. إضاءة محيطة =====
+            // إضاءة محيطة
             const ambientLight = new THREE.AmbientLight(0x404060);
             this.engine.scene.add(ambientLight);
             
@@ -484,142 +483,73 @@ class ActualViewConstructionOS {
             sunLight.castShadow = true;
             this.engine.scene.add(sunLight);
             
-            // إضاءة خلفية
-            const backLight = new THREE.DirectionalLight(0x446688, 0.5);
-            backLight.position.set(-20, 10, -20);
-            this.engine.scene.add(backLight);
+            // شبكة أرضية رئيسية
+            const mainGrid = new THREE.GridHelper(100, 50, 0x88aaff, 0x335588);
+            mainGrid.position.y = 0;
+            mainGrid.name = "mainGrid";
+            this.engine.scene.add(mainGrid);
             
-            // ===== 2. الأرضية المربعة الواضحة =====
-            // شبكة رئيسية كبيرة
-            const gridHelper = new THREE.GridHelper(100, 50, 0x88aaff, 0x335588);
-            gridHelper.position.y = 0;
-            gridHelper.name = "mainGrid";
-            this.engine.scene.add(gridHelper);
-            
-            // شبكة ثانوية دقيقة (أكثر كثافة)
+            // شبكة ثانوية دقيقة
             const detailGrid = new THREE.GridHelper(50, 50, 0x44aaff, 0x224466);
             detailGrid.position.y = 0.01;
             detailGrid.name = "detailGrid";
             this.engine.scene.add(detailGrid);
             
-            // ===== 3. الكرة التوجيهية في المركز =====
-            // كرة رئيسية
-            const sphereGeometry = new THREE.SphereGeometry(0.8, 32, 32);
-            const sphereMaterial = new THREE.MeshStandardMaterial({ 
+            // كرة مركزية
+            const sphereGeo = new THREE.SphereGeometry(0.8, 32, 32);
+            const sphereMat = new THREE.MeshStandardMaterial({ 
                 color: 0xffaa44,
-                emissive: 0x442200,
-                transparent: true,
-                opacity: 0.9
+                emissive: 0x442200
             });
-            const centerSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+            const centerSphere = new THREE.Mesh(sphereGeo, sphereMat);
             centerSphere.position.set(0, 0.8, 0);
             centerSphere.name = "centerSphere";
             this.engine.scene.add(centerSphere);
             
-            // حلقة حول الكرة (Torus)
-            const torusGeometry = new THREE.TorusGeometry(1.2, 0.05, 16, 100);
-            const torusMaterial = new THREE.MeshStandardMaterial({ 
+            // حلقة حول الكرة
+            const torusGeo = new THREE.TorusGeometry(1.2, 0.05, 16, 100);
+            const torusMat = new THREE.MeshStandardMaterial({ 
                 color: 0xffaa44,
                 emissive: 0x442200
             });
-            const torus = new THREE.Mesh(torusGeometry, torusMaterial);
+            const torus = new THREE.Mesh(torusGeo, torusMat);
             torus.rotation.x = Math.PI / 2;
             torus.position.set(0, 0.8, 0);
             torus.name = "centerTorus";
             this.engine.scene.add(torus);
             
-            // إضاءة حول الكرة
-            const pointLight = new THREE.PointLight(0xffaa44, 1, 15);
-            pointLight.position.set(0, 1, 0);
-            this.engine.scene.add(pointLight);
-            
-            // ===== 4. محاور إحداثية واضحة =====
+            // محاور إحداثية
             const axesHelper = new THREE.AxesHelper(15);
             axesHelper.name = "axesHelper";
             this.engine.scene.add(axesHelper);
             
-            // ===== 5. نقاط مرجعية على الأرضية =====
-            const pointsMaterial = new THREE.PointsMaterial({ color: 0x88aaff, size: 0.15 });
-            const pointsGeometry = new THREE.BufferGeometry();
+            // نقاط مرجعية
+            const pointsMat = new THREE.PointsMaterial({ color: 0x88aaff, size: 0.15 });
+            const pointsGeo = new THREE.BufferGeometry();
             const positions = [];
             for (let x = -20; x <= 20; x += 2) {
                 for (let z = -20; z <= 20; z += 2) {
                     positions.push(x, 0.02, z);
                 }
             }
-
-        pointsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-            const points = new THREE.Points(pointsGeometry, pointsMaterial);
+            pointsGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            const points = new THREE.Points(pointsGeo, pointsMat);
             points.name = "referencePoints";
             this.engine.scene.add(points);
             
-            // ===== 6. أرضية شفافة للظلال =====
-            const floorGeometry = new THREE.CircleGeometry(100, 64);
-            const floorMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0x1a1a1a, 
-                transparent: true, 
-                opacity: 0.15,
-                side: THREE.DoubleSide
-            });
-            const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-            floor.rotation.x = -Math.PI / 2;
-            floor.position.y = 0;
-            floor.receiveShadow = true;
-            floor.name = "shadowFloor";
-            this.engine.scene.add(floor);
-            
-            // ===== 7. مؤشرات اتجاه (أسهم صغيرة) =====
-            this.createDirectionIndicators();
-            
-            // ===== 8. مؤشر حركة (يدور) =====
+            // مؤشرات حركة
             this.createMovementIndicator();
             
-            console.log('✅ Scene setup complete with grid, center sphere and direction indicators');
+            console.log('✅ Scene setup complete');
             
         } catch (error) {
             console.error('❌ Scene setup failed:', error);
         }
     }
 
-    // ===== مؤشرات الاتجاه (أسهم) =====
-    createDirectionIndicators() {
-        const arrowLength = 2;
-        const arrowColor = 0xffaa44;
-        
-        // سهم اتجاه X (أحمر)
-        const arrowX = new THREE.ArrowHelper(
-            new THREE.Vector3(1, 0, 0), 
-            new THREE.Vector3(5, 0.2, 0), 
-            arrowLength, 
-            0xff3333
-        );
-        arrowX.name = "arrowX";
-        this.engine.scene.add(arrowX);
-        
-        // سهم اتجاه Y (أخضر)
-        const arrowY = new THREE.ArrowHelper(
-            new THREE.Vector3(0, 1, 0), 
-            new THREE.Vector3(0, 2, 0), 
-            arrowLength, 
-            0x33ff33
-        );
-        arrowY.name = "arrowY";
-        this.engine.scene.add(arrowY);
-        
-        // سهم اتجاه Z (أزرق)
-        const arrowZ = new THREE.ArrowHelper(
-            new THREE.Vector3(0, 0, 1), 
-            new THREE.Vector3(0, 0.2, 5), 
-            arrowLength, 
-            0x3333ff
-        );
-        arrowZ.name = "arrowZ";
-        this.engine.scene.add(arrowZ);
-    }
-
-    // ===== مؤشر الحركة (يدور حول المركز) =====
+    // ===== مؤشر الحركة =====
     createMovementIndicator() {
-        const indicatorGroup = new THREE.Group();
+        const group = new THREE.Group();
         
         for (let i = 0; i < 12; i++) {
             const angle = (i / 12) * Math.PI * 2;
@@ -630,11 +560,11 @@ class ActualViewConstructionOS {
             });
             const sphere = new THREE.Mesh(sphereGeo, sphereMat);
             sphere.position.set(Math.cos(angle) * 5, 0.3, Math.sin(angle) * 5);
-            indicatorGroup.add(sphere);
+            group.add(sphere);
         }
         
-        indicatorGroup.name = "movementIndicator";
-        this.engine.scene.add(indicatorGroup);
+        group.name = "movementIndicator";
+        this.engine.scene.add(group);
     }
 
     // ========== ANIMATION LOOP ==========
@@ -643,7 +573,6 @@ class ActualViewConstructionOS {
         
         if (this.engine.controls) this.engine.controls.update();
         if (this.engine.lodManager) this.engine.lodManager.update();
-        if (this.engine.tileLODManager) this.engine.tileLODManager.update();
         
         // تدوير مؤشر الحركة
         if (this.state.indicatorRotation !== undefined) {
@@ -654,7 +583,7 @@ class ActualViewConstructionOS {
             }
         }
         
-        // تدوير الحلقة حول الكرة
+        // تدوير الحلقة
         const torus = this.engine.scene.getObjectByName('centerTorus');
         if (torus) {
             torus.rotation.z += 0.005;
@@ -689,7 +618,7 @@ class ActualViewConstructionOS {
         }
     }
 
-    loadTexture(url) {
+loadTexture(url) {
         return new Promise((resolve, reject) => {
             new THREE.TextureLoader().load(url, resolve, undefined, reject);
         });
@@ -698,7 +627,6 @@ class ActualViewConstructionOS {
     // ========== IMPORT CAD ==========
     importCAD(file) {
         console.log(`📄 Importing CAD: ${file.name}`);
-        // سيتم تنفيذها لاحقاً
     }
 
     // ========== CALIBRATION ==========
@@ -715,20 +643,17 @@ class ActualViewConstructionOS {
         this.state.calibrationPoints.push(point);
         this.updateCalibrationPointsList();
         
-        // تحديث عداد GCP في الواجهة
         const gcpCountEl = document.getElementById('gcpCount');
         if (gcpCountEl) {
             gcpCountEl.textContent = this.engine.geoRef.gcp.length;
         }
-
-    // تحديث مصفوفة التحويل إذا كان لدينا 3 نقاط أو أكثر
+        
         if (this.engine.geoRef.gcp.length >= 3) {
             this.engine.geoRef.calculateTransform();
             this.updateTransformMatrix();
         }
     }
 
-    // دالة جديدة لتحديث مصفوفة التحويل في الواجهة
     updateTransformMatrix() {
         const matrixEl = document.getElementById('transformMatrix');
         if (!matrixEl) return;
@@ -751,8 +676,6 @@ class ActualViewConstructionOS {
         this.engine.geoRef.calculateTransform();
         const report = this.engine.geoRef.getCalibrationReport();
         console.log('✅ Calibration complete:', report);
-        
-        // تحديث مصفوفة التحويل
         this.updateTransformMatrix();
     }
 
@@ -825,13 +748,11 @@ class ActualViewConstructionOS {
         console.log(`👁️ View mode: ${mode}`);
     }
 
-    // ========== STATUS ==========
     updateStatus(message, type = 'info') {
         document.getElementById('statusMessage').innerHTML = message;
         console.log(type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️', message);
     }
 
-    // ========== GET SYSTEM STATUS ==========
     getSystemStatus() {
         return {
             version: '3.0.0',
@@ -910,7 +831,6 @@ window.addEventListener('load', () => {
     window.updateStatus = (msg, type) => window.app?.updateStatus(msg, type);
     window.getSystemStatus = () => window.app?.getSystemStatus();
     
-    // تحديث workflow step
     window.updateWorkflow = (step) => {
         const steps = document.querySelectorAll('.workflow-step');
         steps.forEach((s, i) => s.classList.toggle('active', i < step));
@@ -923,7 +843,6 @@ window.addEventListener('load', () => {
     console.log('📌 Commands: window.app, getSystemStatus(), updateWorkflow()');
 });
 
-// ===== RESTART FUNCTION =====
 window.restartApp = () => {
     console.log('🔄 Restarting application...');
     location.reload();
