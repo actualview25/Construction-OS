@@ -402,8 +402,8 @@
             align-items: center;
             gap: 6px;
         }
-        
-        .btn:hover {
+
+       .btn:hover {
             background: #3a3a3a;
             border-color: #ffaa44;
         }
@@ -424,24 +424,25 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.95);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
         }
         
         .modal-content {
             background: #1a1a1a;
             border-radius: 12px;
-            width: 380px;
+            width: 400px;
             max-width: 90%;
-            border: 1px solid #ffaa44;
+            border: 2px solid #ffaa44;
+            box-shadow: 0 0 30px rgba(255,170,68,0.2);
         }
         
         .modal-header {
-            padding: 15px;
+            padding: 20px;
             border-bottom: 1px solid #333333;
             display: flex;
             justify-content: space-between;
@@ -450,62 +451,87 @@
         
         .modal-header h3 {
             color: #ffaa44;
-            font-size: 16px;
+            font-size: 18px;
+            margin: 0;
         }
+        
+        .modal-header button {
+            background: none;
+            border: none;
+            color: #ffaa44;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .modal-header button:hover {
+            transform: scale(1.2);
+        }
+        
         .modal-body {
-            padding: 15px;
+            padding: 20px;
+        }
+        
+        .modal-body p {
+            color: #b0b0b0;
+            margin-bottom: 15px;
+            font-size: 14px;
         }
         
         .modal-body label {
-            color: #b0b0b0;
+            color: #888888;
             font-size: 12px;
+            display: block;
+            margin-bottom: 5px;
         }
         
-        .modal-body input, .modal-body select {
+        .modal-body input,
+        .modal-body select {
+            width: 100%;
+            padding: 8px 12px;
             background: #2a2a2a;
             border: 1px solid #444444;
-            color: #ffffff;
-            padding: 6px;
-            border-radius: 4px;
-            width: 100%;
-            margin-top: 4px;
-            font-size: 12px;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            margin-bottom: 15px;
         }
         
-        .modal-body input:focus, .modal-body select:focus {
+        .modal-body input:focus,
+        .modal-body select:focus {
             outline: none;
             border-color: #ffaa44;
         }
         
         .modal-footer {
-            padding: 15px;
+            padding: 20px;
             border-top: 1px solid #333333;
             display: flex;
             justify-content: flex-end;
-            gap: 8px;
+            gap: 10px;
         }
         
         /* ===== STATUS BAR ===== */
         .status-bar {
             position: fixed;
-            bottom: 15px;
+            bottom: 20px;
             left: 300px;
             right: 320px;
             background: #1a1a1a;
             border: 1px solid #333333;
             border-radius: 30px;
-            padding: 6px 12px;
-            font-size: 11px;
+            padding: 8px 16px;
+            font-size: 12px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
             z-index: 100;
         }
         
         .status-progress {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
             color: #ffaa44;
         }
         
@@ -524,13 +550,13 @@
         }
         
         .mt-2 {
-            margin-top: 8px;
+            margin-top: 10px;
         }
         
-        /* Scrollbar styling */
+        /* Scrollbar Styling */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
         }
         
         ::-webkit-scrollbar-track {
@@ -539,7 +565,7 @@
         
         ::-webkit-scrollbar-thumb {
             background: #444444;
-            border-radius: 3px;
+            border-radius: 4px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
@@ -628,7 +654,7 @@
                         </li>
                     </ul>
                 </ul>
-                <button class="btn btn-primary" style="width:100%; margin-top:8px;" onclick="showImportSceneDialog()">
+                <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="showImportSceneDialog()">
                     <i class="fas fa-plus"></i> Add Scene
                 </button>
             </div>
@@ -651,7 +677,7 @@
                     <span>📍 Second Floor</span>
                     <span class="floor-badge">+6.00 m</span>
                 </div>
-                <button class="btn" style="width:100%; margin-top:8px;">
+                <button class="btn" style="width:100%; margin-top:10px;">
                     <i class="fas fa-plus"></i> Add Level
                 </button>
             </div>
@@ -674,7 +700,7 @@
                     <div class="link-icon">🪜</div>
                     <div>Ground → First (Stairs)</div>
                 </div>
-                <button class="btn" style="width:100%; margin-top:8px;">
+                <button class="btn" style="width:100%; margin-top:10px;">
                     <i class="fas fa-link"></i> Add Link
                 </button>
             </div>
@@ -686,7 +712,7 @@
                     <span>CALIBRATION POINTS</span>
                 </div>
                 <div id="calibrationPointsList">
-                    <div class="text-muted" style="text-align:center; padding:15px;">
+                    <div class="text-muted" style="text-align:center; padding:20px;">
                         No calibration points
                     </div>
                 </div>
@@ -710,7 +736,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- ===== RIGHT PANEL ===== -->
         <div class="right-panel">
             <!-- Properties -->
@@ -815,104 +841,73 @@
                         <i class="fas fa-water"></i>
                         <span>Pipe</span>
                     </div>
-                    <div class="library-item" onclick="runClashDetection()" style="background:#3a3a3a;">
+                    <div class="library-item" onclick="runClashDetection()">
                         <i class="fas fa-exclamation-triangle"></i>
                         <span>Clash</span>
                     </div>
-                    <div class="library-item" onclick="runCalibration()" style="background:#3a3a3a;">
-                        <i class="fas fa-crosshairs"></i>
-                        <span>Calibrate</span>
-                    </div>
                 </div>
             </div>
+            
             <!-- Materials -->
             <div class="panel-section">
                 <div class="panel-title">
                     <i class="fas fa-palette"></i>
                     <span>MATERIALS</span>
                 </div>
-                <div class="material-swatch" style="background:#8B4513;" onclick="selectMaterial('wood')"></div>
-                <div class="material-swatch" style="background:#808080;" onclick="selectMaterial('concrete')"></div>
-                <div class="material-swatch" style="background:#B22222;" onclick="selectMaterial('brick')"></div>
-                <div class="material-swatch" style="background:#87CEEB;" onclick="selectMaterial('glass')"></div>
+                <div class="material-swatch" style="background:#8B4513;" onclick="selectMaterial('wood')" title="Wood"></div>
+                <div class="material-swatch" style="background:#808080;" onclick="selectMaterial('concrete')" title="Concrete"></div>
+                <div class="material-swatch" style="background:#B22222;" onclick="selectMaterial('brick')" title="Brick"></div>
+                <div class="material-swatch" style="background:#87CEEB;" onclick="selectMaterial('glass')" title="Glass"></div>
             </div>
             
-            <!-- GEO REFERENCING TOOLS -->
-            <div class="panel-section" id="calibrationTools">
+            <!-- GeoReferencing Tools -->
+            <div class="panel-section">
                 <div class="panel-title">
                     <i class="fas fa-crosshairs"></i>
                     <span>GEO REFERENCING</span>
                 </div>
                 
-                <!-- نظام الإحداثيات -->
-                <div style="margin-bottom: 10px; background: #1a1a1a; padding: 8px; border-radius: 6px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span style="color: #888;">Coordinate System:</span>
+                <!-- Coordinate System -->
+                <div style="margin-bottom: 15px; background: #1a1a1a; padding: 10px; border-radius: 6px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: #888;">System:</span>
                         <span style="color: #ffaa44; font-weight: bold;" id="coordSystem">UTM</span>
                     </div>
                     <div style="display: flex; gap: 5px;">
-                        <button class="btn" style="flex:1; padding:4px;" onclick="setCoordSystem('utm')">UTM</button>
-                        <button class="btn" style="flex:1; padding:4px;" onclick="setCoordSystem('local')">Local</button>
-                        <button class="btn" style="flex:1; padding:4px;" onclick="setCoordSystem('wgs84')">WGS84</button>
+                        <button class="btn" style="flex:1;" onclick="setCoordSystem('utm')">UTM</button>
+                        <button class="btn" style="flex:1;" onclick="setCoordSystem('local')">Local</button>
+                        <button class="btn" style="flex:1;" onclick="setCoordSystem('wgs84')">WGS84</button>
                     </div>
                 </div>
                 
-                <!-- نقاط التحكم الأرضية (GCP) -->
-                <div style="margin-bottom: 10px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span style="color: #888;">Ground Control Points:</span>
+                <!-- GCP Counter -->
+                <div style="margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: #888;">GCP Points:</span>
                         <span style="color: #ffaa44; font-weight: bold;" id="gcpCount">0</span>
                     </div>
-                    <button class="btn" style="width:100%; margin-bottom:5px;" onclick="addGCP()">
+                    <button class="btn" style="width:100%; margin-bottom:5px;" onclick="addCalibrationPoint()">
                         <i class="fas fa-plus-circle"></i> Add GCP
                     </button>
-                    <button class="btn" style="width:100%; margin-bottom:5px;" onclick="listGCPs()">
+                    <button class="btn" style="width:100%;" onclick="listGCPs()">
                         <i class="fas fa-list"></i> List GCPs
                     </button>
                 </div>
                 
-                <!-- تحويل الإحداثيات -->
-                <div style="margin-bottom: 10px;">
-                    <div style="background: #1a1a1a; padding: 8px; border-radius: 6px; margin-bottom: 5px;">
-                        <div style="display: flex; gap: 5px; margin-bottom: 5px;">
-                            <input type="number" id="photoX" placeholder="Photo X" style="flex:1; background:#2a2a2a; border:1px solid #444; color:white; padding:4px; border-radius:4px;">
-                            <input type="number" id="photoY" placeholder="Photo Y" style="flex:1; background:#2a2a2a; border:1px solid #444; color:white; padding:4px; border-radius:4px;">
-                        </div>
-                        <button class="btn btn-primary" style="width:100%;" onclick="convertPhotoToWorld()">
-                            <i class="fas fa-arrow-right"></i> Photo → World
-                        </button>
+                <!-- Transform Matrix -->
+                <div style="background: #1a1a1a; padding: 10px; border-radius: 6px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: #888;">Transform:</span>
+                        <button class="btn" style="padding:2px 8px;" onclick="calculateTransform()">Calc</button>
                     </div>
-                    
-                    <div style="background: #1a1a1a; padding: 8px; border-radius: 6px;">
-                        <div style="display: flex; gap: 5px; margin-bottom: 5px;">
-                            <input type="number" id="worldX" placeholder="World X" style="flex:1; background:#2a2a2a; border:1px solid #444; color:white; padding:4px; border-radius:4px;">
-                            <input type="number" id="worldY" placeholder="World Y" style="flex:1; background:#2a2a2a; border:1px solid #444; color:white; padding:4px; border-radius:4px;">
-                        </div>
-                        <button class="btn btn-primary" style="width:100%;" onclick="convertWorldToPhoto()">
-                            <i class="fas fa-arrow-left"></i> World → Photo
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- مصفوفة التحويل -->
-                <div style="background: #1a1a1a; padding: 8px; border-radius: 6px; margin-bottom: 5px;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #888;">Transform Matrix:</span>
-                        <button class="btn" style="padding:2px 8px;" onclick="calculateTransform()">Calculate</button>
-                    </div>
-                    <div style="font-family: monospace; font-size: 11px; margin-top: 5px;" id="transformMatrix">
+                    <div id="transformMatrix" style="font-family: monospace; font-size: 11px; background: #2a2a2a; padding: 8px; border-radius: 4px;">
                         Not calculated
                     </div>
                 </div>
-                
-                <!-- تقرير المعايرة -->
-                <button class="btn btn-primary" style="width:100%;" onclick="showCalibrationReport()">
-                    <i class="fas fa-file-alt"></i> Calibration Report
-                </button>
             </div>
         </div>
     </div>
-    
+
     <!-- ===== STATUS BAR ===== -->
     <div class="status-bar" id="statusBar">
         <div class="status-progress">
@@ -924,22 +919,20 @@
         </div>
     </div>
     
-    <!-- ===== MODAL: Import 360 Image ===== -->
+    <!-- ===== MODALS ===== -->
+    
+    <!-- Import 360 Image Modal -->
     <div id="importImageModal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
                 <h3><i class="fas fa-images"></i> Import 360 Image</h3>
-                <button onclick="hideModal('importImageModal')" style="background:none; border:none; color:#ffaa44; cursor:pointer; font-size:18px;">
-                    <i class="fas fa-times"></i>
-                </button>
+                <button onclick="hideModal('importImageModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <p style="color:#b0b0b0; font-size:12px;">Select a 360° panoramic image:</p>
+                <p>Select a 360° panoramic image to import:</p>
                 <input type="file" id="imageInput" accept="image/*">
-                <div class="mt-2">
-                    <label>Scene Name:</label>
-                    <input type="text" id="sceneName" value="New Scene">
-                </div>
+                <label>Scene Name:</label>
+                <input type="text" id="sceneName" value="New Scene">
             </div>
             <div class="modal-footer">
                 <button class="btn" onclick="hideModal('importImageModal')">Cancel</button>
@@ -947,18 +940,16 @@
             </div>
         </div>
     </div>
-
-    <!-- ===== MODAL: Import CAD ===== -->
+    
+    <!-- Import CAD Modal -->
     <div id="importCADModal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-draw-polygon"></i> Import CAD Drawing</h3>
-                <button onclick="hideModal('importCADModal')" style="background:none; border:none; color:#ffaa44; cursor:pointer; font-size:18px;">
-                    <i class="fas fa-times"></i>
-                </button>
+                <h3><i class="fas fa-draw-polygon"></i> Import CAD</h3>
+                <button onclick="hideModal('importCADModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <p style="color:#b0b0b0; font-size:12px;">Select CAD file (DXF/DWG):</p>
+                <p>Select CAD file (DXF/DWG):</p>
                 <input type="file" id="cadInput" accept=".dxf,.dwg">
             </div>
             <div class="modal-footer">
@@ -968,18 +959,16 @@
         </div>
     </div>
     
-    <!-- ===== MODAL: Add Calibration Point ===== -->
+    <!-- Add Calibration Point Modal -->
     <div id="calibrationPointModal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-crosshairs"></i> Add Calibration Point</h3>
-                <button onclick="hideModal('calibrationPointModal')" style="background:none; border:none; color:#ffaa44; cursor:pointer; font-size:18px;">
-                    <i class="fas fa-times"></i>
-                </button>
+                <h3><i class="fas fa-crosshairs"></i> Add GCP</h3>
+                <button onclick="hideModal('calibrationPointModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <p style="color:#b0b0b0; font-size:12px;">Click on image to select point:</p>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:10px 0;">
+                <p>Click on the image to select a point, then enter real-world coordinates:</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <div>
                         <label>Image X:</label>
                         <input type="number" id="imgX" readonly>
@@ -989,7 +978,7 @@
                         <input type="number" id="imgY" readonly>
                     </div>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <div>
                         <label>Real X:</label>
                         <input type="number" id="realX" value="0">
@@ -999,11 +988,11 @@
                         <input type="number" id="realY" value="0">
                     </div>
                 </div>
-                <div class="mt-2">
+                <div>
                     <label>Coordinate System:</label>
                     <select id="gcpCoordSystem">
                         <option value="local">Local</option>
-                        <option value="utm">UTM</option>
+                        <option value="utm" selected>UTM</option>
                         <option value="wgs84">WGS84</option>
                     </select>
                 </div>
@@ -1017,7 +1006,7 @@
     
     <!-- ===== SCRIPT ===== -->
     <script>
-        // ===== UI CONTROLS =====
+        // Modal Controls
         function showModal(id) {
             document.getElementById(id).classList.remove('hidden');
         }
@@ -1034,21 +1023,18 @@
             showModal('importCADModal');
         }
         
-        // Update workflow step
+        // Workflow Control
         function updateWorkflow(step) {
             const steps = document.querySelectorAll('.workflow-step');
             steps.forEach((s, i) => {
-                if (i < step) {
-                    s.classList.add('active');
-                } else {
-                    s.classList.remove('active');
-                }
+                if (i < step) s.classList.add('active');
+                else s.classList.remove('active');
             });
-            
-            document.getElementById('statusMessage').innerHTML = `Step ${step}/7: ${['','Import CAD','Draw Plan','Import 360','Calibrate','Link','Build','BOQ'][step]}`;
+            document.getElementById('statusMessage').innerHTML = 
+                `Step ${step}/7: ${['','Import CAD','Draw Plan','Import 360','Calibrate','Link','Build','BOQ'][step]}`;
         }
         
-        // Update properties display
+        // Properties Update
         function updateProperties(props) {
             document.getElementById('propType').textContent = props.type || '-';
             document.getElementById('propId').textContent = props.id || '-';
@@ -1060,246 +1046,104 @@
             document.getElementById('propY').textContent = props.y || '-';
             document.getElementById('propZ').textContent = props.z || '-';
         }
-        // ===== Import Functions =====
+        
+        // Import Functions
         window.importImage = function() {
-            const fileInput = document.getElementById('imageInput');
-            const sceneName = document.getElementById('sceneName').value;
-            
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const url = URL.createObjectURL(file);
-                
-                if (window.app) {
-                    window.app.import360Image(url, sceneName);
-                }
-                
+            const input = document.getElementById('imageInput');
+            const name = document.getElementById('sceneName').value;
+            if (input.files.length) {
+                window.app?.import360Image(URL.createObjectURL(input.files[0]), name);
                 hideModal('importImageModal');
                 updateWorkflow(3);
-            } else {
-                alert('Please select an image');
-            }
+            } else alert('Please select an image');
         };
-        
-        window.importCAD = function() {
-            const fileInput = document.getElementById('cadInput');
-            
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                
-                if (window.app) {
-                    window.app.importCAD(file);
-                }
-                
+
+       window.importCAD = function() {
+            const input = document.getElementById('cadInput');
+            if (input.files.length) {
+                window.app?.importCAD(input.files[0]);
                 hideModal('importCADModal');
                 updateWorkflow(2);
-            } else {
-                alert('Please select a CAD file');
-            }
+            } else alert('Please select a CAD file');
         };
         
-        // ===== Element Creation Functions =====
-        window.startDrawWall = function() {
-            if (window.app) {
-                window.app.startDrawing('wall');
-                window.updateStatus('Start drawing wall on plan', 'info');
-            }
-        };
+        // Element Creation Functions
+        window.startDrawWall = () => window.app?.startDrawing('wall');
+        window.startDrawColumn = () => window.app?.startDrawing('column');
+        window.addDoor = () => window.app?.startDrawing('door');
+        window.addWindow = () => window.app?.startDrawing('window');
+        window.addBeam = () => window.app?.startDrawing('beam');
+        window.addSlab = () => window.app?.startDrawing('slab');
+        window.addFoundation = () => window.app?.startDrawing('foundation');
+        window.addPipe = () => window.app?.startDrawing('pipe');
+        window.runClashDetection = () => window.app?.runClashDetection();
         
-        window.startDrawColumn = function() {
-            if (window.app) {
-                window.app.startDrawing('column');
-                window.updateStatus('Click to place column', 'info');
-            }
-        };
-        
-        window.addDoor = function() {
-            if (window.app) {
-                window.app.startDrawing('door');
-                window.updateStatus('Select door location', 'info');
-            }
-        };
-        
-        window.addWindow = function() {
-            if (window.app) {
-                window.app.startDrawing('window');
-                window.updateStatus('Select window location', 'info');
-            }
-        };
-        
-        window.addBeam = function() {
-            if (window.app) {
-                window.app.startDrawing('beam');
-                window.updateStatus('Draw beam path', 'info');
-            }
-        };
-        
-        window.addSlab = function() {
-            if (window.app) {
-                window.app.startDrawing('slab');
-                window.updateStatus('Draw slab boundary', 'info');
-            }
-        };
-        
-        window.addFoundation = function() {
-            if (window.app) {
-                window.app.startDrawing('foundation');
-                window.updateStatus('Select foundation location', 'info');
-            }
-        };
-        
-        window.addPipe = function() {
-            if (window.app) {
-                window.app.startDrawing('pipe');
-                window.updateStatus('Draw pipe path', 'info');
-            }
-        };
-        
-        window.runClashDetection = function() {
-            if (window.app) {
-                window.app.runClashDetection();
-                window.updateStatus('Running clash detection...', 'info');
-            }
-        };
-        
-        // ===== Calibration Functions =====
-        window.addCalibrationPoint = function() {
-            if (window.app) {
-                window.app.startCalibrationPoint();
-                showModal('calibrationPointModal');
-            }
-        };
-        
-        window.runCalibration = function() {
-            if (window.app) {
-                window.app.runCalibration();
-                updateWorkflow(4);
-                window.updateStatus('Calibration completed', 'success');
-            }
-        };
-        
-        // ===== GEO REFERENCING FUNCTIONS =====
+        // GeoReferencing Functions
         window.setCoordSystem = function(system) {
             if (window.app) {
                 window.app.engine.geoRef.setCoordinateSystem(system);
                 document.getElementById('coordSystem').textContent = system.toUpperCase();
-                window.app.updateStatus(`Coordinate system: ${system}`, 'success');
+                window.app.updateStatus(`System: ${system}`, 'success');
             }
         };
-
+        
         window.listGCPs = function() {
-            if (window.app) {
-                const gcps = window.app.engine.geoRef.gcp;
-                if (gcps.length === 0) {
-                    alert('No GCPs added yet');
-                    return;
-                }
-                
-                let list = 'Ground Control Points:\n';
-                gcps.forEach((gcp, i) => {
-                    list += `${i+1}. Photo(${gcp.photo.x.toFixed(2)}, ${gcp.photo.y.toFixed(2)}) → Real(${gcp.real.x.toFixed(2)}, ${gcp.real.y.toFixed(2)}) Error: ${gcp.error.toFixed(3)}m\n`;
-                });
-                alert(list);
-            }
-        };
-
-        window.convertPhotoToWorld = function() {
             if (!window.app) return;
-            
-            const photoX = parseFloat(document.getElementById('photoX').value);
-            const photoY = parseFloat(document.getElementById('photoY').value);
-            
-            if (isNaN(photoX) || isNaN(photoY)) {
-                alert('Enter photo coordinates');
+            const gcps = window.app.engine.geoRef.gcp;
+            if (gcps.length === 0) {
+                alert('No GCPs added');
                 return;
             }
-            
-            const world = window.app.engine.geoRef.photoToWorld({ x: photoX, y: photoY, z: 0 });
-            alert(`World coordinates: (${world.x.toFixed(2)}, ${world.y.toFixed(2)}, ${world.z.toFixed(2)})`);
+            let list = 'Ground Control Points:\n';
+            gcps.forEach((gcp, i) => {
+                list += `${i+1}. Photo(${gcp.photo.x.toFixed(1)},${gcp.photo.y.toFixed(1)}) → ` +
+                       `Real(${gcp.real.x.toFixed(1)},${gcp.real.y.toFixed(1)}) ` +
+                       `Error: ${gcp.error.toFixed(3)}m\n`;
+            });
+            alert(list);
         };
-
-        window.convertWorldToPhoto = function() {
-            if (!window.app) return;
-            
-            const worldX = parseFloat(document.getElementById('worldX').value);
-            const worldY = parseFloat(document.getElementById('worldY').value);
-            
-            if (isNaN(worldX) || isNaN(worldY)) {
-                alert('Enter world coordinates');
-                return;
-            }
-            
-            const photo = window.app.engine.geoRef.worldToPhoto({ x: worldX, y: worldY, z: 0 });
-            alert(`Photo coordinates: (${photo.x.toFixed(2)}, ${photo.y.toFixed(2)})`);
-        };
-
+        
         window.calculateTransform = function() {
             if (window.app) {
                 window.app.engine.geoRef.calculateTransform();
-                
-                const matrix = window.app.engine.geoRef.transformMatrix;
-                if (matrix) {
-                    let matrixText = '';
-                    matrix.forEach(row => {
-                        matrixText += row.map(v => v.toFixed(3)).join('  ') + '\n';
-                    });
-                    document.getElementById('transformMatrix').innerHTML = matrixText.replace(/\n/g, '<br>');
-                }
-                
+                window.app.updateTransformMatrix();
                 window.app.updateStatus('Transform calculated', 'success');
             }
         };
-
-        window.showCalibrationReport = function() {
-            if (window.app) {
-                const report = window.app.engine.geoRef.getCalibrationReport();
-                alert(JSON.stringify(report, null, 2));
-            }
-        };
+        
+        // Calibration Functions
+        window.addCalibrationPoint = () => window.app?.startCalibrationPoint();
+        window.runCalibration = () => window.app?.runCalibration();
         
         window.addCalibrationPointToScene = function() {
             const imgX = document.getElementById('imgX').value;
             const imgY = document.getElementById('imgY').value;
             const realX = document.getElementById('realX').value;
             const realY = document.getElementById('realY').value;
-            const coordSystem = document.getElementById('gcpCoordSystem').value;
             
             if (window.app) {
                 window.app.addCalibrationPoint({
                     imageX: parseFloat(imgX) || 0,
                     imageY: parseFloat(imgY) || 0,
                     realX: parseFloat(realX) || 0,
-                    realY: parseFloat(realY) || 0,
-                    system: coordSystem
+                    realY: parseFloat(realY) || 0
                 });
-                
-                // تحديث عداد GCP
-                const gcpCount = window.app.engine.geoRef.gcp.length;
-                document.getElementById('gcpCount').textContent = gcpCount;
             }
-            
             hideModal('calibrationPointModal');
         };
         
-        window.selectMaterial = function(material) {
-            if (window.app) {
-                window.app.updateStatus(`Selected material: ${material}`, 'success');
-            }
-        };
+        window.selectMaterial = (m) => window.app?.updateStatus(`Material: ${m}`, 'success');
         
-        // Change view mode
+        // View Controls
         document.querySelectorAll('.view-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-                
-                const mode = this.dataset.mode;
-                if (window.app) {
-                    window.app.setViewMode(mode);
-                }
+                if (window.app) window.app.setViewMode(this.dataset.mode);
             });
         });
         
-        // Change top menu
+        // Menu Controls
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', function() {
                 document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
@@ -1307,24 +1151,14 @@
             });
         });
         
-        // Status bar update
-        window.updateStatus = function(message, type = 'info') {
-            document.getElementById('statusMessage').innerHTML = message;
-            
-            if (type === 'success') {
-                console.log('✅', message);
-            } else if (type === 'error') {
-                console.error('❌', message);
-            } else {
-                console.log('ℹ️', message);
-            }
-        };
+        // Status Update
+        window.updateStatus = (msg, type) => window.app?.updateStatus(msg, type);
         
-        // Initial load
-        window.updateStatus('Loading engine...', 'info');
+        // Initial Workflow
+        updateWorkflow(1);
     </script>
     
-    <!-- Import main.js -->
+    <!-- Main Application Script -->
     <script type="module" src="./main.js"></script>
 </body>
-</html>
+</html> 
