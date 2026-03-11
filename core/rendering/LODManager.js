@@ -1,12 +1,13 @@
 // =======================================
-// ACTUAL CONSTRUCTION OS - LOD MANAGER
+// ACTUAL VIEW CONSTRUCTION OS - LOD MANAGER
 // =======================================
-// مستويات تفاصيل متعددة للكيانات
+// الإصدار: 3.0.0 - مستويات تفاصيل متعددة للكيانات
+// =======================================
 
 export class LODManager {
     constructor(camera) {
         this.camera = camera;
-        this.entities = new Map();        // الكيانات مع LODs
+        this.entities = new Map();
         this.distances = {
             high: 10,      // أقل من 10 متر → تفاصيل عالية
             medium: 30,    // 10-30 متر → تفاصيل متوسطة
@@ -20,6 +21,9 @@ export class LODManager {
             low: 0,
             culled: 0
         };
+        
+        this.debug = false;
+        console.log('✅ LODManager initialized');
     }
 
     // إضافة كيان مع مستويات التفاصيل
@@ -27,15 +31,22 @@ export class LODManager {
         this.entities.set(entityId, {
             id: entityId,
             meshes: {
-                high: meshes.high,      // عالي التفاصيل
-                medium: meshes.medium,  // متوسط
-                low: meshes.low,        // منخفض
+                high: meshes.high,
+                medium: meshes.medium,
+                low: meshes.low,
                 current: meshes.high
             },
             position: meshes.position,
             lastLOD: 'high',
-            visible: true
+            visible: true,
+            updateCount: 0
         });
+
+        // إخفاء المستويات المنخفضة في البداية
+        if (meshes.medium) meshes.medium.visible = false;
+        if (meshes.low) meshes.low.visible = false;
+        
+        if (this.debug) console.log(`➕ Entity added: ${entityId}`);
     }
 
     // تحديث LOD بناءً على المسافة
@@ -70,11 +81,16 @@ export class LODManager {
                 this.stats.culled++;
             }
 
-            // تطبيق التغيير
+            // تطبيق التغيير إذا تغير المستوى
             if (newLOD !== entity.lastLOD) {
                 this.switchLOD(entity, newLOD, mesh);
+                entity.updateCount++;
             }
         });
+
+        if (this.debug && this.entities.size > 0) {
+            console.log('📊 LOD Stats:', this.stats);
+        }
     }
 
     // التبديل بين المستويات
@@ -92,46 +108,87 @@ export class LODManager {
 
         entity.lastLOD = newLOD;
         
-        console.log(`🔄 ${entity.id}: ${newLOD}`);
-    }
-
-    // إنشاء نسخ مختلفة التفاصيل لكيان
-    static createLODVersions(originalMesh, options = {}) {
-        const high = originalMesh.clone();
-        
-        // نسخة متوسطة (نصف التفاصيل)
-        const medium = originalMesh.clone();
-        if (medium.geometry) {
-            // تقليل عدد المثلثات
-            medium.geometry = this.simplifyGeometry(medium.geometry, 0.5);
+        if (this.debug) {
+            console.log(`🔄 ${entity.id}: ${entity.lastLOD} → ${newLOD}`);
         }
-
-        // نسخة منخفضة (ربع التفاصيل)
-        const low = originalMesh.clone();
-        if (low.geometry) {
-            low.geometry = this.simplifyGeometry(low.geometry, 0.25);
-        }
-
-        return { high, medium, low, position: originalMesh.position.clone() };
-    }
-
-    // تبسيط الهندسة (تقليل المثلثات)
-    static simplifyGeometry(geometry, factor) {
-        // هنا يمكن استخدام مكتبة مثل THREE.SimplifyModifier
-        // للتبسيط، نعيد نفس الهندسة
-        return geometry.clone();
     }
 
     // ضبط مسافات LOD
     setDistances(high, medium, low, culled) {
         this.distances = { high, medium, low, culled };
+        console.log('📏 LOD distances updated:', this.distances);
     }
 
     // الحصول على إحصائيات
     getStats() {
         return {
             ...this.stats,
-            total: this.entities.size
+            total: this.entities.size,
+            distances: this.distances
         };
+    }
+
+    // تفعيل وضع التصحيح
+    enableDebug() {
+        this.debug = true;
+        console.log('🔧 LOD Debug enabled');
+    }
+
+    // تعطيل وضع التصحيح
+    disableDebug() {
+        this.debug = false;
+    }
+
+    // إزالة كيان
+    removeEntity(entityId) {
+        const entity = this.entities.get(entityId);
+        if (entity) {
+            // إخفاء كل المستويات
+            if (entity.meshes.high) entity.meshes.high.visible = false;
+            if (entity.meshes.medium) entity.meshes.medium.visible = false;
+            if (entity.meshes.low) entity.meshes.low.visible = false;
+            
+            this.entities.delete(entityId);
+            if (this.debug) console.log(`➖ Entity removed: ${entityId}`);
+            return true;
+        }
+        return false;
+    }
+
+    // إعادة تعيين كل الكيانات
+    reset() {
+        this.entities.clear();
+        this.stats = { high: 0, medium: 0, low: 0, culled: 0 };
+        console.log('🔄 LODManager reset');
+    }
+
+    // إنشاء نسخ مختلفة التفاصيل لكيان
+    static createLODVersions(originalMesh, options = {}) {
+        const high = originalMesh.clone();
+        
+        // نسخة متوسطة
+        const medium = originalMesh.clone();
+        if (medium.geometry && options.simplify) {
+            medium.geometry = this.simplifyGeometry(medium.geometry, 0.5);
+        }
+
+        // نسخة منخفضة
+        const low = originalMesh.clone();
+        if (low.geometry && options.simplify) {
+            low.geometry = this.simplifyGeometry(low.geometry, 0.25);
+        }
+
+        return { 
+            high, 
+            medium, 
+            low, 
+            position: originalMesh.position.clone() 
+        };
+    }
+
+    // تبسيط الهندسة
+    static simplifyGeometry(geometry, factor) {
+        // يمكن تطويرها لاحقاً باستخدام THREE.SimplifyModifier
+        return geometry.clone();
     }
 }
