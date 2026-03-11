@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ACTUAL CONSTRUCTION OS - Reality BIM Platform</title>
     
-    <!-- Font Awesome للأيقونات -->
+    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- إعدادات Three.js -->
+    <!-- Three.js Configuration -->
     <script type="importmap">
         {
             "imports": {
@@ -297,7 +297,7 @@
             align-items: center;
             gap: 8px;
         }
-        
+
         .property-row {
             display: flex;
             justify-content: space-between;
@@ -379,9 +379,6 @@
             border-color: #5a7c9f;
         }
         
-        .btn-primary:hover {
-            background: #5a7c9f;
-        }
         .btn-primary:hover {
             background: #5a7c9f;
         }
@@ -485,10 +482,10 @@
             </div>
             
             <div class="main-menu">
-                <div class="menu-item active" data-view="project">المشروع</div>
+                <div class="menu-item active" data-view="project">PROJECT</div>
                 <div class="menu-item" data-view="cad">CAD</div>
-                <div class="menu-item" data-view="scenes">المشاهد</div>
-                <div class="menu-item" data-view="elements">العناصر</div>
+                <div class="menu-item" data-view="scenes">SCENES</div>
+                <div class="menu-item" data-view="elements">ELEMENTS</div>
                 <div class="menu-item" data-view="boq">BOQ</div>
                 <div class="menu-item" data-view="ai">AI</div>
             </div>
@@ -496,31 +493,31 @@
             <div class="workflow-indicator">
                 <div class="workflow-step active">
                     <i class="fas fa-file-import"></i>
-                    <span>1. استيراد CAD</span>
+                    <span>1. Import CAD</span>
                 </div>
                 <div class="workflow-step">
                     <i class="fas fa-draw-polygon"></i>
-                    <span>2. رسم المخطط</span>
+                    <span>2. Draw Plan</span>
                 </div>
                 <div class="workflow-step">
                     <i class="fas fa-images"></i>
-                    <span>3. استيراد الصور</span>
+                    <span>3. Import 360 Images</span>
                 </div>
                 <div class="workflow-step">
                     <i class="fas fa-crosshairs"></i>
-                    <span>4. معايرة</span>
+                    <span>4. Calibrate</span>
                 </div>
                 <div class="workflow-step">
                     <i class="fas fa-link"></i>
-                    <span>5. ربط</span>
+                    <span>5. Link Scenes</span>
                 </div>
                 <div class="workflow-step">
                     <i class="fas fa-pencil-ruler"></i>
-                    <span>6. بناء</span>
+                    <span>6. Build</span>
                 </div>
                 <div class="workflow-step">
                     <i class="fas fa-chart-bar"></i>
-                    <span>7. كميات</span>
+                    <span>7. Quantities</span>
                 </div>
             </div>
         </div>
@@ -531,35 +528,35 @@
             <div class="panel-section">
                 <div class="panel-title">
                     <i class="fas fa-sitemap"></i>
-                    <span>مستكشف المشاهد</span>
+                    <span>SCENE EXPLORER</span>
                 </div>
                 <ul class="scene-tree" id="sceneTree">
                     <li class="scene-item active">
                         <i class="fas fa-building"></i>
-                        <span>المشروع الرئيسي</span>
+                        <span>Main Project</span>
                     </li>
                     <ul class="scene-children">
                         <li class="scene-item">
                             <i class="fas fa-door-open"></i>
-                            <span>المدخل</span>
+                            <span>Entrance</span>
                         </li>
                         <li class="scene-item">
                             <i class="fas fa-couch"></i>
-                            <span>غرفة المعيشة</span>
+                            <span>Living Room</span>
                         </li>
                         <li class="scene-item">
                             <i class="fas fa-bed"></i>
-                            <span>غرفة النوم</span>
+                            <span>Bedroom</span>
                         </li>
                         <li class="scene-item">
                             <i class="fas fa-utensils"></i>
-                            <span>المطبخ</span>
+                            <span>Kitchen</span>
                         </li>
                     </ul>
                 </ul>
                 <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="showImportSceneDialog()">
                     <i class="fas fa-plus"></i>
-                    إضافة مشهد
+                    Add Scene
                 </button>
             </div>
             
@@ -567,23 +564,23 @@
             <div class="panel-section">
                 <div class="panel-title">
                     <i class="fas fa-layer-group"></i>
-                    <span>المستويات</span>
+                    <span>FLOOR LEVELS</span>
                 </div>
                 <div class="floor-level" data-level="ground">
-                    <span>📍 الدور الأرضي</span>
-                    <span class="floor-badge">+0.00 م</span>
+                    <span>📍 Ground Floor</span>
+                    <span class="floor-badge">+0.00 m</span>
                 </div>
                 <div class="floor-level" data-level="first">
-                    <span>📍 الدور الأول</span>
-                    <span class="floor-badge">+3.00 م</span>
+                    <span>📍 First Floor</span>
+                    <span class="floor-badge">+3.00 m</span>
                 </div>
                 <div class="floor-level" data-level="second">
-                    <span>📍 الدور الثاني</span>
-                    <span class="floor-badge">+6.00 م</span>
+                    <span>📍 Second Floor</span>
+                    <span class="floor-badge">+6.00 m</span>
                 </div>
                 <button class="btn" style="width:100%; margin-top:10px;">
                     <i class="fas fa-plus"></i>
-                    إضافة مستوى
+                    Add Level
                 </button>
             </div>
             
@@ -591,23 +588,23 @@
             <div class="panel-section">
                 <div class="panel-title">
                     <i class="fas fa-link"></i>
-                    <span>الروابط بين المشاهد</span>
+                    <span>SCENE LINKS</span>
                 </div>
                 <div class="link-item">
                     <div class="link-icon">🚪</div>
-                    <div>المدخل → غرفة المعيشة</div>
+                    <div>Entrance → Living Room</div>
                 </div>
                 <div class="link-item">
                     <div class="link-icon">🚶</div>
-                    <div>غرفة المعيشة → المطبخ</div>
+                    <div>Living Room → Kitchen</div>
                 </div>
                 <div class="link-item">
                     <div class="link-icon">🪜</div>
-                    <div>الأرضي → الأول (درج)</div>
+                    <div>Ground → First (Stairs)</div>
                 </div>
                 <button class="btn" style="width:100%; margin-top:10px;">
                     <i class="fas fa-link"></i>
-                    إضافة رابط
+                    Add Link
                 </button>
             </div>
             
@@ -615,11 +612,11 @@
             <div class="panel-section">
                 <div class="panel-title">
                     <i class="fas fa-crosshairs"></i>
-                    <span>نقاط المعايرة</span>
+                    <span>CALIBRATION POINTS</span>
                 </div>
                 <div id="calibrationPointsList">
                     <div class="text-muted" style="text-align:center; padding:20px;">
-                        لا توجد نقاط معايرة
+                        No calibration points
                     </div>
                 </div>
             </div>
@@ -633,15 +630,15 @@
             <div class="view-controls">
                 <div class="view-btn active" data-mode="plan">
                     <i class="fas fa-draw-polygon"></i>
-                    المخطط
+                    PLAN
                 </div>
                 <div class="view-btn" data-mode="reality">
                     <i class="fas fa-vr-cardboard"></i>
-                    الواقع
+                    REALITY
                 </div>
                 <div class="view-btn" data-mode="construction">
                     <i class="fas fa-hard-hat"></i>
-                    البناء
+                    CONSTRUCTION
                 </div>
             </div>
         </div>
@@ -652,24 +649,24 @@
             <div class="panel-section">
                 <div class="panel-title">
                     <i class="fas fa-sliders-h"></i>
-                    <span>الخصائص</span>
+                    <span>PROPERTIES</span>
                 </div>
                 <div class="properties-grid" id="propertiesGrid">
                     <div class="property-group">
                         <div class="property-group-title">
                             <i class="fas fa-cube"></i>
-                            معلومات العنصر
+                            Element Info
                         </div>
                         <div class="property-row">
-                            <span class="property-label">النوع:</span>
+                            <span class="property-label">Type:</span>
                             <span class="property-value" id="propType">-</span>
                         </div>
                         <div class="property-row">
-                            <span class="property-label">المعرف:</span>
+                            <span class="property-label">ID:</span>
                             <span class="property-value" id="propId">-</span>
                         </div>
                         <div class="property-row">
-                            <span class="property-label">المشهد:</span>
+                            <span class="property-label">Scene:</span>
                             <span class="property-value" id="propScene">-</span>
                         </div>
                     </div>
@@ -677,18 +674,18 @@
                     <div class="property-group">
                         <div class="property-group-title">
                             <i class="fas fa-ruler"></i>
-                            الأبعاد
+                            Dimensions
                         </div>
                         <div class="property-row">
-                            <span class="property-label">الطول:</span>
+                            <span class="property-label">Length:</span>
                             <span class="property-value" id="propLength">-</span>
                         </div>
                         <div class="property-row">
-                            <span class="property-label">العرض:</span>
+                            <span class="property-label">Width:</span>
                             <span class="property-value" id="propWidth">-</span>
                         </div>
                         <div class="property-row">
-                            <span class="property-label">الارتفاع:</span>
+                            <span class="property-label">Height:</span>
                             <span class="property-value" id="propHeight">-</span>
                         </div>
                     </div>
@@ -696,7 +693,7 @@
                     <div class="property-group">
                         <div class="property-group-title">
                             <i class="fas fa-map-marker-alt"></i>
-                            الموقع
+                            Position
                         </div>
                         <div class="property-row">
                             <span class="property-label">X:</span>
@@ -713,45 +710,45 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Element Library -->
             <div class="panel-section">
                 <div class="panel-title">
                     <i class="fas fa-icons"></i>
-                    <span>مكتبة العناصر</span>
+                    <span>ELEMENT LIBRARY</span>
                 </div>
                 <div class="library-grid">
                     <div class="library-item" onclick="startDrawWall()">
                         <i class="fas fa-vector-square"></i>
-                        <span>جدار</span>
+                        <span>Wall</span>
                     </div>
                     <div class="library-item" onclick="startDrawColumn()">
                         <i class="fas fa-square-full"></i>
-                        <span>عمود</span>
+                        <span>Column</span>
                     </div>
                     <div class="library-item" onclick="addDoor()">
                         <i class="fas fa-door-open"></i>
-                        <span>باب</span>
+                        <span>Door</span>
                     </div>
                     <div class="library-item" onclick="addWindow()">
                         <i class="fas fa-window-maximize"></i>
-                        <span>شباك</span>
+                        <span>Window</span>
                     </div>
                     <div class="library-item" onclick="addBeam()">
                         <i class="fas fa-grip-lines"></i>
-                        <span>كمرة</span>
+                        <span>Beam</span>
                     </div>
                     <div class="library-item" onclick="addSlab()">
                         <i class="fas fa-border-all"></i>
-                        <span>سقف</span>
+                        <span>Slab</span>
                     </div>
                     <div class="library-item" onclick="addFoundation()">
                         <i class="fas fa-arrow-down"></i>
-                        <span>قاعدة</span>
+                        <span>Foundation</span>
                     </div>
                     <div class="library-item" onclick="addPipe()">
                         <i class="fas fa-water"></i>
-                        <span>ماسورة</span>
+                        <span>Pipe</span>
                     </div>
                 </div>
             </div>
@@ -760,7 +757,7 @@
             <div class="panel-section">
                 <div class="panel-title">
                     <i class="fas fa-palette"></i>
-                    <span>المواد</span>
+                    <span>MATERIALS</span>
                 </div>
                 <div class="material-swatch" style="background:#8B4513;" onclick="selectMaterial('wood')"></div>
                 <div class="material-swatch" style="background:#808080;" onclick="selectMaterial('concrete')"></div>
@@ -772,110 +769,110 @@
             <div class="panel-section" id="calibrationTools">
                 <div class="panel-title">
                     <i class="fas fa-crosshairs"></i>
-                    <span>أدوات المعايرة</span>
+                    <span>CALIBRATION TOOLS</span>
                 </div>
                 <button class="btn" style="width:100%; margin-bottom:5px;" onclick="addCalibrationPoint()">
                     <i class="fas fa-plus-circle"></i>
-                    إضافة نقطة تحكم
+                    Add Control Point
                 </button>
                 <button class="btn btn-primary" style="width:100%;" onclick="runCalibration()">
                     <i class="fas fa-calculator"></i>
-                    حساب التحويل
+                    Calculate Transform
                 </button>
             </div>
         </div>
     </div>
-
-<!-- ===== STATUS BAR ===== -->
+    
+    <!-- ===== STATUS BAR ===== -->
     <div class="status-bar" id="statusBar">
         <div class="status-progress">
             <i class="fas fa-spinner fa-spin"></i>
-            <span>الخطوة 1/7: استيراد المخطط</span>
+            <span>Step 1/7: Import CAD</span>
         </div>
         <div class="status-message" id="statusMessage">
-            جاري تحميل المنصة...
+            Loading platform...
         </div>
     </div>
     
-    <!-- ===== MODAL: استيراد صورة 360 ===== -->
+    <!-- ===== MODAL: Import 360 Image ===== -->
     <div id="importImageModal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-images"></i> استيراد صورة 360</h3>
+                <h3><i class="fas fa-images"></i> Import 360 Image</h3>
                 <button onclick="hideModal('importImageModal')" style="background:none; border:none; color:white; cursor:pointer;">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <p>اختر صورة بانورامية 360 درجة:</p>
+                <p>Select a 360° panoramic image:</p>
                 <input type="file" id="imageInput" accept="image/*" style="width:100%; padding:10px; background:#2a2a3a; border:1px solid #4a6c8f; border-radius:6px; color:white;">
                 <div class="mt-2">
-                    <label>اسم المشهد:</label>
-                    <input type="text" id="sceneName" value="مشهد جديد" style="width:100%; padding:8px; background:#2a2a3a; border:1px solid #4a6c8f; border-radius:6px; color:white; margin-top:5px;">
+                    <label>Scene Name:</label>
+                    <input type="text" id="sceneName" value="New Scene" style="width:100%; padding:8px; background:#2a2a3a; border:1px solid #4a6c8f; border-radius:6px; color:white; margin-top:5px;">
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn" onclick="hideModal('importImageModal')">إلغاء</button>
-                <button class="btn btn-primary" onclick="importImage()">استيراد</button>
+                <button class="btn" onclick="hideModal('importImageModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="importImage()">Import</button>
             </div>
         </div>
     </div>
     
-    <!-- ===== MODAL: استيراد CAD ===== -->
+    <!-- ===== MODAL: Import CAD ===== -->
     <div id="importCADModal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-draw-polygon"></i> استيراد مخطط CAD</h3>
+                <h3><i class="fas fa-draw-polygon"></i> Import CAD Drawing</h3>
                 <button onclick="hideModal('importCADModal')" style="background:none; border:none; color:white; cursor:pointer;">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <p>اختر ملف CAD (DXF/DWG):</p>
+                <p>Select CAD file (DXF/DWG):</p>
                 <input type="file" id="cadInput" accept=".dxf,.dwg" style="width:100%; padding:10px; background:#2a2a3a; border:1px solid #4a6c8f; border-radius:6px; color:white;">
             </div>
             <div class="modal-footer">
-                <button class="btn" onclick="hideModal('importCADModal')">إلغاء</button>
-                <button class="btn btn-primary" onclick="importCAD()">استيراد</button>
+                <button class="btn" onclick="hideModal('importCADModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="importCAD()">Import</button>
             </div>
         </div>
     </div>
     
-    <!-- ===== MODAL: إضافة نقطة معايرة ===== -->
+    <!-- ===== MODAL: Add Calibration Point ===== -->
     <div id="calibrationPointModal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-crosshairs"></i> إضافة نقطة معايرة</h3>
+                <h3><i class="fas fa-crosshairs"></i> Add Calibration Point</h3>
                 <button onclick="hideModal('calibrationPointModal')" style="background:none; border:none; color:white; cursor:pointer;">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <p>انقر على الصورة لتحديد نقطة، ثم أدخل الإحداثيات الحقيقية:</p>
+                <p>Click on the image to select a point, then enter real-world coordinates:</p>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:15px 0;">
                     <div>
-                        <label>إحداثيات الصورة X:</label>
+                        <label>Image X:</label>
                         <input type="number" id="imgX" readonly style="width:100%; padding:8px; background:#2a2a3a; border:1px solid #4a6c8f; border-radius:6px; color:white;">
                     </div>
                     <div>
-                        <label>إحداثيات الصورة Y:</label>
+                        <label>Image Y:</label>
                         <input type="number" id="imgY" readonly style="width:100%; padding:8px; background:#2a2a3a; border:1px solid #4a6c8f; border-radius:6px; color:white;">
                     </div>
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                     <div>
-                        <label>الإحداثي الحقيقي X:</label>
+                        <label>Real X:</label>
                         <input type="number" id="realX" value="0" style="width:100%; padding:8px; background:#2a2a3a; border:1px solid #4a6c8f; border-radius:6px; color:white;">
                     </div>
                     <div>
-                        <label>الإحداثي الحقيقي Y:</label>
+                        <label>Real Y:</label>
                         <input type="number" id="realY" value="0" style="width:100%; padding:8px; background:#2a2a3a; border:1px solid #4a6c8f; border-radius:6px; color:white;">
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn" onclick="hideModal('calibrationPointModal')">إلغاء</button>
-                <button class="btn btn-primary" onclick="addCalibrationPointToScene()">إضافة</button>
+                <button class="btn" onclick="hideModal('calibrationPointModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="addCalibrationPointToScene()">Add</button>
             </div>
         </div>
     </div>
@@ -895,7 +892,11 @@
             showModal('importImageModal');
         }
         
-        // تحديث حالة شريط التقدم
+        function showImportCADDialog() {
+            showModal('importCADModal');
+        }
+        
+        // Update workflow step
         function updateWorkflow(step) {
             const steps = document.querySelectorAll('.workflow-step');
             steps.forEach((s, i) => {
@@ -905,16 +906,16 @@
                     s.classList.remove('active');
                 }
             });
-            
-            document.getElementById('statusMessage').innerHTML = `الخطوة ${step}/7: ${getStepName(step)}`;
+
+            document.getElementById('statusMessage').innerHTML = `Step ${step}/7: ${getStepName(step)}`;
         }
         
         function getStepName(step) {
-            const names = ['', 'استيراد CAD', 'رسم المخطط', 'استيراد الصور', 'معايرة', 'ربط المشاهد', 'بناء', 'استخراج الكميات'];
+            const names = ['', 'Import CAD', 'Draw Plan', 'Import 360 Images', 'Calibrate', 'Link Scenes', 'Build', 'Quantities'];
             return names[step];
         }
         
-        // تغيير وضع العرض
+        // Change view mode
         document.querySelectorAll('.view-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
@@ -926,8 +927,8 @@
                 }
             });
         });
-
-        // تغيير القائمة العلوية
+        
+        // Change top menu
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', function() {
                 document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
@@ -935,7 +936,7 @@
             });
         });
         
-        // تحديث الخصائص
+        // Update properties display
         function updateProperties(props) {
             document.getElementById('propType').textContent = props.type || '-';
             document.getElementById('propId').textContent = props.id || '-';
@@ -948,7 +949,7 @@
             document.getElementById('propZ').textContent = props.z || '-';
         }
         
-        // ===== دوال استيراد الصور و CAD =====
+        // ===== Import Functions =====
         window.importImage = function() {
             const fileInput = document.getElementById('imageInput');
             const sceneName = document.getElementById('sceneName').value;
@@ -962,9 +963,9 @@
                 }
                 
                 hideModal('importImageModal');
-                updateWorkflow(3); // انتقل للخطوة 3
+                updateWorkflow(3);
             } else {
-                alert('الرجاء اختيار صورة');
+                alert('Please select an image');
             }
         };
         
@@ -979,70 +980,70 @@
                 }
                 
                 hideModal('importCADModal');
-                updateWorkflow(2); // انتقل للخطوة 2
+                updateWorkflow(2);
             } else {
-                alert('الرجاء اختيار ملف CAD');
+                alert('Please select a CAD file');
             }
         };
         
-        // ===== دوال إنشاء العناصر (سيتم استبدالها من main.js) =====
+        // ===== Element Creation Functions =====
         window.startDrawWall = function() {
             if (window.app) {
                 window.app.startDrawing('wall');
-                window.updateStatus('ابدأ برسم الجدار على المخطط', 'info');
+                window.updateStatus('Start drawing wall on plan', 'info');
             }
         };
         
         window.startDrawColumn = function() {
             if (window.app) {
                 window.app.startDrawing('column');
-                window.updateStatus('انقر لوضع العمود', 'info');
+                window.updateStatus('Click to place column', 'info');
             }
         };
         
         window.addDoor = function() {
             if (window.app) {
                 window.app.startDrawing('door');
-                window.updateStatus('اختر موقع الباب', 'info');
+                window.updateStatus('Select door location', 'info');
             }
         };
         
         window.addWindow = function() {
             if (window.app) {
                 window.app.startDrawing('window');
-                window.updateStatus('اختر موقع الشباك', 'info');
+                window.updateStatus('Select window location', 'info');
             }
         };
         
         window.addBeam = function() {
             if (window.app) {
                 window.app.startDrawing('beam');
-                window.updateStatus('ارسم مسار الكمرة', 'info');
+                window.updateStatus('Draw beam path', 'info');
             }
         };
         
         window.addSlab = function() {
             if (window.app) {
                 window.app.startDrawing('slab');
-                window.updateStatus('ارسم حدود السقف', 'info');
+                window.updateStatus('Draw slab boundary', 'info');
             }
         };
         
         window.addFoundation = function() {
             if (window.app) {
                 window.app.startDrawing('foundation');
-                window.updateStatus('اختر موقع القاعدة', 'info');
+                window.updateStatus('Select foundation location', 'info');
             }
         };
         
         window.addPipe = function() {
             if (window.app) {
                 window.app.startDrawing('pipe');
-                window.updateStatus('ارسم مسار الماسورة', 'info');
+                window.updateStatus('Draw pipe path', 'info');
             }
         };
         
-        // ===== دوال المعايرة =====
+        // ===== Calibration Functions =====
         window.addCalibrationPoint = function() {
             if (window.app) {
                 window.app.startCalibrationPoint();
@@ -1054,7 +1055,7 @@
             if (window.app) {
                 window.app.runCalibration();
                 updateWorkflow(4);
-                window.updateStatus('تمت المعايرة بنجاح', 'success');
+                window.updateStatus('Calibration completed successfully', 'success');
             }
         };
         
@@ -1079,11 +1080,11 @@
         window.selectMaterial = function(material) {
             if (window.app) {
                 window.app.selectMaterial(material);
-                window.updateStatus(`تم اختيار مادة: ${material}`, 'success');
+                window.updateStatus(`Selected material: ${material}`, 'success');
             }
         };
         
-        // تحديث شريط الحالة
+        // Status bar update
         window.updateStatus = function(message, type = 'info') {
             document.getElementById('statusMessage').innerHTML = message;
             
@@ -1096,12 +1097,11 @@
             }
         };
         
-        // بداية التحميل
-        window.updateStatus('جاري تحميل المحرك...', 'info');
+        // Initial load
+        window.updateStatus('Loading engine...', 'info');
     </script>
     
-    <!-- استيراد main.js (سيتم تحميله بعد) -->
+    <!-- Import main.js -->
     <script type="module" src="./main.js"></script>
 </body>
 </html>
-    
