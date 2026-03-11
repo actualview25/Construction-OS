@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ACTUAL VIEW CONSTRUCTION - Reality BIM Platform</title>
+    <title>ACTUAL VIEW CONSTRUCTION OS - Reality BIM Platform</title>
     
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -58,29 +58,30 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
             color: #ffffff;
+            white-space: nowrap;
         }
         
-        .logo-icon {
-            font-size: 28px;
+        .logo i {
+            font-size: 22px;
             color: #ffaa44;
         }
         
         .main-menu {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             flex: 1;
         }
         
         .menu-item {
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 14px;
+            font-size: 13px;
             color: #b0b0b0;
         }
         
@@ -97,14 +98,14 @@
         
         .workflow-indicator {
             display: flex;
-            gap: 15px;
-            font-size: 13px;
+            gap: 12px;
+            font-size: 12px;
         }
         
         .workflow-step {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
             color: #666666;
         }
         
@@ -113,7 +114,7 @@
         }
         
         .workflow-step i {
-            font-size: 14px;
+            font-size: 12px;
         }
         
         /* ===== LEFT PANEL ===== */
@@ -126,23 +127,24 @@
         }
         
         .panel-section {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         
         .panel-title {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 14px;
+            gap: 8px;
+            font-size: 13px;
             font-weight: bold;
             color: #ffaa44;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
         
         .panel-title i {
-            width: 20px;
+            width: 18px;
+            font-size: 14px;
         }
         
         /* Scene Explorer */
@@ -151,15 +153,15 @@
         }
         
         .scene-item {
-            padding: 8px 12px;
-            margin: 4px 0;
+            padding: 6px 10px;
+            margin: 3px 0;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 13px;
+            font-size: 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             color: #b0b0b0;
         }
         
@@ -175,19 +177,20 @@
         }
         
         .scene-item i {
-            width: 20px;
+            width: 18px;
             color: #666666;
+            font-size: 12px;
         }
         
         .scene-children {
             list-style: none;
-            margin-left: 30px;
+            margin-left: 25px;
         }
         
         /* Floor Levels */
         .floor-level {
-            padding: 8px 12px;
-            margin: 4px 0;
+            padding: 6px 10px;
+            margin: 3px 0;
             border-radius: 6px;
             background: #1a1a1a;
             display: flex;
@@ -196,6 +199,7 @@
             cursor: pointer;
             border: 1px solid #333333;
             color: #b0b0b0;
+            font-size: 12px;
         }
         
         .floor-level:hover {
@@ -205,34 +209,35 @@
         
         .floor-badge {
             background: #333333;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
             color: #ffaa44;
         }
         
         /* Links */
         .link-item {
-            padding: 8px 12px;
-            margin: 4px 0;
+            padding: 6px 10px;
+            margin: 3px 0;
             border-radius: 6px;
             background: #1a1a1a;
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 12px;
+            gap: 8px;
+            font-size: 11px;
             border: 1px solid #333333;
             color: #b0b0b0;
         }
         
         .link-icon {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             background: #333333;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 12px;
         }
         
         /* ===== CENTER PANEL ===== */
@@ -253,19 +258,19 @@
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 10px;
+            gap: 8px;
             background: #1a1a1a;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 30px;
             border: 1px solid #333333;
             z-index: 50;
         }
         
         .view-btn {
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             transition: all 0.2s;
             color: #b0b0b0;
         }
@@ -294,32 +299,32 @@
         .properties-grid {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
         
         .property-group {
             background: #1a1a1a;
             border-radius: 8px;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid #333333;
         }
         
         .property-group-title {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
             color: #ffaa44;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         .property-row {
             display: flex;
             justify-content: space-between;
-            padding: 6px 0;
+            padding: 5px 0;
             border-bottom: 1px solid #333333;
-            font-size: 13px;
+            font-size: 12px;
             color: #b0b0b0;
         }
         
@@ -336,14 +341,14 @@
         .library-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-top: 10px;
+            gap: 6px;
+            margin-top: 8px;
         }
-
+        
         .library-item {
             background: #1a1a1a;
             border-radius: 6px;
-            padding: 12px;
+            padding: 10px 5px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s;
@@ -359,22 +364,22 @@
         }
         
         .library-item i {
-            font-size: 24px;
-            margin-bottom: 5px;
+            font-size: 20px;
+            margin-bottom: 4px;
             display: block;
             color: #ffaa44;
         }
 
         .library-item span {
-            font-size: 11px;
+            font-size: 10px;
         }
         
         /* Materials */
         .material-swatch {
             width: 100%;
-            height: 30px;
+            height: 25px;
             border-radius: 4px;
-            margin: 5px 0;
+            margin: 4px 0;
             cursor: pointer;
             border: 1px solid #333333;
         }
@@ -388,14 +393,14 @@
             background: #2a2a2a;
             border: 1px solid #444444;
             color: #e0e0e0;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 13px;
+            font-size: 12px;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         .btn:hover {
@@ -430,13 +435,13 @@
         .modal-content {
             background: #1a1a1a;
             border-radius: 12px;
-            width: 400px;
+            width: 380px;
             max-width: 90%;
             border: 1px solid #ffaa44;
         }
         
         .modal-header {
-            padding: 20px;
+            padding: 15px;
             border-bottom: 1px solid #333333;
             display: flex;
             justify-content: space-between;
@@ -445,61 +450,62 @@
         
         .modal-header h3 {
             color: #ffaa44;
+            font-size: 16px;
         }
-        
         .modal-body {
-            padding: 20px;
+            padding: 15px;
         }
         
         .modal-body label {
             color: #b0b0b0;
-            font-size: 13px;
+            font-size: 12px;
         }
         
-        .modal-body input {
+        .modal-body input, .modal-body select {
             background: #2a2a2a;
             border: 1px solid #444444;
             color: #ffffff;
-            padding: 8px;
+            padding: 6px;
             border-radius: 4px;
             width: 100%;
-            margin-top: 5px;
+            margin-top: 4px;
+            font-size: 12px;
         }
         
-        .modal-body input:focus {
+        .modal-body input:focus, .modal-body select:focus {
             outline: none;
             border-color: #ffaa44;
         }
         
         .modal-footer {
-            padding: 20px;
+            padding: 15px;
             border-top: 1px solid #333333;
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
+            gap: 8px;
         }
         
         /* ===== STATUS BAR ===== */
         .status-bar {
             position: fixed;
-            bottom: 20px;
+            bottom: 15px;
             left: 300px;
             right: 320px;
             background: #1a1a1a;
             border: 1px solid #333333;
             border-radius: 30px;
-            padding: 8px 16px;
-            font-size: 12px;
+            padding: 6px 12px;
+            font-size: 11px;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
             z-index: 100;
         }
         
         .status-progress {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
             color: #ffaa44;
         }
         
@@ -518,13 +524,13 @@
         }
         
         .mt-2 {
-            margin-top: 10px;
+            margin-top: 8px;
         }
         
         /* Scrollbar styling */
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
         }
         
         ::-webkit-scrollbar-track {
@@ -533,7 +539,7 @@
         
         ::-webkit-scrollbar-thumb {
             background: #444444;
-            border-radius: 4px;
+            border-radius: 3px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
@@ -546,8 +552,8 @@
         <!-- ===== TOP BAR ===== -->
         <div class="top-bar">
             <div class="logo">
-                <span class="logo-icon">🏗️</span>
-                <span>ACTUAL VIEW CONSTRUCTION</span>
+                <i class="fas fa-hard-hat"></i>
+                <span>ACTUAL VIEW CONSTRUCTION OS</span>
             </div>
             
             <div class="main-menu">
@@ -569,7 +575,7 @@
                 </div>
                 <div class="workflow-step">
                     <i class="fas fa-images"></i>
-                    <span>3. Import 360 Images</span>
+                    <span>3. Import 360</span>
                 </div>
                 <div class="workflow-step">
                     <i class="fas fa-crosshairs"></i>
@@ -577,7 +583,7 @@
                 </div>
                 <div class="workflow-step">
                     <i class="fas fa-link"></i>
-                    <span>5. Link Scenes</span>
+                    <span>5. Link</span>
                 </div>
                 <div class="workflow-step">
                     <i class="fas fa-pencil-ruler"></i>
@@ -585,7 +591,7 @@
                 </div>
                 <div class="workflow-step">
                     <i class="fas fa-chart-bar"></i>
-                    <span>7. Quantities</span>
+                    <span>7. BOQ</span>
                 </div>
             </div>
         </div>
@@ -622,9 +628,8 @@
                         </li>
                     </ul>
                 </ul>
-                <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="showImportSceneDialog()">
-                    <i class="fas fa-plus"></i>
-                    Add Scene
+                <button class="btn btn-primary" style="width:100%; margin-top:8px;" onclick="showImportSceneDialog()">
+                    <i class="fas fa-plus"></i> Add Scene
                 </button>
             </div>
 
@@ -646,9 +651,8 @@
                     <span>📍 Second Floor</span>
                     <span class="floor-badge">+6.00 m</span>
                 </div>
-                <button class="btn" style="width:100%; margin-top:10px;">
-                    <i class="fas fa-plus"></i>
-                    Add Level
+                <button class="btn" style="width:100%; margin-top:8px;">
+                    <i class="fas fa-plus"></i> Add Level
                 </button>
             </div>
             
@@ -670,9 +674,8 @@
                     <div class="link-icon">🪜</div>
                     <div>Ground → First (Stairs)</div>
                 </div>
-                <button class="btn" style="width:100%; margin-top:10px;">
-                    <i class="fas fa-link"></i>
-                    Add Link
+                <button class="btn" style="width:100%; margin-top:8px;">
+                    <i class="fas fa-link"></i> Add Link
                 </button>
             </div>
             
@@ -683,13 +686,13 @@
                     <span>CALIBRATION POINTS</span>
                 </div>
                 <div id="calibrationPointsList">
-                    <div class="text-muted" style="text-align:center; padding:20px;">
+                    <div class="text-muted" style="text-align:center; padding:15px;">
                         No calibration points
                     </div>
                 </div>
             </div>
         </div>
-
+        
         <!-- ===== CENTER PANEL ===== -->
         <div class="center-panel">
             <div id="container"></div>
@@ -697,16 +700,13 @@
             <!-- View Controls -->
             <div class="view-controls">
                 <div class="view-btn active" data-mode="plan">
-                    <i class="fas fa-draw-polygon"></i>
-                    PLAN
+                    <i class="fas fa-draw-polygon"></i> PLAN
                 </div>
                 <div class="view-btn" data-mode="reality">
-                    <i class="fas fa-vr-cardboard"></i>
-                    REALITY
+                    <i class="fas fa-vr-cardboard"></i> REALITY
                 </div>
                 <div class="view-btn" data-mode="construction">
-                    <i class="fas fa-hard-hat"></i>
-                    CONSTRUCTION
+                    <i class="fas fa-hard-hat"></i> CONSTRUCTION
                 </div>
             </div>
         </div>
@@ -722,8 +722,7 @@
                 <div class="properties-grid" id="propertiesGrid">
                     <div class="property-group">
                         <div class="property-group-title">
-                            <i class="fas fa-cube"></i>
-                            Element Info
+                            <i class="fas fa-cube"></i> Element Info
                         </div>
                         <div class="property-row">
                             <span class="property-label">Type:</span>
@@ -741,8 +740,7 @@
                     
                     <div class="property-group">
                         <div class="property-group-title">
-                            <i class="fas fa-ruler"></i>
-                            Dimensions
+                            <i class="fas fa-ruler"></i> Dimensions
                         </div>
                         <div class="property-row">
                             <span class="property-label">Length:</span>
@@ -760,8 +758,7 @@
                     
                     <div class="property-group">
                         <div class="property-group-title">
-                            <i class="fas fa-map-marker-alt"></i>
-                            Position
+                            <i class="fas fa-map-marker-alt"></i> Position
                         </div>
                         <div class="property-row">
                             <span class="property-label">X:</span>
@@ -818,9 +815,16 @@
                         <i class="fas fa-water"></i>
                         <span>Pipe</span>
                     </div>
+                    <div class="library-item" onclick="runClashDetection()" style="background:#3a3a3a;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Clash</span>
+                    </div>
+                    <div class="library-item" onclick="runCalibration()" style="background:#3a3a3a;">
+                        <i class="fas fa-crosshairs"></i>
+                        <span>Calibrate</span>
+                    </div>
                 </div>
             </div>
-            
             <!-- Materials -->
             <div class="panel-section">
                 <div class="panel-title">
@@ -833,19 +837,77 @@
                 <div class="material-swatch" style="background:#87CEEB;" onclick="selectMaterial('glass')"></div>
             </div>
             
-            <!-- Calibration Tools -->
+            <!-- GEO REFERENCING TOOLS -->
             <div class="panel-section" id="calibrationTools">
                 <div class="panel-title">
                     <i class="fas fa-crosshairs"></i>
-                    <span>CALIBRATION TOOLS</span>
+                    <span>GEO REFERENCING</span>
                 </div>
-                <button class="btn" style="width:100%; margin-bottom:5px;" onclick="addCalibrationPoint()">
-                    <i class="fas fa-plus-circle"></i>
-                    Add Control Point
-                </button>
-                <button class="btn btn-primary" style="width:100%;" onclick="runCalibration()">
-                    <i class="fas fa-calculator"></i>
-                    Calculate Transform
+                
+                <!-- نظام الإحداثيات -->
+                <div style="margin-bottom: 10px; background: #1a1a1a; padding: 8px; border-radius: 6px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="color: #888;">Coordinate System:</span>
+                        <span style="color: #ffaa44; font-weight: bold;" id="coordSystem">UTM</span>
+                    </div>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="btn" style="flex:1; padding:4px;" onclick="setCoordSystem('utm')">UTM</button>
+                        <button class="btn" style="flex:1; padding:4px;" onclick="setCoordSystem('local')">Local</button>
+                        <button class="btn" style="flex:1; padding:4px;" onclick="setCoordSystem('wgs84')">WGS84</button>
+                    </div>
+                </div>
+                
+                <!-- نقاط التحكم الأرضية (GCP) -->
+                <div style="margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="color: #888;">Ground Control Points:</span>
+                        <span style="color: #ffaa44; font-weight: bold;" id="gcpCount">0</span>
+                    </div>
+                    <button class="btn" style="width:100%; margin-bottom:5px;" onclick="addGCP()">
+                        <i class="fas fa-plus-circle"></i> Add GCP
+                    </button>
+                    <button class="btn" style="width:100%; margin-bottom:5px;" onclick="listGCPs()">
+                        <i class="fas fa-list"></i> List GCPs
+                    </button>
+                </div>
+                
+                <!-- تحويل الإحداثيات -->
+                <div style="margin-bottom: 10px;">
+                    <div style="background: #1a1a1a; padding: 8px; border-radius: 6px; margin-bottom: 5px;">
+                        <div style="display: flex; gap: 5px; margin-bottom: 5px;">
+                            <input type="number" id="photoX" placeholder="Photo X" style="flex:1; background:#2a2a2a; border:1px solid #444; color:white; padding:4px; border-radius:4px;">
+                            <input type="number" id="photoY" placeholder="Photo Y" style="flex:1; background:#2a2a2a; border:1px solid #444; color:white; padding:4px; border-radius:4px;">
+                        </div>
+                        <button class="btn btn-primary" style="width:100%;" onclick="convertPhotoToWorld()">
+                            <i class="fas fa-arrow-right"></i> Photo → World
+                        </button>
+                    </div>
+                    
+                    <div style="background: #1a1a1a; padding: 8px; border-radius: 6px;">
+                        <div style="display: flex; gap: 5px; margin-bottom: 5px;">
+                            <input type="number" id="worldX" placeholder="World X" style="flex:1; background:#2a2a2a; border:1px solid #444; color:white; padding:4px; border-radius:4px;">
+                            <input type="number" id="worldY" placeholder="World Y" style="flex:1; background:#2a2a2a; border:1px solid #444; color:white; padding:4px; border-radius:4px;">
+                        </div>
+                        <button class="btn btn-primary" style="width:100%;" onclick="convertWorldToPhoto()">
+                            <i class="fas fa-arrow-left"></i> World → Photo
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- مصفوفة التحويل -->
+                <div style="background: #1a1a1a; padding: 8px; border-radius: 6px; margin-bottom: 5px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #888;">Transform Matrix:</span>
+                        <button class="btn" style="padding:2px 8px;" onclick="calculateTransform()">Calculate</button>
+                    </div>
+                    <div style="font-family: monospace; font-size: 11px; margin-top: 5px;" id="transformMatrix">
+                        Not calculated
+                    </div>
+                </div>
+                
+                <!-- تقرير المعايرة -->
+                <button class="btn btn-primary" style="width:100%;" onclick="showCalibrationReport()">
+                    <i class="fas fa-file-alt"></i> Calibration Report
                 </button>
             </div>
         </div>
@@ -867,12 +929,12 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3><i class="fas fa-images"></i> Import 360 Image</h3>
-                <button onclick="hideModal('importImageModal')" style="background:none; border:none; color:#ffaa44; cursor:pointer; font-size:20px;">
+                <button onclick="hideModal('importImageModal')" style="background:none; border:none; color:#ffaa44; cursor:pointer; font-size:18px;">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <p style="color:#b0b0b0;">Select a 360° panoramic image:</p>
+                <p style="color:#b0b0b0; font-size:12px;">Select a 360° panoramic image:</p>
                 <input type="file" id="imageInput" accept="image/*">
                 <div class="mt-2">
                     <label>Scene Name:</label>
@@ -891,12 +953,12 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3><i class="fas fa-draw-polygon"></i> Import CAD Drawing</h3>
-                <button onclick="hideModal('importCADModal')" style="background:none; border:none; color:#ffaa44; cursor:pointer; font-size:20px;">
+                <button onclick="hideModal('importCADModal')" style="background:none; border:none; color:#ffaa44; cursor:pointer; font-size:18px;">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <p style="color:#b0b0b0;">Select CAD file (DXF/DWG):</p>
+                <p style="color:#b0b0b0; font-size:12px;">Select CAD file (DXF/DWG):</p>
                 <input type="file" id="cadInput" accept=".dxf,.dwg">
             </div>
             <div class="modal-footer">
@@ -911,13 +973,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3><i class="fas fa-crosshairs"></i> Add Calibration Point</h3>
-                <button onclick="hideModal('calibrationPointModal')" style="background:none; border:none; color:#ffaa44; cursor:pointer; font-size:20px;">
+                <button onclick="hideModal('calibrationPointModal')" style="background:none; border:none; color:#ffaa44; cursor:pointer; font-size:18px;">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <p style="color:#b0b0b0;">Click on the image to select a point, then enter real-world coordinates:</p>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:15px 0;">
+                <p style="color:#b0b0b0; font-size:12px;">Click on image to select point:</p>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:10px 0;">
                     <div>
                         <label>Image X:</label>
                         <input type="number" id="imgX" readonly>
@@ -927,7 +989,7 @@
                         <input type="number" id="imgY" readonly>
                     </div>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
                     <div>
                         <label>Real X:</label>
                         <input type="number" id="realX" value="0">
@@ -937,8 +999,15 @@
                         <input type="number" id="realY" value="0">
                     </div>
                 </div>
+                <div class="mt-2">
+                    <label>Coordinate System:</label>
+                    <select id="gcpCoordSystem">
+                        <option value="local">Local</option>
+                        <option value="utm">UTM</option>
+                        <option value="wgs84">WGS84</option>
+                    </select>
+                </div>
             </div>
-
             <div class="modal-footer">
                 <button class="btn" onclick="hideModal('calibrationPointModal')">Cancel</button>
                 <button class="btn btn-primary" onclick="addCalibrationPointToScene()">Add</button>
@@ -976,34 +1045,8 @@
                 }
             });
             
-            document.getElementById('statusMessage').innerHTML = `Step ${step}/7: ${getStepName(step)}`;
+            document.getElementById('statusMessage').innerHTML = `Step ${step}/7: ${['','Import CAD','Draw Plan','Import 360','Calibrate','Link','Build','BOQ'][step]}`;
         }
-        
-        function getStepName(step) {
-            const names = ['', 'Import CAD', 'Draw Plan', 'Import 360 Images', 'Calibrate', 'Link Scenes', 'Build', 'Quantities'];
-            return names[step];
-        }
-        
-        // Change view mode
-        document.querySelectorAll('.view-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                const mode = this.dataset.mode;
-                if (window.app) {
-                    window.app.setViewMode(mode);
-                }
-            });
-        });
-        
-        // Change top menu
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
         
         // Update properties display
         function updateProperties(props) {
@@ -1017,7 +1060,6 @@
             document.getElementById('propY').textContent = props.y || '-';
             document.getElementById('propZ').textContent = props.z || '-';
         }
-        
         // ===== Import Functions =====
         window.importImage = function() {
             const fileInput = document.getElementById('imageInput');
@@ -1112,6 +1154,13 @@
             }
         };
         
+        window.runClashDetection = function() {
+            if (window.app) {
+                window.app.runClashDetection();
+                window.updateStatus('Running clash detection...', 'info');
+            }
+        };
+        
         // ===== Calibration Functions =====
         window.addCalibrationPoint = function() {
             if (window.app) {
@@ -1124,7 +1173,86 @@
             if (window.app) {
                 window.app.runCalibration();
                 updateWorkflow(4);
-                window.updateStatus('Calibration completed successfully', 'success');
+                window.updateStatus('Calibration completed', 'success');
+            }
+        };
+        
+        // ===== GEO REFERENCING FUNCTIONS =====
+        window.setCoordSystem = function(system) {
+            if (window.app) {
+                window.app.engine.geoRef.setCoordinateSystem(system);
+                document.getElementById('coordSystem').textContent = system.toUpperCase();
+                window.app.updateStatus(`Coordinate system: ${system}`, 'success');
+            }
+        };
+
+        window.listGCPs = function() {
+            if (window.app) {
+                const gcps = window.app.engine.geoRef.gcp;
+                if (gcps.length === 0) {
+                    alert('No GCPs added yet');
+                    return;
+                }
+                
+                let list = 'Ground Control Points:\n';
+                gcps.forEach((gcp, i) => {
+                    list += `${i+1}. Photo(${gcp.photo.x.toFixed(2)}, ${gcp.photo.y.toFixed(2)}) → Real(${gcp.real.x.toFixed(2)}, ${gcp.real.y.toFixed(2)}) Error: ${gcp.error.toFixed(3)}m\n`;
+                });
+                alert(list);
+            }
+        };
+
+        window.convertPhotoToWorld = function() {
+            if (!window.app) return;
+            
+            const photoX = parseFloat(document.getElementById('photoX').value);
+            const photoY = parseFloat(document.getElementById('photoY').value);
+            
+            if (isNaN(photoX) || isNaN(photoY)) {
+                alert('Enter photo coordinates');
+                return;
+            }
+            
+            const world = window.app.engine.geoRef.photoToWorld({ x: photoX, y: photoY, z: 0 });
+            alert(`World coordinates: (${world.x.toFixed(2)}, ${world.y.toFixed(2)}, ${world.z.toFixed(2)})`);
+        };
+
+        window.convertWorldToPhoto = function() {
+            if (!window.app) return;
+            
+            const worldX = parseFloat(document.getElementById('worldX').value);
+            const worldY = parseFloat(document.getElementById('worldY').value);
+            
+            if (isNaN(worldX) || isNaN(worldY)) {
+                alert('Enter world coordinates');
+                return;
+            }
+            
+            const photo = window.app.engine.geoRef.worldToPhoto({ x: worldX, y: worldY, z: 0 });
+            alert(`Photo coordinates: (${photo.x.toFixed(2)}, ${photo.y.toFixed(2)})`);
+        };
+
+        window.calculateTransform = function() {
+            if (window.app) {
+                window.app.engine.geoRef.calculateTransform();
+                
+                const matrix = window.app.engine.geoRef.transformMatrix;
+                if (matrix) {
+                    let matrixText = '';
+                    matrix.forEach(row => {
+                        matrixText += row.map(v => v.toFixed(3)).join('  ') + '\n';
+                    });
+                    document.getElementById('transformMatrix').innerHTML = matrixText.replace(/\n/g, '<br>');
+                }
+                
+                window.app.updateStatus('Transform calculated', 'success');
+            }
+        };
+
+        window.showCalibrationReport = function() {
+            if (window.app) {
+                const report = window.app.engine.geoRef.getCalibrationReport();
+                alert(JSON.stringify(report, null, 2));
             }
         };
         
@@ -1133,14 +1261,20 @@
             const imgY = document.getElementById('imgY').value;
             const realX = document.getElementById('realX').value;
             const realY = document.getElementById('realY').value;
+            const coordSystem = document.getElementById('gcpCoordSystem').value;
             
             if (window.app) {
                 window.app.addCalibrationPoint({
-                    imageX: parseFloat(imgX),
-                    imageY: parseFloat(imgY),
-                    realX: parseFloat(realX),
-                    realY: parseFloat(realY)
+                    imageX: parseFloat(imgX) || 0,
+                    imageY: parseFloat(imgY) || 0,
+                    realX: parseFloat(realX) || 0,
+                    realY: parseFloat(realY) || 0,
+                    system: coordSystem
                 });
+                
+                // تحديث عداد GCP
+                const gcpCount = window.app.engine.geoRef.gcp.length;
+                document.getElementById('gcpCount').textContent = gcpCount;
             }
             
             hideModal('calibrationPointModal');
@@ -1148,10 +1282,30 @@
         
         window.selectMaterial = function(material) {
             if (window.app) {
-                window.app.selectMaterial(material);
-                window.updateStatus(`Selected material: ${material}`, 'success');
+                window.app.updateStatus(`Selected material: ${material}`, 'success');
             }
         };
+        
+        // Change view mode
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const mode = this.dataset.mode;
+                if (window.app) {
+                    window.app.setViewMode(mode);
+                }
+            });
+        });
+        
+        // Change top menu
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
         
         // Status bar update
         window.updateStatus = function(message, type = 'info') {
