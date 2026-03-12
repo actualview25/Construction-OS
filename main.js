@@ -878,7 +878,206 @@ window.addEventListener('load', () => {
     
     window.app = new ActualViewConstructionOS();
     
-    // ربط دوال الواجهة
+    // ===== ربط دوال import =====
+    window.app.import360Image = function(url, name) {
+        return this.import360Image(url, name);
+    };
+    
+    window.app.importCAD = function(file) {
+        return this.importCAD(file);
+    };
+    
+    // ===== ربط دوال Landscape =====
+    window.app.addPlant = function(options) {
+        if (!this.landscaping?.Plant) return;
+        const plant = new this.landscaping.Plant(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(plant.createMesh());
+        this.updateStatus('🌱 Plant added', 'success');
+        return plant;
+    };
+    
+    window.app.addGrass = function(options) {
+        if (!this.landscaping?.Grass) return;
+        const grass = new this.landscaping.Grass(options || { area: 10, position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(grass.createMesh());
+        this.updateStatus('🌿 Grass added', 'success');
+        return grass;
+    };
+    
+    window.app.addTree = function(options) {
+        if (!this.landscaping?.Tree) return;
+        const tree = new this.landscaping.Tree(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(tree.createMesh());
+        this.updateStatus('🌳 Tree added', 'success');
+        return tree;
+    };
+    
+    window.app.addPalm = function(options) {
+        if (!this.landscaping?.Palm) return;
+        const palm = new this.landscaping.Palm(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(palm.createMesh());
+        this.updateStatus('🌴 Palm added', 'success');
+        return palm;
+    };
+    
+    window.app.addFountain = function(options) {
+        if (!this.landscaping?.Fountain) return;
+        const fountain = new this.landscaping.Fountain(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(fountain.createMesh());
+        this.updateStatus('⛲ Fountain added', 'success');
+        return fountain;
+    };
+    
+    window.app.addGardenLight = function(options) {
+        if (!this.landscaping?.GardenLight) return;
+        const light = new this.landscaping.GardenLight(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(light.createMesh());
+        this.updateStatus('💡 Garden light added', 'success');
+        return light;
+    };
+    
+    window.app.addGardenPath = function(points, options) {
+        if (!this.landscaping?.GardenPath) return;
+        const path = new this.landscaping.GardenPath({ 
+            points: points || [{x:-2,z:-2},{x:2,z:2}], 
+            ...options 
+        });
+        this.engine.scene.add(path.createMesh());
+        this.updateStatus('🛤️ Garden path added', 'success');
+        return path;
+    };
+    
+    // ===== ربط دوال Stone & Brick =====
+    window.app.addStone = function(options) {
+        if (!this.stoneBrick?.Stone) return;
+        const stone = new this.stoneBrick.Stone(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(stone.createMesh());
+        this.updateStatus('🪨 Stone added', 'success');
+        return stone;
+    };
+    
+    window.app.addBrick = function(options) {
+        if (!this.stoneBrick?.Brick) return;
+        const brick = new this.stoneBrick.Brick(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(brick.createMesh());
+        this.updateStatus('🧱 Brick added', 'success');
+        return brick;
+    };
+    
+    window.app.addMarble = function(options) {
+        if (!this.stoneBrick?.Marble) return;
+        const marble = new this.stoneBrick.Marble(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(marble.createMesh());
+        this.updateStatus('✨ Marble added', 'success');
+        return marble;
+    };
+    
+    window.app.addGranite = function(options) {
+        if (!this.stoneBrick?.Granite) return;
+        const granite = new this.stoneBrick.Granite(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(granite.createMesh());
+        this.updateStatus('⛰️ Granite added', 'success');
+        return granite;
+    };
+    
+    window.app.addCladding = function(options) {
+        if (!this.stoneBrick?.Cladding) return;
+        const cladding = new this.stoneBrick.Cladding(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(cladding.createMesh());
+        this.updateStatus('🏛️ Cladding added', 'success');
+        return cladding;
+    };
+    
+    window.app.addPavement = function(options) {
+        if (!this.stoneBrick?.Pavement) return;
+        const pavement = new this.stoneBrick.Pavement(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(pavement.createMesh());
+        this.updateStatus('🛤️ Pavement added', 'success');
+        return pavement;
+    };
+    
+    // ===== ربط دوال Glass =====
+    window.app.addGlass = function(options) {
+        if (!this.glass?.Glass) return;
+        const glass = new this.glass.Glass(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(glass.createMesh());
+        this.updateStatus('🪟 Glass added', 'success');
+        return glass;
+    };
+    
+    window.app.addWindowGlass = function(options) {
+        if (!this.glass?.WindowGlass) return;
+        const wg = new this.glass.WindowGlass(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(wg.createMesh());
+        this.updateStatus('🪟 Window added', 'success');
+        return wg;
+    };
+    
+    window.app.addCurtainWall = function(options) {
+        if (!this.glass?.CurtainWall) return;
+        const cw = new this.glass.CurtainWall(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(cw.createMesh());
+        this.updateStatus('🏢 Curtain wall added', 'success');
+        return cw;
+    };
+    
+    window.app.addGlassPartition = function(options) {
+        if (!this.glass?.GlassPartition) return;
+        const gp = new this.glass.GlassPartition(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(gp.createMesh());
+        this.updateStatus('🚪 Glass partition added', 'success');
+        return gp;
+    };
+    
+    window.app.addSkylight = function(options) {
+        if (!this.glass?.Skylight) return;
+        const sl = new this.glass.Skylight(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(sl.createMesh());
+        this.updateStatus('☀️ Skylight added', 'success');
+        return sl;
+    };
+    
+    window.app.addGlassFloor = function(options) {
+        if (!this.glass?.GlassFloor) return;
+        const gf = new this.glass.GlassFloor(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(gf.createMesh());
+        this.updateStatus('✨ Glass floor added', 'success');
+        return gf;
+    };
+    
+    window.app.addGlassRailing = function(options) {
+        if (!this.glass?.GlassRailing) return;
+        const gr = new this.glass.GlassRailing(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(gr.createMesh());
+        this.updateStatus('🪢 Glass railing added', 'success');
+        return gr;
+    };
+    
+    window.app.addStainedGlass = function(options) {
+        if (!this.glass?.StainedGlass) return;
+        const sg = new this.glass.StainedGlass(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(sg.createMesh());
+        this.updateStatus('🎨 Stained glass added', 'success');
+        return sg;
+    };
+    
+    window.app.addSmartGlass = function(options) {
+        if (!this.glass?.SmartGlass) return;
+        const smg = new this.glass.SmartGlass(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(smg.createMesh());
+        this.updateStatus('🔮 Smart glass added', 'success');
+        return smg;
+    };
+    
+    window.app.addGlassBlock = function(options) {
+        if (!this.glass?.GlassBlock) return;
+        const gb = new this.glass.GlassBlock(options || { position: { x: 0, y: 0, z: 0 } });
+        this.engine.scene.add(gb.createMesh());
+        this.updateStatus('🧊 Glass block added', 'success');
+        return gb;
+    };
+    
+    // ===== ربط دوال الواجهة =====
     window.showImportSceneDialog = () => document.getElementById('importImageModal')?.classList.remove('hidden');
     window.showImportCADDialog = () => document.getElementById('importCADModal')?.classList.remove('hidden');
     window.hideModal = (id) => document.getElementById(id)?.classList.add('hidden');
@@ -887,18 +1086,127 @@ window.addEventListener('load', () => {
         const input = document.getElementById('imageInput');
         const name = document.getElementById('sceneName').value;
         if (input.files.length) {
-            window.app.import360Image(URL.createObjectURL(input.files[0]), name);
-            document.getElementById('importImageModal').classList.add('hidden');
-        }
+            window.app?.import360Image(URL.createObjectURL(input.files[0]), name);
+            hideModal('importImageModal');
+            updateWorkflow(3);
+        } else alert('Please select an image');
     };
     
     window.importCAD = () => {
         const input = document.getElementById('cadInput');
         if (input.files.length) {
-            window.app.importCAD(input.files[0]);
-            document.getElementById('importCADModal').classList.add('hidden');
+            window.app?.importCAD(input.files[0]);
+            hideModal('importCADModal');
+            updateWorkflow(2);
+        } else alert('Please select a CAD file');
+    };
+    
+    // ===== ربط دوال العناصر الأساسية =====
+    window.startDrawWall = () => window.app?.startDrawing('wall');
+    window.startDrawColumn = () => window.app?.startDrawing('column');
+    window.addDoor = () => window.app?.startDrawing('door');
+    window.addWindow = () => window.app?.startDrawing('window');
+    window.addBeam = () => window.app?.startDrawing('beam');
+    window.addSlab = () => window.app?.startDrawing('slab');
+    window.addFoundation = () => window.app?.startDrawing('foundation');
+    window.addPipe = () => window.app?.startDrawing('pipe');
+    
+    // ===== ربط دوال Landscape (للواجهة) =====
+    window.addPlant = (options) => window.app?.addPlant(options);
+    window.addGrass = (options) => window.app?.addGrass(options);
+    window.addTree = (options) => window.app?.addTree(options);
+    window.addPalm = (options) => window.app?.addPalm(options);
+    window.addFountain = (options) => window.app?.addFountain(options);
+    window.addGardenLight = (options) => window.app?.addGardenLight(options);
+    window.addGardenPath = (points, options) => window.app?.addGardenPath(points, options);
+    
+    // ===== ربط دوال Stone & Brick (للواجهة) =====
+    window.addStone = (options) => window.app?.addStone(options);
+    window.addBrick = (options) => window.app?.addBrick(options);
+    window.addMarble = (options) => window.app?.addMarble(options);
+    window.addGranite = (options) => window.app?.addGranite(options);
+    window.addCladding = (options) => window.app?.addCladding(options);
+    window.addPavement = (options) => window.app?.addPavement(options);
+    
+    // ===== ربط دوال Glass (للواجهة) =====
+    window.addGlass = (options) => window.app?.addGlass(options);
+    window.addWindowGlass = (options) => window.app?.addWindowGlass(options);
+    window.addCurtainWall = (options) => window.app?.addCurtainWall(options);
+    window.addGlassPartition = (options) => window.app?.addGlassPartition(options);
+    window.addSkylight = (options) => window.app?.addSkylight(options);
+    window.addGlassFloor = (options) => window.app?.addGlassFloor(options);
+    window.addGlassRailing = (options) => window.app?.addGlassRailing(options);
+    window.addStainedGlass = (options) => window.app?.addStainedGlass(options);
+    window.addSmartGlass = (options) => window.app?.addSmartGlass(options);
+    window.addGlassBlock = (options) => window.app?.addGlassBlock(options);
+    
+    // ===== ربط دوال GeoReferencing =====
+    window.setCoordSystem = (system) => {
+        if (window.app) {
+            window.app.engine.geoRef.setCoordinateSystem(system);
+            document.getElementById('coordSystem').textContent = system.toUpperCase();
+            window.app.updateStatus(`System: ${system}`, 'success');
         }
     };
+    
+    window.listGCPs = () => {
+        if (!window.app) return;
+        const gcps = window.app.engine.geoRef.gcp;
+        if (gcps.length === 0) {
+            alert('No GCPs added');
+            return;
+        }
+        let list = 'Ground Control Points:\n';
+        gcps.forEach((gcp, i) => {
+            list += `${i+1}. Photo(${gcp.photo.x.toFixed(1)},${gcp.photo.y.toFixed(1)}) → ` +
+                   `Real(${gcp.real.x.toFixed(1)},${gcp.real.y.toFixed(1)}) ` +
+                   `Error: ${gcp.error.toFixed(3)}m\n`;
+        });
+        alert(list);
+    };
+    
+    window.calculateTransform = () => {
+        if (window.app) {
+            window.app.engine.geoRef.calculateTransform();
+            window.app.updateTransformMatrix();
+            window.app.updateStatus('Transform calculated', 'success');
+        }
+    };
+    
+    window.addCalibrationPoint = () => window.app?.startCalibrationPoint();
+    window.runCalibration = () => window.app?.runCalibration();
+    window.runClashDetection = () => window.app?.runClashDetection();
+    
+    window.addCalibrationPointToScene = () => {
+        window.app?.addCalibrationPoint({
+            imageX: parseFloat(document.getElementById('imgX').value) || 0,
+            imageY: parseFloat(document.getElementById('imgY').value) || 0,
+            realX: parseFloat(document.getElementById('realX').value) || 0,
+            realY: parseFloat(document.getElementById('realY').value) || 0
+        });
+        document.getElementById('calibrationPointModal').classList.add('hidden');
+    };
+    
+    window.selectMaterial = (m) => window.app?.updateStatus(`Selected material: ${m}`, 'success');
+    window.updateStatus = (msg, type) => window.app?.updateStatus(msg, type);
+    window.getSystemStatus = () => window.app?.getSystemStatus();
+    
+    window.updateWorkflow = (step) => {
+        const steps = document.querySelectorAll('.workflow-step');
+        steps.forEach((s, i) => s.classList.toggle('active', i < step));
+        document.getElementById('statusMessage').innerHTML = `Step ${step}/7: ${['','Import CAD','Draw Plan','Import 360','Calibrate','Link','Build','BOQ'][step]}`;
+    };
+    
+    window.updateWorkflow(1);
+    window.app.updateStatus('All systems ready', 'success');
+    
+    console.log('📌 Commands: window.app, getSystemStatus(), updateWorkflow()');
+});
+
+window.restartApp = () => {
+    console.log('🔄 Restarting application...');
+    location.reload();
+};
     
     // ===== ARCHITECTURE =====
     window.startDrawWall = () => window.app?.startDrawing('wall');
