@@ -941,5 +941,17 @@
     </script>
     
     <script type="module" src="./main.js"></script>
+
+<script>
+// تأخير الدوال حتى يتم تحميل التطبيق
+window.addEventListener('load', function() {
+    // انتظر حتى يتم تهيئة التطبيق
+    setTimeout(function() {
+        if (window.app) {
+            console.log('✅ App loaded, functions ready');
+        }
+    }, 1000);
+});
+</script>
 </body>
 </html> 
