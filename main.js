@@ -1309,3 +1309,11 @@ window.restartApp = () => {
     console.log('🔄 Restarting application...');
     location.reload();
 };
+// تأكيد ربط الدوال بعد إنشاء التطبيق
+window.app.import360Image = function(url, name) {
+    if (!this.import360Image) {
+        console.error('❌ import360Image not found in app');
+        return null;
+    }
+    return this.import360Image(url, name);
+};
