@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ACTUAL VIEW CONSTRUCTION OS - Reality BIM Platform</title>
     
-    <!-- Font Awesome for icons -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Three.js Configuration -->
+    <!-- Three.js -->
     <script type="importmap">
         {
             "imports": {
@@ -19,12 +19,11 @@
     </script>
     
     <style>
-        /* ===== RESET & BASE ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
         }
         
         body {
@@ -37,21 +36,37 @@
         #app {
             display: grid;
             grid-template-columns: 280px 1fr 300px;
-            grid-template-rows: 48px 1fr;
             height: 100vh;
             width: 100vw;
+            transition: grid-template-columns 0.3s ease;
+        }
+        
+        /* توسيع نافذة العرض عند إخفاء الألواح */
+        #app.view-mode-left {
+            grid-template-columns: 0 1fr 300px;
+        }
+        
+        #app.view-mode-right {
+            grid-template-columns: 280px 1fr 0;
+        }
+        
+        #app.view-mode-full {
+            grid-template-columns: 0 1fr 0;
         }
         
         /* ===== TOP BAR ===== */
         .top-bar {
-            grid-column: 1 / -1;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 48px;
             background: #1a1a1a;
-            border-bottom: 1px solid #333333;
+            border-bottom: 1px solid #333;
             display: flex;
             align-items: center;
             padding: 0 20px;
             gap: 30px;
-            color: #cccccc;
             z-index: 100;
         }
         
@@ -61,8 +76,7 @@
             gap: 8px;
             font-weight: bold;
             font-size: 16px;
-            color: #ffffff;
-            white-space: nowrap;
+            color: #fff;
         }
         
         .logo i {
@@ -80,19 +94,19 @@
             padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s;
             font-size: 13px;
             color: #b0b0b0;
+            transition: 0.2s;
         }
         
         .menu-item:hover {
-            background: #333333;
-            color: #ffffff;
+            background: #333;
+            color: #fff;
         }
         
         .menu-item.active {
-            background: #333333;
-            color: #ffffff;
+            background: #333;
+            color: #ffaa44;
             border-bottom: 2px solid #ffaa44;
         }
         
@@ -106,28 +120,56 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            color: #666666;
+            color: #666;
         }
         
         .workflow-step.active {
             color: #ffaa44;
         }
         
-        .workflow-step i {
-            font-size: 12px;
+        /* ===== VIEW CONTROLS ===== */
+        .view-controls {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            background: #1a1a1a;
+            padding: 6px 12px;
+            border-radius: 30px;
+            border: 1px solid #333;
+            z-index: 200;
         }
         
+        .view-btn {
+            padding: 5px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #b0b0b0;
+        }
+        
+        .view-btn:hover {
+            background: #333;
+        }
+        
+        .view-btn.active {
+            background: #333;
+            color: #ffaa44;
+        }
+
         /* ===== LEFT PANEL ===== */
         .left-panel {
             background: #121212;
-            border-right: 1px solid #333333;
+            border-right: 1px solid #333;
+            height: 100vh;
+            padding-top: 68px;
             overflow-y: auto;
-            padding: 20px;
-            z-index: 90;
         }
         
         .panel-section {
-            margin-bottom: 25px;
+            margin: 20px;
         }
         
         .panel-title {
@@ -139,12 +181,6 @@
             color: #ffaa44;
             margin-bottom: 12px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .panel-title i {
-            width: 18px;
-            font-size: 14px;
         }
         
         /* Scene Explorer */
@@ -153,11 +189,10 @@
         }
         
         .scene-item {
-            padding: 6px 10px;
-            margin: 3px 0;
+            padding: 8px 12px;
+            margin: 4px 0;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s;
             font-size: 12px;
             display: flex;
             align-items: center;
@@ -167,19 +202,11 @@
         
         .scene-item:hover {
             background: #2a2a2a;
-            color: #ffffff;
         }
         
         .scene-item.active {
             background: #2a2a2a;
             border-left: 3px solid #ffaa44;
-            color: #ffffff;
-        }
-        
-        .scene-item i {
-            width: 18px;
-            color: #666666;
-            font-size: 12px;
         }
         
         .scene-children {
@@ -189,160 +216,46 @@
         
         /* Floor Levels */
         .floor-level {
-            padding: 6px 10px;
-            margin: 3px 0;
+            padding: 8px 12px;
+            margin: 4px 0;
             border-radius: 6px;
             background: #1a1a1a;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            border: 1px solid #333333;
-            color: #b0b0b0;
+            border: 1px solid #333;
             font-size: 12px;
-        }
-        
-        .floor-level:hover {
-            background: #2a2a2a;
-            border-color: #ffaa44;
         }
         
         .floor-badge {
-            background: #333333;
-            padding: 2px 6px;
+            background: #333;
+            padding: 2px 8px;
             border-radius: 10px;
-            font-size: 10px;
             color: #ffaa44;
-        }
-        
-        /* Links */
-        .link-item {
-            padding: 6px 10px;
-            margin: 3px 0;
-            border-radius: 6px;
-            background: #1a1a1a;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 11px;
-            border: 1px solid #333333;
-            color: #b0b0b0;
-        }
-        
-        .link-icon {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background: #333333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-        }
-        
-        /* ===== CENTER PANEL ===== */
-        .center-panel {
-            position: relative;
-            background: #000000;
-            overflow: hidden;
-        }
-        
-        #container {
-            width: 100%;
-            height: 100%;
-        }
-        
-        .view-controls {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
-            background: #1a1a1a;
-            padding: 6px 12px;
-            border-radius: 30px;
-            border: 1px solid #333333;
-            z-index: 50;
-        }
-        
-        .view-btn {
-            padding: 5px 10px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s;
-            color: #b0b0b0;
-        }
-        
-        .view-btn:hover {
-            background: #333333;
-            color: #ffffff;
-        }
-        
-        .view-btn.active {
-            background: #333333;
-            color: #ffaa44;
-            border: 1px solid #ffaa44;
         }
         
         /* ===== RIGHT PANEL ===== */
         .right-panel {
             background: #121212;
-            border-left: 1px solid #333333;
+            border-left: 1px solid #333;
+            height: 100vh;
+            padding-top: 68px;
             overflow-y: auto;
-            padding: 20px;
-            z-index: 90;
         }
         
-        /* Properties Grid */
-        .properties-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        /* Element Library - مخفية افتراضياً */
+        .element-library {
+            display: none;
         }
         
-        .property-group {
-            background: #1a1a1a;
-            border-radius: 8px;
-            padding: 10px;
-            border: 1px solid #333333;
+        .element-library.visible {
+            display: block;
         }
         
-        .property-group-title {
-            font-size: 12px;
-            font-weight: bold;
-            color: #ffaa44;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .property-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
-            border-bottom: 1px solid #333333;
-            font-size: 12px;
-            color: #b0b0b0;
-        }
-        
-        .property-label {
-            color: #888888;
-        }
-        
-        .property-value {
-            font-weight: 500;
-            color: #ffffff;
-        }
-        
-        /* Element Library */
         .library-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 6px;
-            margin-top: 8px;
+            margin-top: 10px;
         }
         
         .library-item {
@@ -351,56 +264,50 @@
             padding: 10px 5px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid #333333;
+            border: 1px solid #333;
             color: #b0b0b0;
         }
         
         .library-item:hover {
             background: #2a2a2a;
-            transform: translateY(-2px);
             border-color: #ffaa44;
-            color: #ffffff;
         }
         
         .library-item i {
             font-size: 20px;
-            margin-bottom: 4px;
-            display: block;
             color: #ffaa44;
         }
-
+        
         .library-item span {
             font-size: 10px;
         }
         
-        /* Materials */
-        .material-swatch {
-            width: 100%;
-            height: 25px;
-            border-radius: 4px;
-            margin: 4px 0;
-            cursor: pointer;
-            border: 1px solid #333333;
+        /* Properties Grid */
+        .property-group {
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid #333;
+            margin-bottom: 12px;
         }
         
-        .material-swatch:hover {
-            border: 2px solid #ffaa44;
+        .property-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #333;
+            font-size: 12px;
         }
         
         /* Buttons */
         .btn {
             background: #2a2a2a;
-            border: 1px solid #444444;
+            border: 1px solid #444;
             color: #e0e0e0;
             padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s;
             font-size: 12px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
         }
         
         .btn:hover {
@@ -413,17 +320,22 @@
             border-color: #ffaa44;
         }
         
-        .btn-primary:hover {
-            background: #4a4a4a;
+        /* ===== CENTER PANEL ===== */
+        .center-panel {
+            position: relative;
+            background: #000;
+            overflow: hidden;
         }
         
-        /* ===== MODAL DIALOGS ===== */
+        #container {
+            width: 100%;
+            height: 100vh;
+        }
+        
+        /* ===== MODALS ===== */
         .modal {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.95);
             display: flex;
             align-items: center;
@@ -438,51 +350,20 @@
             width: 400px;
             max-width: 90%;
             border: 2px solid #ffaa44;
-            box-shadow: 0 0 30px rgba(255,170,68,0.2);
         }
         
         .modal-header {
             padding: 20px;
-            border-bottom: 1px solid #333333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            border-bottom: 1px solid #333;
         }
         
         .modal-header h3 {
             color: #ffaa44;
             font-size: 18px;
-            margin: 0;
-        }
-        
-        .modal-header button {
-            background: none;
-            border: none;
-            color: #ffaa44;
-            font-size: 24px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .modal-header button:hover {
-            transform: scale(1.2);
         }
         
         .modal-body {
             padding: 20px;
-        }
-        
-        .modal-body p {
-            color: #b0b0b0;
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
-        
-        .modal-body label {
-            color: #888888;
-            font-size: 12px;
-            display: block;
-            margin-bottom: 5px;
         }
         
         .modal-body input,
@@ -490,22 +371,15 @@
             width: 100%;
             padding: 8px 12px;
             background: #2a2a2a;
-            border: 1px solid #444444;
+            border: 1px solid #444;
             border-radius: 6px;
             color: white;
-            font-size: 14px;
             margin-bottom: 15px;
-        }
-        
-        .modal-body input:focus,
-        .modal-body select:focus {
-            outline: none;
-            border-color: #ffaa44;
         }
         
         .modal-footer {
             padding: 20px;
-            border-top: 1px solid #333333;
+            border-top: 1px solid #333;
             display: flex;
             justify-content: flex-end;
             gap: 10px;
@@ -518,7 +392,7 @@
             left: 300px;
             right: 320px;
             background: #1a1a1a;
-            border: 1px solid #333333;
+            border: 1px solid #333;
             border-radius: 30px;
             padding: 8px 16px;
             font-size: 12px;
@@ -540,41 +414,13 @@
             color: #b0b0b0;
         }
         
-        /* ===== UTILITIES ===== */
         .hidden {
             display: none !important;
-        }
-        
-        .text-muted {
-            color: #666666;
-        }
-        
-        .mt-2 {
-            margin-top: 10px;
-        }
-        
-        /* Scrollbar Styling */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #1a1a1a;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #444444;
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #ffaa44;
         }
     </style>
 </head>
 <body>
-    <div id="app">
+    <div id="app" class="">
         <!-- ===== TOP BAR ===== -->
         <div class="top-bar">
             <div class="logo">
@@ -586,451 +432,142 @@
                 <div class="menu-item active" data-view="project">PROJECT</div>
                 <div class="menu-item" data-view="cad">CAD</div>
                 <div class="menu-item" data-view="scenes">SCENES</div>
-                <div class="menu-item" data-view="elements">ELEMENTS</div>
+                <div class="menu-item" data-view="elements" onclick="toggleElementLibrary()">ELEMENTS</div>
                 <div class="menu-item" data-view="boq">BOQ</div>
             </div>
             
             <div class="workflow-indicator">
-                <div class="workflow-step active">
-                    <i class="fas fa-file-import"></i>
-                    <span>1. Import CAD</span>
-                </div>
-                <div class="workflow-step">
-                    <i class="fas fa-draw-polygon"></i>
-                    <span>2. Draw Plan</span>
-                </div>
-                <div class="workflow-step">
-                    <i class="fas fa-images"></i>
-                    <span>3. Import 360</span>
-                </div>
-                <div class="workflow-step">
-                    <i class="fas fa-crosshairs"></i>
-                    <span>4. Calibrate</span>
-                </div>
-                <div class="workflow-step">
-                    <i class="fas fa-link"></i>
-                    <span>5. Link</span>
-                </div>
-                <div class="workflow-step">
-                    <i class="fas fa-pencil-ruler"></i>
-                    <span>6. Build</span>
-                </div>
-                <div class="workflow-step">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>7. BOQ</span>
-                </div>
+                <div class="workflow-step active"><i class="fas fa-file-import"></i><span>1. Import CAD</span></div>
+                <div class="workflow-step"><i class="fas fa-draw-polygon"></i><span>2. Draw Plan</span></div>
+                <div class="workflow-step"><i class="fas fa-images"></i><span>3. Import 360</span></div>
+                <div class="workflow-step"><i class="fas fa-crosshairs"></i><span>4. Calibrate</span></div>
+                <div class="workflow-step"><i class="fas fa-link"></i><span>5. Link</span></div>
+                <div class="workflow-step"><i class="fas fa-pencil-ruler"></i><span>6. Build</span></div>
+                <div class="workflow-step"><i class="fas fa-chart-bar"></i><span>7. BOQ</span></div>
             </div>
         </div>
-
+        
+        <!-- ===== VIEW CONTROLS ===== -->
+        <div class="view-controls">
+            <div class="view-btn" onclick="toggleLeftPanel()"><i class="fas fa-chevron-left"></i> Left</div>
+            <div class="view-btn active" onclick="setFullView()"><i class="fas fa-expand"></i> Full</div>
+            <div class="view-btn" onclick="toggleRightPanel()">Right <i class="fas fa-chevron-right"></i></div>
+        </div>
+        
         <!-- ===== LEFT PANEL ===== -->
         <div class="left-panel">
-            <!-- Scene Explorer -->
             <div class="panel-section">
-                <div class="panel-title">
-                    <i class="fas fa-sitemap"></i>
-                    <span>SCENE EXPLORER</span>
-                </div>
+                <div class="panel-title"><i class="fas fa-sitemap"></i><span>SCENE EXPLORER</span></div>
                 <ul class="scene-tree" id="sceneTree">
-                    <li class="scene-item active">
-                        <i class="fas fa-building"></i>
-                        <span>Main Project</span>
-                    </li>
+                    <li class="scene-item active"><i class="fas fa-building"></i><span>Main Project</span></li>
                     <ul class="scene-children">
-                        <li class="scene-item">
-                            <i class="fas fa-door-open"></i>
-                            <span>Entrance</span>
-                        </li>
-                        <li class="scene-item">
-                            <i class="fas fa-couch"></i>
-                            <span>Living Room</span>
-                        </li>
-                        <li class="scene-item">
-                            <i class="fas fa-bed"></i>
-                            <span>Bedroom</span>
-                        </li>
-                        <li class="scene-item">
-                            <i class="fas fa-utensils"></i>
-                            <span>Kitchen</span>
-                        </li>
+                        <li class="scene-item"><i class="fas fa-door-open"></i><span>Entrance</span></li>
+                        <li class="scene-item"><i class="fas fa-couch"></i><span>Living Room</span></li>
+                        <li class="scene-item"><i class="fas fa-bed"></i><span>Bedroom</span></li>
+                        <li class="scene-item"><i class="fas fa-utensils"></i><span>Kitchen</span></li>
                     </ul>
                 </ul>
-                <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="showImportSceneDialog()">
+                <button class="btn btn-primary" style="width:100%;" onclick="showImportSceneDialog()">
                     <i class="fas fa-plus"></i> Add Scene
                 </button>
             </div>
 
-            <!-- Floor Levels -->
             <div class="panel-section">
-                <div class="panel-title">
-                    <i class="fas fa-layer-group"></i>
-                    <span>FLOOR LEVELS</span>
-                </div>
-                <div class="floor-level" data-level="ground">
-                    <span>📍 Ground Floor</span>
-                    <span class="floor-badge">+0.00 m</span>
-                </div>
-                <div class="floor-level" data-level="first">
-                    <span>📍 First Floor</span>
-                    <span class="floor-badge">+3.00 m</span>
-                </div>
-                <div class="floor-level" data-level="second">
-                    <span>📍 Second Floor</span>
-                    <span class="floor-badge">+6.00 m</span>
-                </div>
-                <button class="btn" style="width:100%; margin-top:10px;">
-                    <i class="fas fa-plus"></i> Add Level
-                </button>
+                <div class="panel-title"><i class="fas fa-layer-group"></i><span>FLOOR LEVELS</span></div>
+                <div class="floor-level"><span>📍 Ground Floor</span><span class="floor-badge">+0.00 m</span></div>
+                <div class="floor-level"><span>📍 First Floor</span><span class="floor-badge">+3.00 m</span></div>
+                <div class="floor-level"><span>📍 Second Floor</span><span class="floor-badge">+6.00 m</span></div>
             </div>
             
-            <!-- Links -->
             <div class="panel-section">
-                <div class="panel-title">
-                    <i class="fas fa-link"></i>
-                    <span>SCENE LINKS</span>
-                </div>
-                <div class="link-item">
-                    <div class="link-icon">🚪</div>
-                    <div>Entrance → Living Room</div>
-                </div>
-                <div class="link-item">
-                    <div class="link-icon">🚶</div>
-                    <div>Living Room → Kitchen</div>
-                </div>
-                <div class="link-item">
-                    <div class="link-icon">🪜</div>
-                    <div>Ground → First (Stairs)</div>
-                </div>
-                <button class="btn" style="width:100%; margin-top:10px;">
-                    <i class="fas fa-link"></i> Add Link
-                </button>
+                <div class="panel-title"><i class="fas fa-link"></i><span>SCENE LINKS</span></div>
+                <div class="floor-level"><span>🚪 Entrance → Living Room</span></div>
+                <div class="floor-level"><span>🚶 Living Room → Kitchen</span></div>
             </div>
             
-            <!-- Calibration Points -->
             <div class="panel-section">
-                <div class="panel-title">
-                    <i class="fas fa-crosshairs"></i>
-                    <span>CALIBRATION POINTS</span>
-                </div>
+                <div class="panel-title"><i class="fas fa-crosshairs"></i><span>CALIBRATION POINTS</span></div>
                 <div id="calibrationPointsList">
-                    <div class="text-muted" style="text-align:center; padding:20px;">
-                        No calibration points
-                    </div>
+                    <div class="text-muted" style="text-align:center; padding:20px;">No calibration points</div>
                 </div>
             </div>
         </div>
-        
+
         <!-- ===== CENTER PANEL ===== -->
         <div class="center-panel">
             <div id="container"></div>
-            
-            <!-- View Controls -->
-            <div class="view-controls">
-                <div class="view-btn active" data-mode="plan">
-                    <i class="fas fa-draw-polygon"></i> PLAN
-                </div>
-                <div class="view-btn" data-mode="reality">
-                    <i class="fas fa-vr-cardboard"></i> REALITY
-                </div>
-                <div class="view-btn" data-mode="construction">
-                    <i class="fas fa-hard-hat"></i> CONSTRUCTION
-                </div>
-            </div>
         </div>
         
         <!-- ===== RIGHT PANEL ===== -->
         <div class="right-panel">
-            <!-- Properties -->
             <div class="panel-section">
-                <div class="panel-title">
-                    <i class="fas fa-sliders-h"></i>
-                    <span>PROPERTIES</span>
+                <div class="panel-title"><i class="fas fa-sliders-h"></i><span>PROPERTIES</span></div>
+                <div class="property-group">
+                    <div class="property-row"><span class="property-label">Type:</span><span class="property-value" id="propType">-</span></div>
+                    <div class="property-row"><span class="property-label">ID:</span><span class="property-value" id="propId">-</span></div>
+                    <div class="property-row"><span class="property-label">Scene:</span><span class="property-value" id="propScene">-</span></div>
                 </div>
-                <div class="properties-grid" id="propertiesGrid">
-                    <div class="property-group">
-                        <div class="property-group-title">
-                            <i class="fas fa-cube"></i> Element Info
-                        </div>
-                        <div class="property-row">
-                            <span class="property-label">Type:</span>
-                            <span class="property-value" id="propType">-</span>
-                        </div>
-                        <div class="property-row">
-                            <span class="property-label">ID:</span>
-                            <span class="property-value" id="propId">-</span>
-                        </div>
-                        <div class="property-row">
-                            <span class="property-label">Scene:</span>
-                            <span class="property-value" id="propScene">-</span>
-                        </div>
-                    </div>
-                    
-                    <div class="property-group">
-                        <div class="property-group-title">
-                            <i class="fas fa-ruler"></i> Dimensions
-                        </div>
-                        <div class="property-row">
-                            <span class="property-label">Length:</span>
-                            <span class="property-value" id="propLength">-</span>
-                        </div>
-                        <div class="property-row">
-                            <span class="property-label">Width:</span>
-                            <span class="property-value" id="propWidth">-</span>
-                        </div>
-                        <div class="property-row">
-                            <span class="property-label">Height:</span>
-                            <span class="property-value" id="propHeight">-</span>
-                        </div>
-                    </div>
-                    
-                    <div class="property-group">
-                        <div class="property-group-title">
-                            <i class="fas fa-map-marker-alt"></i> Position
-                        </div>
-                        <div class="property-row">
-                            <span class="property-label">X:</span>
-                            <span class="property-value" id="propX">-</span>
-                        </div>
-                        <div class="property-row">
-                            <span class="property-label">Y:</span>
-                            <span class="property-value" id="propY">-</span>
-                        </div>
-                        <div class="property-row">
-                            <span class="property-label">Z:</span>
-                            <span class="property-value" id="propZ">-</span>
-                        </div>
-                    </div>
+                <div class="property-group">
+                    <div class="property-row"><span class="property-label">Length:</span><span class="property-value" id="propLength">-</span></div>
+                    <div class="property-row"><span class="property-label">Width:</span><span class="property-value" id="propWidth">-</span></div>
+                    <div class="property-row"><span class="property-label">Height:</span><span class="property-value" id="propHeight">-</span></div>
+                </div>
+                <div class="property-group">
+                    <div class="property-row"><span class="property-label">X:</span><span class="property-value" id="propX">-</span></div>
+                    <div class="property-row"><span class="property-label">Y:</span><span class="property-value" id="propY">-</span></div>
+                    <div class="property-row"><span class="property-label">Z:</span><span class="property-value" id="propZ">-</span></div>
                 </div>
             </div>
             
-            <!-- Element Library -->
-            <div class="panel-section">
-                <div class="panel-title">
-                    <i class="fas fa-icons"></i>
-                    <span>ELEMENT LIBRARY</span>
-                </div>
+            <!-- Element Library (مخفي افتراضياً) -->
+            <div class="panel-section element-library" id="elementLibrary">
+                <div class="panel-title"><i class="fas fa-icons"></i><span>ELEMENT LIBRARY</span></div>
                 <div class="library-grid">
-                    <!-- Architecture -->
-                    <div class="library-item" onclick="startDrawWall()">
-                        <i class="fas fa-vector-square"></i>
-                        <span>Wall</span>
-                    </div>
-                    <div class="library-item" onclick="startDrawColumn()">
-                        <i class="fas fa-square-full"></i>
-                        <span>Column</span>
-                    </div>
-                    <div class="library-item" onclick="addDoor()">
-                        <i class="fas fa-door-open"></i>
-                        <span>Door</span>
-                    </div>
-                    <div class="library-item" onclick="addWindow()">
-                        <i class="fas fa-window-maximize"></i>
-                        <span>Window</span>
-                    </div>
-                    <div class="library-item" onclick="addBeam()">
-                        <i class="fas fa-grip-lines"></i>
-                        <span>Beam</span>
-                    </div>
-                    <div class="library-item" onclick="addSlab()">
-                        <i class="fas fa-border-all"></i>
-                        <span>Slab</span>
-                    </div>
-                    <div class="library-item" onclick="addFoundation()">
-                        <i class="fas fa-arrow-down"></i>
-                        <span>Foundation</span>
-                    </div>
-                    <div class="library-item" onclick="addPipe()">
-                        <i class="fas fa-water"></i>
-                        <span>Pipe</span>
-                    </div>
-                    
-                    <!-- Landscaping -->
-                    <div class="library-item" onclick="addPlant({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-seedling"></i>
-                        <span>Plant</span>
-                    </div>
-                    <div class="library-item" onclick="addGrass({area:10,position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-leaf"></i>
-                        <span>Grass</span>
-                    </div>
-                    <div class="library-item" onclick="addTree({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-tree"></i>
-                        <span>Tree</span>
-                    </div>
-                    <div class="library-item" onclick="addPalm({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-palm-tree"></i>
-                        <span>Palm</span>
-                    </div>
-                    <div class="library-item" onclick="addFountain({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-fountain"></i>
-                        <span>Fountain</span>
-                    </div>
-                    <div class="library-item" onclick="addGardenLight({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-lightbulb"></i>
-                        <span>Garden Light</span>
-                    </div>
-                    <div class="library-item" onclick="addGardenPath([{x:-2,z:-2},{x:2,z:2}])">
-                        <i class="fas fa-road"></i>
-                        <span>Garden Path</span>
-                    </div>
-                    
-                    <!-- Stone & Brick -->
-                    <div class="library-item" onclick="addStone({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-mountain"></i>
-                        <span>Stone</span>
-                    </div>
-                    <div class="library-item" onclick="addBrick({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-cubes"></i>
-                        <span>Brick</span>
-                    </div>
-                    <div class="library-item" onclick="addMarble({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-gem"></i>
-                        <span>Marble</span>
-                    </div>
-                    <div class="library-item" onclick="addGranite({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-mountain"></i>
-                        <span>Granite</span>
-                    </div>
-                    <div class="library-item" onclick="addCladding({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-border-all"></i>
-                        <span>Cladding</span>
-                    </div>
-                    <div class="library-item" onclick="addPavement({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-road"></i>
-                        <span>Pavement</span>
-                    </div>
-                    
-                    <!-- Glass -->
-                    <div class="library-item" onclick="addGlass({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-window-maximize"></i>
-                        <span>Glass</span>
-                    </div>
-                    <div class="library-item" onclick="addWindowGlass({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-window-restore"></i>
-                        <span>Window</span>
-                    </div>
-                    <div class="library-item" onclick="addCurtainWall({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-building"></i>
-                        <span>Curtain Wall</span>
-                    </div>
-                    <div class="library-item" onclick="addGlassPartition({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-columns"></i>
-                        <span>Partition</span>
-                    </div>
-                    <div class="library-item" onclick="addSkylight({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-sun"></i>
-                        <span>Skylight</span>
-                    </div>
-                    <div class="library-item" onclick="addGlassFloor({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-border-all"></i>
-                        <span>Glass Floor</span>
-                    </div>
-                    <div class="library-item" onclick="addGlassRailing({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-ruler-vertical"></i>
-                        <span>Glass Railing</span>
-                    </div>
-                    <div class="library-item" onclick="addStainedGlass({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-palette"></i>
-                        <span>Stained</span>
-                    </div>
-                    <div class="library-item" onclick="addSmartGlass({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-microchip"></i>
-                        <span>Smart Glass</span>
-                    </div>
-                    <div class="library-item" onclick="addGlassBlock({position:{x:0,y:0,z:0}})">
-                        <i class="fas fa-cube"></i>
-                        <span>Glass Block</span>
-                    </div>
-                    
-                    <!-- Tools -->
-                    <div class="library-item" onclick="runClashDetection()">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span>Clash</span>
-                    </div>
+                    <div class="library-item" onclick="addWall()"><i class="fas fa-vector-square"></i><span>Wall</span></div>
+                    <div class="library-item" onclick="addColumn()"><i class="fas fa-square-full"></i><span>Column</span></div>
+                    <div class="library-item" onclick="addDoor()"><i class="fas fa-door-open"></i><span>Door</span></div>
+                    <div class="library-item" onclick="addWindow()"><i class="fas fa-window-maximize"></i><span>Window</span></div>
+                    <div class="library-item" onclick="addBeam()"><i class="fas fa-grip-lines"></i><span>Beam</span></div>
+                    <div class="library-item" onclick="addSlab()"><i class="fas fa-border-all"></i><span>Slab</span></div>
+                    <div class="library-item" onclick="addFoundation()"><i class="fas fa-arrow-down"></i><span>Foundation</span></div>
+                    <div class="library-item" onclick="addPipe()"><i class="fas fa-water"></i><span>Pipe</span></div>
+                    <div class="library-item" onclick="addTree()"><i class="fas fa-tree"></i><span>Tree</span></div>
+                    <div class="library-item" onclick="addStone()"><i class="fas fa-mountain"></i><span>Stone</span></div>
+                    <div class="library-item" onclick="addGlass()"><i class="fas fa-window-maximize"></i><span>Glass</span></div>
                 </div>
-            </div>
-
-           <!-- Materials -->
-            <div class="panel-section">
-                <div class="panel-title">
-                    <i class="fas fa-palette"></i>
-                    <span>MATERIALS</span>
-                </div>
-                <div class="material-swatch" style="background:#8B4513;" onclick="selectMaterial('wood')" title="Wood"></div>
-                <div class="material-swatch" style="background:#808080;" onclick="selectMaterial('concrete')" title="Concrete"></div>
-                <div class="material-swatch" style="background:#B22222;" onclick="selectMaterial('brick')" title="Brick"></div>
-                <div class="material-swatch" style="background:#87CEEB;" onclick="selectMaterial('glass')" title="Glass"></div>
             </div>
             
-            <!-- GeoReferencing Tools -->
             <div class="panel-section">
-                <div class="panel-title">
-                    <i class="fas fa-crosshairs"></i>
-                    <span>GEO REFERENCING</span>
-                </div>
-                
-                <!-- Coordinate System -->
-                <div style="margin-bottom: 15px; background: #1a1a1a; padding: 10px; border-radius: 6px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="color: #888;">System:</span>
-                        <span style="color: #ffaa44; font-weight: bold;" id="coordSystem">UTM</span>
-                    </div>
-                    <div style="display: flex; gap: 5px;">
-                        <button class="btn" style="flex:1;" onclick="setCoordSystem('utm')">UTM</button>
-                        <button class="btn" style="flex:1;" onclick="setCoordSystem('local')">Local</button>
-                        <button class="btn" style="flex:1;" onclick="setCoordSystem('wgs84')">WGS84</button>
-                    </div>
-                </div>
-                
-                <!-- GCP Counter -->
-                <div style="margin-bottom: 15px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="color: #888;">GCP Points:</span>
-                        <span style="color: #ffaa44; font-weight: bold;" id="gcpCount">0</span>
-                    </div>
-                    <button class="btn" style="width:100%; margin-bottom:5px;" onclick="addCalibrationPoint()">
-                        <i class="fas fa-plus-circle"></i> Add GCP
-                    </button>
-                    <button class="btn" style="width:100%;" onclick="listGCPs()">
-                        <i class="fas fa-list"></i> List GCPs
-                    </button>
-                </div>
-                
-                <!-- Transform Matrix -->
-                <div style="background: #1a1a1a; padding: 10px; border-radius: 6px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="color: #888;">Transform:</span>
-                        <button class="btn" style="padding:2px 8px;" onclick="calculateTransform()">Calc</button>
-                    </div>
-                    <div id="transformMatrix" style="font-family: monospace; font-size: 11px; background: #2a2a2a; padding: 8px; border-radius: 4px;">
-                        Not calculated
-                    </div>
-                </div>
+                <div class="panel-title"><i class="fas fa-palette"></i><span>MATERIALS</span></div>
+                <div class="material-swatch" style="background:#8B4513;" onclick="selectMaterial('wood')"></div>
+                <div class="material-swatch" style="background:#808080;" onclick="selectMaterial('concrete')"></div>
+                <div class="material-swatch" style="background:#B22222;" onclick="selectMaterial('brick')"></div>
+                <div class="material-swatch" style="background:#87CEEB;" onclick="selectMaterial('glass')"></div>
+            </div>
+            
+            <div class="panel-section">
+                <div class="panel-title"><i class="fas fa-crosshairs"></i><span>CALIBRATION TOOLS</span></div>
+                <button class="btn" style="width:100%; margin-bottom:5px;" onclick="addCalibrationPoint()">
+                    <i class="fas fa-plus-circle"></i> Add GCP
+                </button>
+                <button class="btn btn-primary" style="width:100%;" onclick="runCalibration()">
+                    <i class="fas fa-calculator"></i> Calculate Transform
+                </button>
             </div>
         </div>
     </div>
     
     <!-- ===== STATUS BAR ===== -->
     <div class="status-bar" id="statusBar">
-        <div class="status-progress">
-            <i class="fas fa-spinner fa-spin"></i>
-            <span>Step 1/7: Import CAD</span>
-        </div>
-        <div class="status-message" id="statusMessage">
-            Loading platform...
-        </div>
+        <div class="status-progress"><i class="fas fa-spinner fa-spin"></i><span>Step 1/7: Import CAD</span></div>
+        <div class="status-message" id="statusMessage">Loading platform...</div>
     </div>
     
-    <!-- ===== MODALS ===== -->
-    
-    <!-- Import 360 Image Modal -->
+    <!-- ===== MODALS (نفس الكود السابق) ===== -->
     <div id="importImageModal" class="modal hidden">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-images"></i> Import 360 Image</h3>
-                <button onclick="hideModal('importImageModal')">&times;</button>
-            </div>
+            <div class="modal-header"><h3><i class="fas fa-images"></i> Import 360 Image</h3></div>
             <div class="modal-body">
-                <p>Select a 360° panoramic image to import:</p>
                 <input type="file" id="imageInput" accept="image/*">
                 <label>Scene Name:</label>
                 <input type="text" id="sceneName" value="New Scene">
@@ -1042,61 +579,14 @@
         </div>
     </div>
     
-    <!-- Import CAD Modal -->
-    <div id="importCADModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-draw-polygon"></i> Import CAD</h3>
-                <button onclick="hideModal('importCADModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>Select CAD file (DXF/DWG):</p>
-                <input type="file" id="cadInput" accept=".dxf,.dwg">
-            </div>
-            <div class="modal-footer">
-                <button class="btn" onclick="hideModal('importCADModal')">Cancel</button>
-                <button class="btn btn-primary" onclick="importCAD()">Import</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Add Calibration Point Modal -->
     <div id="calibrationPointModal" class="modal hidden">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-crosshairs"></i> Add GCP</h3>
-                <button onclick="hideModal('calibrationPointModal')">&times;</button>
-            </div>
+            <div class="modal-header"><h3><i class="fas fa-crosshairs"></i> Add GCP</h3></div>
             <div class="modal-body">
-                <p>Click on the image to select a point, then enter real-world coordinates:</p>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div>
-                        <label>Image X:</label>
-                        <input type="number" id="imgX" readonly>
-                    </div>
-                    <div>
-                        <label>Image Y:</label>
-                        <input type="number" id="imgY" readonly>
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div>
-                        <label>Real X:</label>
-                        <input type="number" id="realX" value="0">
-                    </div>
-                    <div>
-                        <label>Real Y:</label>
-                        <input type="number" id="realY" value="0">
-                    </div>
-                </div>
-                <div>
-                    <label>Coordinate System:</label>
-                    <select id="gcpCoordSystem">
-                        <option value="local">Local</option>
-                        <option value="utm" selected>UTM</option>
-                        <option value="wgs84">WGS84</option>
-                    </select>
-                </div>
+                <div><label>Image X:</label><input type="number" id="imgX" readonly></div>
+                <div><label>Image Y:</label><input type="number" id="imgY" readonly></div>
+                <div><label>Real X:</label><input type="number" id="realX" value="0"></div>
+                <div><label>Real Y:</label><input type="number" id="realY" value="0"></div>
             </div>
             <div class="modal-footer">
                 <button class="btn" onclick="hideModal('calibrationPointModal')">Cancel</button>
@@ -1104,10 +594,32 @@
             </div>
         </div>
     </div>
-
-    <!-- ===== SCRIPT ===== -->
+    
     <script>
-        // ===== UI CONTROLS =====
+        // ===== VIEW CONTROLS =====
+        function toggleLeftPanel() {
+            const app = document.getElementById('app');
+            app.classList.toggle('view-mode-left');
+        }
+        
+        function toggleRightPanel() {
+            const app = document.getElementById('app');
+            app.classList.toggle('view-mode-right');
+        }
+        
+        function setFullView() {
+            const app = document.getElementById('app');
+            app.classList.remove('view-mode-left', 'view-mode-right');
+            app.classList.add('view-mode-full');
+        }
+        
+        // ===== ELEMENT LIBRARY TOGGLE =====
+        function toggleElementLibrary() {
+            const library = document.getElementById('elementLibrary');
+            library.classList.toggle('visible');
+        }
+        
+        // ===== UI FUNCTIONS =====
         function showModal(id) {
             document.getElementById(id).classList.remove('hidden');
         }
@@ -1120,247 +632,51 @@
             showModal('importImageModal');
         }
         
-        function showImportCADDialog() {
-            showModal('importCADModal');
-        }
-        
-        // Workflow Control
-        function updateWorkflow(step) {
-            const steps = document.querySelectorAll('.workflow-step');
-            steps.forEach((s, i) => {
-                if (i < step) s.classList.add('active');
-                else s.classList.remove('active');
-            });
-            document.getElementById('statusMessage').innerHTML = 
-                `Step ${step}/7: ${['','Import CAD','Draw Plan','Import 360','Calibrate','Link','Build','BOQ'][step]}`;
-        }
-        
-        // Properties Update
-        function updateProperties(props) {
-            document.getElementById('propType').textContent = props.type || '-';
-            document.getElementById('propId').textContent = props.id || '-';
-            document.getElementById('propScene').textContent = props.scene || '-';
-            document.getElementById('propLength').textContent = props.length || '-';
-            document.getElementById('propWidth').textContent = props.width || '-';
-            document.getElementById('propHeight').textContent = props.height || '-';
-            document.getElementById('propX').textContent = props.x || '-';
-            document.getElementById('propY').textContent = props.y || '-';
-            document.getElementById('propZ').textContent = props.z || '-';
-        }
-        
-        // ===== Import Functions =====
         window.importImage = function() {
             const input = document.getElementById('imageInput');
             const name = document.getElementById('sceneName').value;
-            if (input.files.length) {
-                window.app?.import360Image(URL.createObjectURL(input.files[0]), name);
+            if (input.files.length && window.app) {
+                window.app.import360Image(URL.createObjectURL(input.files[0]), name);
                 hideModal('importImageModal');
-                updateWorkflow(3);
-            } else alert('Please select an image');
+            }
         };
         
-        window.importCAD = function() {
-            const input = document.getElementById('cadInput');
-            if (input.files.length) {
-                window.app?.importCAD(input.files[0]);
-                hideModal('importCADModal');
-                updateWorkflow(2);
-            } else alert('Please select a CAD file');
+        window.addCalibrationPoint = () => {
+            if (window.app) {
+                window.app.startCalibrationPoint();
+                showModal('calibrationPointModal');
+            }
+        };
+
+        window.addCalibrationPointToScene = () => {
+            if (window.app) {
+                window.app.addCalibrationPoint({
+                    imageX: parseFloat(document.getElementById('imgX').value) || 0,
+                    imageY: parseFloat(document.getElementById('imgY').value) || 0,
+                    realX: parseFloat(document.getElementById('realX').value) || 0,
+                    realY: parseFloat(document.getElementById('realY').value) || 0
+                });
+            }
+            hideModal('calibrationPointModal');
         };
         
-        // ===== Element Creation Functions (defined in main.js) =====
-        // These are just wrappers to avoid errors if main.js not loaded yet
-        window.startDrawWall = () => window.app?.startDrawing('wall');
-        window.startDrawColumn = () => window.app?.startDrawing('column');
+        window.runCalibration = () => window.app?.runCalibration();
+        window.selectMaterial = (m) => window.app?.updateStatus(`Material: ${m}`, 'success');
+        
+        // ===== ELEMENT FUNCTIONS =====
+        window.addWall = () => window.app?.startDrawing('wall');
+        window.addColumn = () => window.app?.startDrawing('column');
         window.addDoor = () => window.app?.startDrawing('door');
         window.addWindow = () => window.app?.startDrawing('window');
         window.addBeam = () => window.app?.startDrawing('beam');
         window.addSlab = () => window.app?.startDrawing('slab');
         window.addFoundation = () => window.app?.startDrawing('foundation');
         window.addPipe = () => window.app?.startDrawing('pipe');
-        
-        // Landscaping
-        window.addPlant = (options) => {
-            if (window.app) window.app.addPlant?.(options);
-            else console.warn('App not ready');
-        };
-        window.addGrass = (options) => {
-            if (window.app) window.app.addGrass?.(options);
-            else console.warn('App not ready');
-        };
-        window.addTree = (options) => {
-            if (window.app) window.app.addTree?.(options);
-            else console.warn('App not ready');
-        };
-        window.addPalm = (options) => {
-            if (window.app) window.app.addPalm?.(options);
-            else console.warn('App not ready');
-        };
-        window.addFountain = (options) => {
-            if (window.app) window.app.addFountain?.(options);
-            else console.warn('App not ready');
-        };
-        window.addGardenLight = (options) => {
-            if (window.app) window.app.addGardenLight?.(options);
-            else console.warn('App not ready');
-        };
-        window.addGardenPath = (points, options) => {
-            if (window.app) window.app.addGardenPath?.(points, options);
-            else console.warn('App not ready');
-        };
-        
-        // Stone & Brick
-        window.addStone = (options) => {
-            if (window.app) window.app.addStone?.(options);
-            else console.warn('App not ready');
-        };
-        window.addBrick = (options) => {
-            if (window.app) window.app.addBrick?.(options);
-            else console.warn('App not ready');
-        };
-        window.addMarble = (options) => {
-            if (window.app) window.app.addMarble?.(options);
-            else console.warn('App not ready');
-        };
-        window.addGranite = (options) => {
-            if (window.app) window.app.addGranite?.(options);
-            else console.warn('App not ready');
-        };
-        window.addCladding = (options) => {
-            if (window.app) window.app.addCladding?.(options);
-            else console.warn('App not ready');
-        };
-        window.addPavement = (options) => {
-            if (window.app) window.app.addPavement?.(options);
-            else console.warn('App not ready');
-        };
-        
-        // Glass
-        window.addGlass = (options) => {
-            if (window.app) window.app.addGlass?.(options);
-            else console.warn('App not ready');
-        };
-        window.addWindowGlass = (options) => {
-            if (window.app) window.app.addWindowGlass?.(options);
-            else console.warn('App not ready');
-        };
-        window.addCurtainWall = (options) => {
-            if (window.app) window.app.addCurtainWall?.(options);
-            else console.warn('App not ready');
-        };
-        window.addGlassPartition = (options) => {
-            if (window.app) window.app.addGlassPartition?.(options);
-            else console.warn('App not ready');
-        };
-        window.addSkylight = (options) => {
-            if (window.app) window.app.addSkylight?.(options);
-            else console.warn('App not ready');
-        };
-        window.addGlassFloor = (options) => {
-            if (window.app) window.app.addGlassFloor?.(options);
-            else console.warn('App not ready');
-        };
-        window.addGlassRailing = (options) => {
-            if (window.app) window.app.addGlassRailing?.(options);
-            else console.warn('App not ready');
-        };
-        window.addStainedGlass = (options) => {
-            if (window.app) window.app.addStainedGlass?.(options);
-            else console.warn('App not ready');
-        };
-        window.addSmartGlass = (options) => {
-            if (window.app) window.app.addSmartGlass?.(options);
-            else console.warn('App not ready');
-        };
-        window.addGlassBlock = (options) => {
-            if (window.app) window.app.addGlassBlock?.(options);
-            else console.warn('App not ready');
-        };
-        
-        // Tools
-        window.runClashDetection = () => window.app?.runClashDetection();
-        
-        // ===== GeoReferencing Functions =====
-        window.setCoordSystem = function(system) {
-            if (window.app) {
-                window.app.engine.geoRef.setCoordinateSystem(system);
-                document.getElementById('coordSystem').textContent = system.toUpperCase();
-                window.app.updateStatus(`System: ${system}`, 'success');
-            }
-        };
-        
-        window.listGCPs = function() {
-            if (!window.app) return;
-            const gcps = window.app.engine.geoRef.gcp;
-            if (gcps.length === 0) {
-                alert('No GCPs added');
-                return;
-            }
-            let list = 'Ground Control Points:\n';
-            gcps.forEach((gcp, i) => {
-                list += `${i+1}. Photo(${gcp.photo.x.toFixed(1)},${gcp.photo.y.toFixed(1)}) → ` +
-                       `Real(${gcp.real.x.toFixed(1)},${gcp.real.y.toFixed(1)}) ` +
-                       `Error: ${gcp.error.toFixed(3)}m\n`;
-            });
-            alert(list);
-        };
-        
-        window.calculateTransform = function() {
-            if (window.app) {
-                window.app.engine.geoRef.calculateTransform();
-                window.app.updateTransformMatrix();
-                window.app.updateStatus('Transform calculated', 'success');
-            }
-        };
-        
-        window.addCalibrationPoint = () => window.app?.startCalibrationPoint();
-        window.runCalibration = () => window.app?.runCalibration();
-        
-        window.addCalibrationPointToScene = function() {
-            const imgX = document.getElementById('imgX').value;
-            const imgY = document.getElementById('imgY').value;
-            const realX = document.getElementById('realX').value;
-            const realY = document.getElementById('realY').value;
-            
-            if (window.app) {
-                window.app.addCalibrationPoint({
-                    imageX: parseFloat(imgX) || 0,
-                    imageY: parseFloat(imgY) || 0,
-                    realX: parseFloat(realX) || 0,
-                    realY: parseFloat(realY) || 0
-                });
-            }
-            hideModal('calibrationPointModal');
-        };
-        
-        window.selectMaterial = (m) => window.app?.updateStatus(`Selected material: ${m}`, 'success');
-        
-        // View Controls
-        document.querySelectorAll('.view-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                if (window.app) window.app.setViewMode(this.dataset.mode);
-            });
-        });
-        
-        // Menu Controls
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-        
-        // Status Update
-        window.updateStatus = (msg, type) => window.app?.updateStatus(msg, type);
-        window.getSystemStatus = () => window.app?.getSystemStatus();
-        
-        // Initial Workflow
-        updateWorkflow(1);
+        window.addTree = () => window.app?.startDrawing('tree');
+        window.addStone = () => window.app?.startDrawing('stone');
+        window.addGlass = () => window.app?.startDrawing('glass');
     </script>
     
-    <!-- Main Application Script -->
     <script type="module" src="./main.js"></script>
 </body>
 </html>
