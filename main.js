@@ -5,6 +5,7 @@
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { TransformControls } from 'three/addons/controls/TransformControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
@@ -217,7 +218,7 @@ class ActualViewConstructionOS {
         console.log('%c🚀 ACTUAL VIEW CONSTRUCTION OS v3.0.0', 'color: #ffaa44; font-size: 18px; font-weight: bold;');
         console.log('%c📐 جميع الأنظمة مفعلة - النسخة الكاملة', 'color: #88aaff; font-size: 14px;');
         console.log('%c========================================', 'color: #ffaa44');
-        
+
         // ===== تهيئة الحاوية =====
         this.engine = {};
         this.state = {
@@ -232,10 +233,10 @@ class ActualViewConstructionOS {
             clashes: [],
             indicatorRotation: 0
         };
-        
+
         // ===== تهيئة Three.js مع إعدادات Core i7 =====
         this.initThree();
-        
+
         // ===== تهيئة الأنظمة الأساسية =====
         this.initCore();
         this.initGlobalSystems();
@@ -252,25 +253,25 @@ class ActualViewConstructionOS {
         this.initUI();
         this.initDebugSystems();
         this.initWorkerModes();
-        
+
         // ===== تهيئة الأنظمة الجديدة =====
         this.initLandscapingModules();
         this.initStoneBrickModules();
         this.initGlassModules();
-        
+
         // ===== تهيئة الأنظمة العالمية الجديدة =====
         this.initGlobalLandscaping();
         this.initGlobalStoneBrick();
         this.initGlobalGlass();
-        
+
         // ===== تجهيز المشهد الأساسي مع إضاءة متقدمة =====
         this.setupLights();
         this.setupScene();
-        
+
         // ===== بدء الحركة وتفعيل الوضع عالي الأداء =====
         this.animate();
         this.enableHighPerformanceMode();
-        
+
         console.log('%c✅ ACTUAL VIEW CONSTRUCTION OS جاهز', 'color: #44ff44; font-size: 16px;');
         console.log('📊 جميع الأنظمة:', Object.keys(this.engine).length);
     }
@@ -282,11 +283,11 @@ class ActualViewConstructionOS {
             this.engine.scene = new THREE.Scene();
             this.engine.scene.background = new THREE.Color(0x111122);
             this.engine.scene.fog = new THREE.Fog(0x111122, 150, 800);
-            
+
             // كاميرا بزاوية واسعة
             this.engine.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 5000);
             this.engine.camera.position.set(25, 15, 35);
-            
+
             // ===== ريندرر عالي الأداء لـ Core i7 =====
             this.engine.renderer = new THREE.WebGLRenderer({ 
                 antialias: true,
@@ -296,46 +297,58 @@ class ActualViewConstructionOS {
                 depth: true,
                 alpha: false
             });
-            
+
             this.engine.renderer.setSize(window.innerWidth, window.innerHeight);
             this.engine.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            
+
             this.engine.renderer.shadowMap.enabled = true;
             this.engine.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             this.engine.renderer.shadowMap.autoUpdate = true;
-            
+
             this.engine.renderer.toneMapping = THREE.ACESFilmicToneMapping;
             this.engine.renderer.toneMappingExposure = 1.4;
-            
+
             document.getElementById('container').appendChild(this.engine.renderer.domElement);
-            
+
+            // ===== التحكم OrbitControls مع تعديل للسماح بالنظر للأسفل =====
             this.engine.controls = new OrbitControls(this.engine.camera, this.engine.renderer.domElement);
             this.engine.controls.enableDamping = true;
             this.engine.controls.dampingFactor = 0.04;
             this.engine.controls.rotateSpeed = 0.8;
             this.engine.controls.zoomSpeed = 1.2;
             this.engine.controls.panSpeed = 0.8;
-            this.engine.controls.maxPolarAngle = Math.PI / 2;
+            this.engine.controls.maxPolarAngle = Math.PI; // ✅ تم التعديل للسماح بالنظر للأسفل
             this.engine.controls.minDistance = 3;
             this.engine.controls.maxDistance = 1000;
             this.engine.controls.target.set(0, 1.6, 0);
-            
+
+            // ===== إضافة TransformControls (Gizmo) =====
+            this.engine.transformControls = new TransformControls(
+                this.engine.camera,
+                this.engine.renderer.domElement
+            );
+            this.engine.transformControls.addEventListener('dragging-changed', (event) => {
+                this.engine.controls.enabled = !event.value;
+            });
+            this.engine.scene.add(this.engine.transformControls);
+            console.log('✅ TransformControls (Gizmo) added');
+
             console.log('✅ Three.js initialized with Core i7 optimization');
         } catch (error) {
             console.error('❌ Three.js init failed:', error);
         }
     }
 
-// ========== إضاءة متقدمة ==========
+    // ========== إضاءة متقدمة ==========
     setupLights() {
         try {
             const ambientLight = new THREE.AmbientLight(0x404060, 1.0);
             this.engine.scene.add(ambientLight);
-            
+
             const sunLight = new THREE.DirectionalLight(0xfff5e6, 1.8);
             sunLight.position.set(30, 50, 30);
             sunLight.castShadow = true;
-            
+
             sunLight.shadow.mapSize.width = 2048;
             sunLight.shadow.mapSize.height = 2048;
             sunLight.shadow.camera.near = 0.5;
@@ -345,49 +358,51 @@ class ActualViewConstructionOS {
             sunLight.shadow.camera.top = 50;
             sunLight.shadow.camera.bottom = -50;
             sunLight.shadow.bias = -0.0005;
-            
+
             this.engine.scene.add(sunLight);
-            
+
             const backLight = new THREE.DirectionalLight(0x446688, 0.6);
             backLight.position.set(-20, 20, -30);
             this.engine.scene.add(backLight);
-            
+
             const pointLight1 = new THREE.PointLight(0xffaa44, 0.8, 50);
             pointLight1.position.set(10, 10, 10);
             this.engine.scene.add(pointLight1);
-            
+
             const pointLight2 = new THREE.PointLight(0x88aaff, 0.5, 50);
             pointLight2.position.set(-10, 5, -10);
             this.engine.scene.add(pointLight2);
-            
+
             console.log('✅ Advanced lighting setup');
         } catch (error) {
             console.error('❌ Lighting setup failed:', error);
         }
     }
 
-    // ========== SCENE SETUP ==========
+    // ========== SCENE SETUP مع تحسين رؤية الشبكة ==========
     setupScene() {
         try {
-            // شبكات أرضية
+            // شبكات أرضية مع رفع أولوية الرسم
             const mainGrid = new THREE.GridHelper(200, 50, 0x88aaff, 0x335588);
             mainGrid.position.y = 0;
             mainGrid.name = "mainGrid";
+            mainGrid.renderOrder = 999; // ✅ لضمان ظهور الشبكة فوق الكرة
             this.engine.scene.add(mainGrid);
-            
+
             const detailGrid = new THREE.GridHelper(100, 50, 0x44aaff, 0x224466);
             detailGrid.position.y = 0.01;
             detailGrid.name = "detailGrid";
+            detailGrid.renderOrder = 999; // ✅ لضمان ظهور الشبكة فوق الكرة
             this.engine.scene.add(detailGrid);
-            
-            // كرة مركزية
+
+            // كرة مركزية (مرجع بصري)
             const sphereGeo = new THREE.SphereGeometry(0.8, 32, 32);
             const sphereMat = new THREE.MeshStandardMaterial({ color: 0xffaa44, emissive: 0x442200 });
             const centerSphere = new THREE.Mesh(sphereGeo, sphereMat);
             centerSphere.position.set(0, 0.8, 0);
             centerSphere.name = "centerSphere";
             this.engine.scene.add(centerSphere);
-            
+
             // حلقة حول الكرة
             const torusGeo = new THREE.TorusGeometry(1.2, 0.05, 16, 100);
             const torusMat = new THREE.MeshStandardMaterial({ color: 0xffaa44, emissive: 0x442200 });
@@ -396,12 +411,12 @@ class ActualViewConstructionOS {
             torus.position.set(0, 0.8, 0);
             torus.name = "centerTorus";
             this.engine.scene.add(torus);
-            
-            // محاور
+
+            // محاور (مرجع)
             const axesHelper = new THREE.AxesHelper(15);
             axesHelper.name = "axesHelper";
             this.engine.scene.add(axesHelper);
-            
+
             // نقاط مرجعية
             const pointsMat = new THREE.PointsMaterial({ color: 0x88aaff, size: 0.15 });
             const pointsGeo = new THREE.BufferGeometry();
@@ -411,15 +426,17 @@ class ActualViewConstructionOS {
                     positions.push(x, 0.02, z);
                 }
             }
-            pointsGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+
+        pointsGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
             const points = new THREE.Points(pointsGeo, pointsMat);
             points.name = "referencePoints";
+            points.renderOrder = 998;
             this.engine.scene.add(points);
-            
+
             // مؤشر حركة
             this.createMovementIndicator();
-            
-            console.log('✅ Scene setup complete');
+
+            console.log('✅ Scene setup complete with improved grid visibility');
         } catch (error) {
             console.error('❌ Scene setup failed:', error);
         }
@@ -447,12 +464,12 @@ class ActualViewConstructionOS {
             if (mainGrid) {
                 mainGrid.material.opacity = 0.9;
             }
-            
+
             const points = this.engine.scene.getObjectByName('referencePoints');
             if (points) {
                 points.material.size = 0.2;
             }
-            
+
             const indicator = this.engine.scene.getObjectByName('movementIndicator');
             if (indicator) {
                 indicator.children.forEach(child => {
@@ -461,29 +478,130 @@ class ActualViewConstructionOS {
                     }
                 });
             }
-            
+
             console.log('⚡ High performance mode activated');
         } catch (error) {
             console.warn('⚠️ High performance mode error:', error);
         }
     }
 
-    // ========== CORE SYSTEMS ==========
+    // ========== IMPORT 360 IMAGE (مع تحسين عدم حجب العناصر) ==========
+    async import360Image(url, sceneName) {
+        try {
+            console.log(`📥 Importing 360 image: ${sceneName}`, url);
+            const sceneId = `scene-${Date.now()}`;
+            this.engine.sceneConnector.addScene(sceneId, { x: 0, y: 0, z: 0 }, 0);
+            const texture = await this.loadTexture(url);
+            const geometry = new THREE.SphereGeometry(500, 60, 40);
+            
+            // ✅ تم تعديل المادة لمنع حجب العناصر
+            const material = new THREE.MeshBasicMaterial({ 
+                map: texture, 
+                side: THREE.BackSide,
+                depthWrite: false,      // يمنع الكرة من حجب العناصر
+                transparent: true,
+                opacity: 0.95
+            });
+            
+            const sphere = new THREE.Mesh(geometry, material);
+            sphere.userData = { type: '360image', sceneId, sceneName };
+            sphere.renderOrder = -1; // ✅ يرسم خلف كل شيء
+            
+            this.engine.scene.add(sphere);
+            this.state.scenes.set(sceneId, { id: sceneId, name: sceneName, sphere, texture, elements: [], anchors: [] });
+            
+            this.updateSceneExplorer();
+            this.updateStatus(`✅ Imported 360 image: ${sceneName}`, 'success');
+            return sceneId;
+        } catch (error) {
+            console.error('❌ Import failed:', error);
+            this.updateStatus('❌ Import failed', 'error');
+            return null;
+        }
+    }
+
+    loadTexture(url) {
+        return new Promise((resolve, reject) => {
+            new THREE.TextureLoader().load(url, resolve, undefined, reject);
+        });
+    }
+
+    // ========== فصل أوضاع العرض (Reality / Plan / Construction) ==========
+    setViewMode(mode) {
+        this.state.currentViewMode = mode;
+        
+        // جمع كل الكرات (صور 360)
+        const spheres = Array.from(this.state.scenes.values()).map(s => s.sphere);
+        const mainGrid = this.engine.scene.getObjectByName('mainGrid');
+        const detailGrid = this.engine.scene.getObjectByName('detailGrid');
+        const axes = this.engine.scene.getObjectByName('axesHelper');
+        const referencePoints = this.engine.scene.getObjectByName('referencePoints');
+        
+        switch(mode) {
+            case 'reality':
+                // وضع الواقع - إظهار الصور فقط
+                spheres.forEach(s => { if (s) s.visible = true; });
+                if (mainGrid) mainGrid.visible = false;
+                if (detailGrid) detailGrid.visible = false;
+                if (axes) axes.visible = false;
+                if (referencePoints) referencePoints.visible = false;
+                this.updateStatus('🌍 Reality Mode - 360 View Active', 'success');
+                break;
+                
+            case 'plan':
+                // وضع التصميم - إخفاء الصور وإظهار الشبكة
+                spheres.forEach(s => { if (s) s.visible = false; });
+                if (mainGrid) mainGrid.visible = true;
+                if (detailGrid) detailGrid.visible = true;
+                if (axes) axes.visible = true;
+                if (referencePoints) referencePoints.visible = true;
+                this.updateStatus('📐 Design Mode - Grid Active', 'success');
+                break;
+                
+            case 'construction':
+                // وضع البناء - مزيج مع شفافية للصورة
+                spheres.forEach(s => { 
+                    if (s) {
+                        s.visible = true;
+                        if (s.material) {
+                            s.material.transparent = true;
+                            s.material.opacity = 0.5;
+                        }
+                    }
+                });
+
+        if (mainGrid) mainGrid.visible = true;
+                if (detailGrid) detailGrid.visible = true;
+                if (axes) axes.visible = true;
+                if (referencePoints) referencePoints.visible = true;
+                this.updateStatus('🏗️ Construction Mode - Hybrid Active', 'success');
+                break;
+        }
+        
+        // تحديث واجهة المستخدم
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.mode === mode);
+        });
+        
+        console.log(`👁️ View mode changed to: ${mode}`);
+    }
+
+    // ========== CORE SYSTEMS (بدون تغيير) ==========
     initCore() {
         try {
             this.engine.geoRef = new GeoReferencing();
             this.engine.geoRef.setCoordinateSystem('utm');
             this.engine.geoRef.setOrigin(0, 0, 0);
             this.engine.geoRef.setScale(1.0);
-            
+
             this.engine.sceneManager = new SceneManager(this);
             this.engine.projectManager = new ProjectManager();
             this.engine.projectManager.createProject('ACTUAL Project', 'Reality BIM Platform');
-            
+
             this.engine.sceneGraph = new SceneGraph();
             this.engine.storage = new StorageManager();
             this.engine.storage.init();
-            
+
             console.log('✅ Core systems initialized');
         } catch (error) {
             console.error('❌ Core init failed:', error);
@@ -698,7 +816,7 @@ class ActualViewConstructionOS {
             console.log('✅ Landscaping modules initialized');
         } catch (error) {
             console.error('❌ Landscaping modules init failed:', error);
-       }
+        }
     }
 
 // ========== STONE & BRICK MODULES ==========
@@ -788,51 +906,22 @@ class ActualViewConstructionOS {
         if (this.engine.controls) this.engine.controls.update();
         if (this.engine.lodManager) this.engine.lodManager.update();
         if (this.engine.tileLODManager) this.engine.tileLODManager.update();
-        
+
         if (this.state.indicatorRotation !== undefined) {
             this.state.indicatorRotation += 0.01;
             const indicator = this.engine.scene.getObjectByName('movementIndicator');
             if (indicator) indicator.rotation.y = this.state.indicatorRotation;
         }
-        
+
         const torus = this.engine.scene.getObjectByName('centerTorus');
         if (torus) torus.rotation.z += 0.005;
-        
+
         if (this.engine.renderer && this.engine.scene && this.engine.camera) {
             this.engine.renderer.render(this.engine.scene, this.engine.camera);
         }
     }
 
-    // ========== IMPORT 360 IMAGE ==========
-    async import360Image(url, sceneName) {
-        try {
-            console.log(`📥 Importing 360 image: ${sceneName}`, url);
-            const sceneId = `scene-${Date.now()}`;
-            this.engine.sceneConnector.addScene(sceneId, { x: 0, y: 0, z: 0 }, 0);
-            const texture = await this.loadTexture(url);
-            const geometry = new THREE.SphereGeometry(500, 60, 40);
-            const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
-            const sphere = new THREE.Mesh(geometry, material);
-            sphere.userData = { type: '360image', sceneId, sceneName };
-            this.engine.scene.add(sphere);
-            this.state.scenes.set(sceneId, { id: sceneId, name: sceneName, sphere, texture, elements: [], anchors: [] });
-            this.updateSceneExplorer();
-            this.updateStatus(`✅ Imported 360 image: ${sceneName}`, 'success');
-            return sceneId;
-        } catch (error) {
-            console.error('❌ Import failed:', error);
-            this.updateStatus('❌ Import failed', 'error');
-            return null;
-        }
-    }
-
-    loadTexture(url) {
-        return new Promise((resolve, reject) => {
-            new THREE.TextureLoader().load(url, resolve, undefined, reject);
-        });
-    }
-
-    // ========== IMPORT CAD ==========
+// ========== IMPORT CAD ==========
     importCAD(file) {
         console.log(`📄 Importing CAD: ${file.name}`);
         this.updateStatus(`📄 Importing CAD: ${file.name}`, 'info');
@@ -942,14 +1031,6 @@ class ActualViewConstructionOS {
         listEl.innerHTML = html;
     }
 
-    setViewMode(mode) {
-        this.state.currentViewMode = mode;
-        document.querySelectorAll('.view-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.mode === mode);
-        });
-        console.log(`👁️ View mode: ${mode}`);
-    }
-
     updateStatus(message, type = 'info') {
         document.getElementById('statusMessage').innerHTML = message;
         console.log(type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️', message);
@@ -981,19 +1062,19 @@ window.addEventListener('load', () => {
     console.log('%c🌟 ACTUAL VIEW CONSTRUCTION OS', 'color: #ffaa44; font-size: 24px;');
     console.log('%c📐 All systems activated', 'color: #88aaff; font-size: 16px;');
     console.log('%c========================================', 'color: #ffaa44');
-    
+
     try {
         window.app = new ActualViewConstructionOS();
         console.log('✅ App instance created and stored in window.app');
-        
+
         // ربط الدوال بشكل صريح
         window.app.import360Image = window.app.import360Image.bind(window.app);
         window.app.importCAD = window.app.importCAD.bind(window.app);
-        
+
         // تحديث واجهة المستخدم
         window.updateWorkflow(1);
         window.app.updateStatus('All systems ready', 'success');
-        
+
         console.log('📌 App methods:', Object.keys(window.app).filter(k => typeof window.app[k] === 'function'));
     } catch (error) {
         console.error('❌ Failed to create app instance:', error);
@@ -1014,3 +1095,4 @@ window.getSystemInfo = () => ({
     url: window.location.href,
     timestamp: new Date().toISOString()
 });
+
